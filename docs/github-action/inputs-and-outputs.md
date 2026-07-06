@@ -19,14 +19,18 @@ behavior stay comparable.
 
 - `model-directory`: required path to the model project directory.
 - `config`: optional config path.
-- `format`: selected exporter, exact accepted values UNDECIDED.
+- `format`: selected exporter. `cyclonedx-json-1.7` is the leading first value candidate; exact accepted values remain UNDECIDED.
 - `output`: output path for generated BOM.
-- `warnings`: warning policy, such as allow or fail, exact values UNDECIDED.
+- `warning-report`: output path for warning report.
+- `summary`: output path for JSON summary.
+- `warnings`: warning policy, with `allow` and `fail` as leading value candidates; exact values remain UNDECIDED.
 - `upload-artifact`: optional boolean, default false.
 
 ## Draft Outputs
 
 - `bom-path`
+- `warning-report-path`
+- `summary-path`
 - `warning-count`
 - `completeness-status`
 - `format`

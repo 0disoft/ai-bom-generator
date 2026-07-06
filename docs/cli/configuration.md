@@ -28,12 +28,21 @@ collect. It must make explicit references easy and avoid broad hidden discovery.
 ## Precedence
 
 Explicit CLI flags should override config values. Environment variables are
-UNDECIDED and should not be added until secret-redaction behavior is designed.
+out of MVP and should not be added until secret-redaction behavior and precedence
+are designed.
+
+## Config v1 Candidate
+
+`aibom.toml` is the leading filename candidate because it is explicit, local, and
+keeps configuration separate from model-card prose. The proposed v1 schema should
+cover output format, warning policy, model metadata pointers, artifact include
+and exclude patterns, dependency lockfiles, dataset references, prompt references,
+eval references, and training references.
 
 ## Still UNDECIDED
 
-- Config filename.
-- Config schema format.
+- Config filename approval.
+- Config schema approval.
 - Whether lockfile discovery is automatic or config-driven.
 
 ## Review Blockers

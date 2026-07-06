@@ -30,7 +30,11 @@ CI without requiring a hosted service.
 - Binary name.
 - Config filename.
 - First exporter.
-- Runtime compatibility floor: UNDECIDED
+
+## Approved Baseline
+
+- Runtime compatibility floor: Python 3.12.
+- CLI adapter: `argparse`, isolated from application and domain layers.
 
 ## Review Blockers
 

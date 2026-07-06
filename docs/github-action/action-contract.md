@@ -24,6 +24,9 @@ This repository type owns action inputs, outputs, permissions, token handling, a
 ## Permission Policy
 
 Default permissions should be read-only. Artifact upload, release attachment, or PR commenting must be explicit future decisions.
+The default action path should not require secrets. Uploading artifacts, writing
+comments, attaching releases, or publishing packages must remain opt-in future
+contracts with least-privilege review.
 
 ## Review Blockers
 

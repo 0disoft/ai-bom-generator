@@ -22,6 +22,8 @@ default.
 - No write permissions by default.
 - No package, release, issue, pull request, or security-event writes unless a future feature explicitly owns them.
 - No secrets required for MVP generation.
+- Do not rely on implicit access to `github.token` for generation behavior.
+- Do not log token, environment, or secret-shaped values from the runner.
 
 ## Review Requirements
 
@@ -32,3 +34,4 @@ GitHub permission required, and the failure mode when that permission is absent.
 
 - Action permission changes lack least-privilege review.
 - Outputs or exit behavior changes without workflow examples.
+- A future `upload-artifact`, PR comment, release attachment, or package publish feature is enabled by default.

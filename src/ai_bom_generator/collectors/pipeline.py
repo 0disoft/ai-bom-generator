@@ -1,0 +1,267 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
+from ai_bom_generator.config import LoadedConfig
+from ai_bom_generator.domain.artifact import ModelArtifact
+from ai_bom_generator.domain.evidence import NormalizedEvidence
+from ai_bom_generator.domain.reference import DeclaredReference
+from ai_bom_generator.domain.source_location import SourceLocation
+from ai_bom_generator.domain.warning import Warning
+from ai_bom_generator.errors import CollectorError, InvalidInputError
+from ai_bom_generator.hashing import sha256_file
+from ai_bom_generator.security import PathPolicy, Redactor
+
+
+def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redactor) -> NormalizedEvidence:
+    warnings: list[Warning] = []
+    model_metadata = _collect_model(config, warnings, redactor)
+    artifacts = _collect_artifacts(config, policy, warnings)
+    dependencies = _collect_path_references("dependencies", config, policy, warnings, redactor)
+    datasets = _collect_named_references("datasets", config, warnings, redactor)
+    prompts = _collect_path_references("prompts", config, policy, warnings, redactor, optional_paths=True)
+    evals = _collect_path_references("evals", config, policy, warnings, redactor, optional_paths=True)
+    training = _collect_path_references("training", config, policy, warnings, redactor, optional_paths=True)
+    git = _collect_git(policy, warnings)
+
+    return NormalizedEvidence(
+        target_root=policy.root.as_posix(),
+        model_metadata=tuple(sorted(model_metadata)),
+        artifacts=tuple(sorted(artifacts)),
+        dependencies=tuple(sorted(dependencies)),
+        datasets=tuple(sorted(datasets)),
+        prompts=tuple(sorted(prompts)),
+        evals=tuple(sorted(evals)),
+        training=tuple(sorted(training)),
+        git=tuple(sorted(git)),
+        warnings=tuple(sorted(warnings)),
+    )
+
+
+def _collect_model(config: LoadedConfig, warnings: list[Warning], redactor: Redactor) -> list[DeclaredReference]:
+    model = config.get_table("model")
+    if not model:
+        warnings.append(
+            Warning(
+                code="MISSING_MODEL_METADATA",
+                severity="warning",
+                object_kind="model",
+                object_id="model",
+                message="No [model] metadata was declared.",
+                remediation="Add [model] metadata to the AI-BOM config.",
+            )
+        )
+        return []
+
+    values = _string_pairs(model, redactor, skip_keys={"model_card"})
+    if not values:
+        warnings.append(
+            Warning(
+                code="EMPTY_MODEL_METADATA",
+                severity="warning",
+                object_kind="model",
+                object_id="model",
+                message="[model] exists but contains no scalar metadata fields.",
+                source=_source(config, "model"),
+                remediation="Declare at least a model name, version, or license_declared value.",
+            )
+        )
+    return [DeclaredReference(kind="model", object_id=str(model.get("name", "model")), values=values, source=_source(config, "model"))]
+
+
+def _collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[Warning]) -> list[ModelArtifact]:
+    artifacts_config = config.get_table("artifacts")
+    includes = artifacts_config.get("include", [])
+    if not includes:
+        warnings.append(
+            Warning(
+                code="MISSING_ARTIFACT_SELECTION",
+                severity="warning",
+                object_kind="artifact",
+                object_id="artifacts",
+                message="No model artifact include patterns were declared.",
+                source=_source(config, "artifacts.include"),
+                remediation="Add [artifacts].include patterns for model files to hash.",
+            )
+        )
+        return []
+    if not isinstance(includes, list) or any(not isinstance(item, str) for item in includes):
+        raise InvalidInputError("[artifacts].include must be an array of strings.", "config")
+
+    excludes = artifacts_config.get("exclude", [])
+    if excludes and (not isinstance(excludes, list) or any(not isinstance(item, str) for item in excludes)):
+        raise InvalidInputError("[artifacts].exclude must be an array of strings.", "config")
+
+    selected: list[ModelArtifact] = []
+    for pattern in sorted(includes):
+        matches = sorted(policy.root.glob(pattern))
+        if not matches:
+            warnings.append(
+                Warning(
+                    code="MISSING_ARTIFACT",
+                    severity="warning",
+                    object_kind="artifact",
+                    object_id=pattern,
+                    message=f"No artifact matched include pattern: {pattern}",
+                    source=_source(config, "artifacts.include"),
+                    remediation="Check the artifact path or remove the include pattern.",
+                )
+            )
+            continue
+        for match in matches:
+            if _is_excluded(match, policy.root, excludes):
+                continue
+            try:
+                if match.is_symlink():
+                    warnings.append(
+                        Warning(
+                            code="SKIPPED_SYMLINK",
+                            severity="warning",
+                            object_kind="artifact",
+                            object_id=match.as_posix(),
+                            message="Symlink artifact was skipped by default.",
+                            source=_source(config, "artifacts.include"),
+                            remediation="Use a real file inside the target root.",
+                        )
+                    )
+                    continue
+                resolved = match.resolve(strict=True)
+                policy.ensure_inside_root(resolved)
+                if not resolved.is_file():
+                    continue
+                selected.append(
+                    ModelArtifact(
+                        path=policy.relative_to_root(resolved),
+                        size=resolved.stat().st_size,
+                        digest=sha256_file(resolved),
+                        digest_algorithm="sha256",
+                        selected_by=pattern,
+                        source=_source(config, "artifacts.include"),
+                    )
+                )
+            except OSError as exc:
+                raise CollectorError(f"Failed to collect artifact {match}: {exc}", "artifact") from exc
+    return selected
+
+
+def _collect_path_references(
+    section: str,
+    config: LoadedConfig,
+    policy: PathPolicy,
+    warnings: list[Warning],
+    redactor: Redactor,
+    optional_paths: bool = False,
+) -> list[DeclaredReference]:
+    items = config.get_array(section)
+    references: list[DeclaredReference] = []
+    for index, item in enumerate(items):
+        source = _source(config, f"{section}[{index}]")
+        raw_path = item.get("path") or item.get("artifact")
+        values = _string_pairs(item, redactor)
+        if raw_path:
+            if not isinstance(raw_path, str):
+                raise InvalidInputError(f"{section}[{index}] path must be a string.", "config")
+            try:
+                resolved = policy.resolve_existing_file(raw_path, required=not optional_paths)
+                merged = dict(values)
+                merged["path"] = policy.relative_to_root(resolved)
+                values = tuple(sorted(merged.items()))
+            except InvalidInputError:
+                if optional_paths:
+                    warnings.append(
+                        Warning(
+                            code=f"MISSING_{section.upper()}_REFERENCE_FILE",
+                            severity="warning",
+                            object_kind=section,
+                            object_id=str(item.get("name", raw_path)),
+                            message=f"Declared {section} file could not be read: {raw_path}",
+                            source=source,
+                            remediation="Check the path or remove the stale reference.",
+                        )
+                    )
+                else:
+                    raise
+        object_id = str(item.get("name") or item.get("type") or raw_path or f"{section}-{index}")
+        references.append(DeclaredReference(kind=_singular_kind(section), object_id=object_id, values=values, source=source))
+    return references
+
+
+def _collect_named_references(
+    section: str,
+    config: LoadedConfig,
+    warnings: list[Warning],
+    redactor: Redactor,
+) -> list[DeclaredReference]:
+    items = config.get_array(section)
+    references: list[DeclaredReference] = []
+    for index, item in enumerate(items):
+        object_id = str(item.get("name") or f"{section}-{index}")
+        values = _string_pairs(item, redactor)
+        if section == "datasets" and "license_declared" not in item:
+            warnings.append(
+                Warning(
+                    code="MISSING_DATASET_LICENSE",
+                    severity="warning",
+                    object_kind="dataset",
+                    object_id=object_id,
+                    message="Dataset license was not declared.",
+                    source=_source(config, f"{section}[{index}].license_declared"),
+                    remediation="Add license_declared or NOASSERTION to the dataset reference.",
+                )
+            )
+        references.append(DeclaredReference(kind=_singular_kind(section), object_id=object_id, values=values, source=_source(config, f"{section}[{index}]")))
+    return references
+
+
+def _collect_git(policy: PathPolicy, warnings: list[Warning]) -> list[DeclaredReference]:
+    git_head = policy.root / ".git" / "HEAD"
+    if not git_head.exists():
+        return []
+    if git_head.is_symlink():
+        warnings.append(
+            Warning(
+                code="SKIPPED_GIT_SYMLINK",
+                severity="warning",
+                object_kind="git",
+                object_id="HEAD",
+                message="Git HEAD symlink was skipped.",
+            )
+        )
+        return []
+    try:
+        text = git_head.read_text(encoding="utf-8").strip()
+    except OSError:
+        return []
+    return [DeclaredReference(kind="git", object_id="HEAD", values=(("head", text),), source=SourceLocation(path=".git/HEAD", collector="git"))]
+
+
+def _string_pairs(data: dict[str, Any], redactor: Redactor, skip_keys: set[str] | None = None) -> tuple[tuple[str, str], ...]:
+    skip = skip_keys or set()
+    pairs: list[tuple[str, str]] = []
+    for key, value in data.items():
+        if key in skip:
+            continue
+        if isinstance(value, (str, int, float, bool)):
+            pairs.append((str(key), redactor.redact_text(str(value))))
+    return tuple(sorted(pairs))
+
+
+def _source(config: LoadedConfig, field: str) -> SourceLocation:
+    path = config.path.as_posix() if config.path else "<inline-defaults>"
+    return SourceLocation(path=path, field=field)
+
+
+def _is_excluded(path: Path, root: Path, excludes: list[str]) -> bool:
+    relative = path.relative_to(root).as_posix()
+    return any(path.match(pattern) or relative == pattern or Path(relative).match(pattern) for pattern in excludes)
+
+
+def _singular_kind(section: str) -> str:
+    return {
+        "dependencies": "dependency",
+        "datasets": "dataset",
+        "prompts": "prompt",
+        "evals": "eval",
+        "training": "training",
+    }.get(section, section)

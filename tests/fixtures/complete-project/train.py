@@ -1,0 +1,1 @@
+print("synthetic training placeholder")

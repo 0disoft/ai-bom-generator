@@ -20,7 +20,7 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 ## MVP Input
 
 - A target model directory.
-- Optional config file path, exact filename UNDECIDED.
+- Optional config file path. The leading filename candidate is `aibom.toml`, pending ADR approval.
 - Model card or model metadata file when present.
 - Model artifact or checkpoint files selected by explicit patterns.
 - Dependency lockfiles from an initial supported set.
@@ -40,20 +40,28 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 - Does not inspect private dataset contents unless a future explicit mode is designed.
 - Does not infer dataset licenses from names, URLs, or comments.
 - Does not claim model safety, bias status, vulnerability status, or regulatory compliance.
+- Does not perform network access, telemetry, hidden caching, or target-directory mutation in MVP.
 
 ## Exporter Direction
 
 SPDX AI and CycloneDX ML-BOM are the candidate output families because they already
 model AI artifacts, datasets, configurations, and provenance-oriented metadata.
-The first implemented exporter remains UNDECIDED until mapping fixtures are written.
+CycloneDX JSON 1.7 is the leading first-exporter candidate because its JSON schema
+can support contract validation early. The first implemented exporter remains
+UNDECIDED until mapping fixtures are written and approved by ADR.
 
 ## Required Decisions Before Implementation
 
-- Runtime and packaging: UNDECIDED.
-- Config filename and schema: UNDECIDED.
+- Runtime: Python 3.12 is approved.
+- CLI adapter: `argparse` is approved, with application and domain layers kept framework-independent.
+- Repository license: Apache-2.0 is approved.
+- Package metadata: `pyproject.toml` with setuptools build backend is approved.
+- Lockfile: UNDECIDED.
+- Config filename and schema: `aibom.toml` plus config schema v1 is proposed, not approved.
 - First exporter: UNDECIDED between SPDX AI and CycloneDX ML-BOM.
 - Lockfile support set: UNDECIDED.
 - Model artifact discovery defaults: UNDECIDED.
+- Redaction default: strict redaction is proposed, not approved.
 - Validation needed before merge: VALIDATION.md.
 
 ## Review Blockers

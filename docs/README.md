@@ -15,3 +15,7 @@ Status: Draft
 - CLI output and exit-code source: docs/cli/output-and-exit-codes.md
 - CLI config source: docs/cli/configuration.md
 - GitHub Action source: docs/github-action/README.md
+- Exporter mapping notes: docs/exporters/*.md
+- Public contract drafts: docs/contracts/*.md
+- Security policy drafts: docs/security/*.md
+- Fixture strategy: docs/testing/fixture-matrix.md

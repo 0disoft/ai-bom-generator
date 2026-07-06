@@ -1,0 +1,7 @@
+schema_version = "1"
+
+[model]
+name = "missing-artifact-model"
+
+[artifacts]
+include = ["models/missing.safetensors"]

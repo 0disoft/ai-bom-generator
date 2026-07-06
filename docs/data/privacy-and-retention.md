@@ -22,6 +22,8 @@ metadata rather than copying source file contents into telemetry or JSON summari
 - JSON summary must not include full model card, prompt, eval, or dataset file contents.
 - Known secret-shaped values should be redacted or rejected before they enter generated reports.
 - Network access is out of scope unless explicitly designed later.
+- Prompt contents, private dataset rows, model weights, and full eval output contents are not collected by default.
+- BOM output is also a privacy surface and must follow redaction rules, not only the JSON summary.
 
 ## Retention Boundary
 
@@ -32,6 +34,7 @@ metadata rather than copying source file contents into telemetry or JSON summari
 ## Validation Needed Before Merge
 
 - Redaction fixtures for obvious token and URL-like secrets.
+- Symlink and target-root escape fixtures.
 - Negative fixtures proving source file contents are not embedded in JSON summary.
 
 ## Review Blockers

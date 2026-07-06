@@ -1,0 +1,39 @@
+schema_version = "1"
+
+[output]
+format = "cyclonedx-json-1.7"
+
+[warning_policy]
+missing_metadata = "warn"
+
+[model]
+name = "example-model"
+version = "0.1.0"
+model_card = "MODEL_CARD.md"
+license_declared = "NOASSERTION"
+
+[artifacts]
+include = ["models/model.safetensors"]
+exclude = ["**/.git/**", "**/__pycache__/**"]
+
+[[dependencies]]
+path = "requirements.lock"
+type = "pip"
+
+[[datasets]]
+name = "example-dataset"
+version = "2026-07"
+uri = "https://example.invalid/datasets/example"
+license_declared = "NOASSERTION"
+
+[[prompts]]
+name = "system-prompt"
+path = "prompts/system.txt"
+include_content = false
+
+[[evals]]
+name = "smoke-eval"
+artifact = "evals/result.json"
+
+[[training]]
+path = "train.py"

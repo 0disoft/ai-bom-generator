@@ -22,6 +22,8 @@ output from the same input project.
 - Missing metadata appears in the warning report.
 - JSON output does not expose full source file contents.
 - Warnings are testable by code, not only prose.
+- Missing data is represented as machine-readable warnings, not inferred facts.
+- Declared values remain distinguishable from observed or derived values.
 
 ## Known Quality Risks
 
@@ -29,6 +31,8 @@ output from the same input project.
 - Lockfile formats differ by ecosystem.
 - SPDX and CycloneDX mapping details can drift.
 - Large artifact hashing can be expensive.
+- Warning noise can make important gaps easy to ignore.
+- Schema-valid output can still be semantically misleading if declared, observed, derived, and concluded fields are mixed.
 
 ## Review Blockers
 

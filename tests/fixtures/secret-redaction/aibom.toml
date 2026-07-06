@@ -1,0 +1,12 @@
+schema_version = "1"
+
+[model]
+name = "redaction-model"
+
+[artifacts]
+include = ["models/model.safetensors"]
+
+[[datasets]]
+name = "private-dataset"
+uri = "https://example.invalid/data?token=super-secret-token"
+license_declared = "NOASSERTION"

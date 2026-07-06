@@ -1,0 +1,8 @@
+schema_version = "1"
+
+[model]
+name = "symlink-escape-model"
+
+[[prompts]]
+name = "outside"
+path = "../outside.txt"

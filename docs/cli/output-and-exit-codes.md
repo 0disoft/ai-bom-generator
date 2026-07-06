@@ -24,18 +24,34 @@ act without reading prose.
 - exporter-failure: selected BOM output could not be produced or validated.
 - internal-error: unexpected implementation failure.
 
-Numeric values are UNDECIDED.
+## Proposed Numeric Codes
+
+- `0`: generation succeeded. Warnings may be present when warning policy allows them.
+- `10`: warning policy failed.
+- `20`: invalid input.
+- `30`: collector failure.
+- `40`: exporter failure.
+- `70`: internal error.
+
+`success-with-warnings` should be a JSON summary status rather than a distinct
+process code when `--warnings allow` is active.
 
 ## JSON Summary Fields
 
-- exporter
-- output_path
-- warning_count
-- warnings
-- hash_algorithm
-- artifact_count
-- completeness_status
-- elapsed_ms
+- `schema_version`
+- `tool.name`
+- `tool.version`
+- `status`
+- `format`
+- `bom_path`
+- `warning_report_path`
+- `hash_algorithm`
+- `artifact_count`
+- `warning_count`
+- `completeness_status`
+- `warnings`
+- `elapsed_ms`
+- `exit_code`
 
 ## Review Blockers
 

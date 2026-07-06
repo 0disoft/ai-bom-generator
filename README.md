@@ -59,6 +59,8 @@ binary diffs, local files, build outputs, caches, and secret files under control
 
 ## Scope Notes
 
-Implementation language, package manager, runtime floor, SPDX/CycloneDX exporter
-priority, and release packaging remain UNDECIDED until the repository owner records
-them in the source-of-truth documents.
+Runtime floor is Python 3.12, the initial CLI adapter is `argparse`, package
+metadata lives in `pyproject.toml`, and the repository license is Apache-2.0.
+Package manager, lockfile, SPDX/CycloneDX exporter priority, and release
+packaging remain UNDECIDED until the repository owner records them in the
+source-of-truth documents.

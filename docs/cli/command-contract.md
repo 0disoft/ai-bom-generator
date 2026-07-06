@@ -15,19 +15,29 @@ This repository type owns command behavior, arguments, flags, config loading, ex
 
 ## Required Decisions
 
-- Command list and flag ownership: first command is expected to generate an AI-BOM from one model directory; exact command name is UNDECIDED.
+- Command list and flag ownership: first command is expected to generate an AI-BOM from one model directory. `ai-bom generate` is the leading command-name candidate, pending ADR approval.
 - Exit-code taxonomy: success, success-with-warnings, invalid-input, collector-failure, exporter-failure, and internal-error need stable numeric codes.
 - Machine-readable output contract: JSON summary must include output paths, warning counts, exporter, hash algorithm, and completeness status without embedding full source file contents.
-- Config precedence and default behavior: explicit CLI flags override config; config filename and defaults remain UNDECIDED.
-- Runtime compatibility floor: UNDECIDED
+- Config precedence and default behavior: explicit CLI flags override config; environment-variable config is out of MVP until redaction and precedence are designed.
+- Runtime compatibility floor: Python 3.12.
+- CLI adapter boundary: `argparse` may own argument parsing and exit-code translation, but application and domain layers must not import it.
 
 ## Candidate CLI Shape
 
 ```text
-ai-bom generate <model-directory> --config <path> --format <spdx-ai|cyclonedx-mlbom> --out <path> --json
+ai-bom generate <model-directory>
+  --config <path>
+  --format <cyclonedx-json-1.7|spdx-ai>
+  --output <path>
+  --warning-report <path>
+  --summary <path|->
+  --warnings <allow|fail>
+  --redaction <strict|off>
 ```
 
-The exact binary name, flag names, and output filenames remain draft until implementation starts.
+The exact binary name, flag names, accepted formats, and output filename defaults
+remain draft until implementation starts. MVP should prefer explicit output paths
+over silently writing into the target model directory.
 
 ## Review Blockers
 

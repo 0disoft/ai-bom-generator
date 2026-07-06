@@ -7,8 +7,9 @@ Scope: data
 This repository owns data pipeline contracts, lineage, quality gates, retention decisions,
 privacy boundaries, and data validation surfaces.
 
-This repository does not generate production datasets, credentials, warehouse objects,
-or application runtime code.
+This repository does not generate production datasets, credentials, or warehouse
+objects. Application runtime code is allowed only for the approved local CLI and
+GitHub Action wrapper scope described in docs/product/02-spec.md and docs/adr/.
 
 ## Repository Shape
 
@@ -27,9 +28,23 @@ Addons: github-action
 - Agent routing: .agents/context-map.md
 - Repository hygiene: .editorconfig, .gitattributes, .gitignore
 
+## Implementation Mode
+
+Owner-approved implementation started on 2026-07-06.
+
+Approved implementation decisions:
+
+- Runtime floor: Python 3.12.
+- CLI adapter: argparse, isolated from application and domain layers.
+- Repository license: Apache-2.0.
+
+Implementation may add local CLI source code, tests, synthetic fixtures, schemas,
+and packaging metadata when those changes preserve the source-of-truth contracts.
+
 ## Hard Rules
 
-- Do not generate or infer application source code from this scaffold.
+- Do not generate production datasets, credentials, warehouse objects, hosted
+  services, or model-serving runtime code.
 - Do not invent technology choices. Use UNDECIDED when a decision is not known.
 - Do not create fake credentials, tokens, secrets, or private values.
 - Do not rely on generated, cache, or build output as source truth.
@@ -50,7 +65,7 @@ Addons: github-action
 
 ## Out of Scope
 
-- Application source scaffolding.
+- Production datasets, dataset hosting, and warehouse objects.
 - Runtime infrastructure such as Docker, Kubernetes, Terraform, or framework apps.
 - Project-specific credentials or deployment secrets.
 

@@ -25,6 +25,9 @@ and a warning report.
 7. Export to the selected standards-backed BOM format.
 8. Emit missing-metadata warnings and machine-readable summary output.
 
+Collectors must not know exporter-specific field names. Exporters must not read
+the filesystem directly. Reporters must not mutate normalized evidence.
+
 ## Ownership Boundary
 
 - Input files belong to the caller.
@@ -44,6 +47,7 @@ and a warning report.
 ## Validation Needed Before Merge
 
 - Fixture coverage for complete, sparse, invalid-config, and missing-artifact projects.
+- Security fixture coverage for secret-redaction and symlink-escape projects.
 - Deterministic output check for stable input.
 - Exporter schema or conformance check once the first exporter is selected.
 

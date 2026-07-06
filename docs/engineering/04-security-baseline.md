@@ -20,5 +20,7 @@ boundaries, and avoidance of implicit network access.
 - A change logs credentials, private dataset contents, model weights, or full source files.
 - A change enables network access, registry publication, PR comments, or artifact upload without an explicit contract.
 - A change treats user-provided paths or config as trusted.
+- A change follows symlinks or reads outside the target root without an explicit policy.
+- A change adds hidden cache, telemetry, or background state without an ADR.
 - A change weakens validation or hides skipped checks.
 - A change lacks failure, recovery, security, performance, or test evidence where relevant.

@@ -1,0 +1,33 @@
+# Path and Symlink Policy
+
+Status: Draft
+Owner: UNASSIGNED
+
+## Purpose
+
+AI-BOM Generator scans caller-owned local projects. The target directory is
+untrusted input and must not be allowed to make the tool read outside the
+intended project boundary by default.
+
+## Default Policy
+
+- Resolve the target model directory before collection.
+- Treat all user-provided paths and globs as untrusted.
+- Block target-root escape by default.
+- Do not follow symlinks by default.
+- Do not read hidden, ignored, cache, dependency, or build-output paths as source
+  truth unless explicitly configured.
+- Use explicit artifact include and exclude patterns for large model files.
+
+## Failure Behavior
+
+- Invalid path: invalid-input failure.
+- Target-root escape: invalid-input failure or machine-readable warning, depending on whether the path was required.
+- Symlink skipped: machine-readable warning.
+- Required artifact inaccessible: collector failure.
+
+## Review Blockers
+
+- A collector resolves paths independently of the shared path policy.
+- A glob can escape the target root.
+- A symlink can make the tool read private files outside the target project.

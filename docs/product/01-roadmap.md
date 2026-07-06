@@ -18,8 +18,9 @@ later exporter and CI integrations.
 
 - Lock the source-of-truth docs.
 - Choose runtime, packaging, config filename, and first exporter.
+- Decide license, visibility, redaction default, no-network posture, and cache policy.
 - Create fixtures for one complete and one sparse model directory.
-- Define JSON output and exit-code taxonomy.
+- Define JSON summary, warning report, warning taxonomy, and exit-code taxonomy.
 
 ## Phase 1: Local CLI MVP
 
@@ -28,6 +29,8 @@ later exporter and CI integrations.
 - Compute SHA-256 digests for configured model artifacts.
 - Collect dependency, dataset, prompt, eval, and training-code references.
 - Emit BOM output and missing-metadata warnings.
+- Reject target-root escapes and symlink escapes by default.
+- Prove secret-shaped values do not leak into summaries or warning reports.
 
 ## Phase 2: CI Integration
 
