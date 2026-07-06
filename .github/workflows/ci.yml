@@ -39,6 +39,9 @@ jobs:
       - name: Run unit and contract tests
         run: uv run --python 3.12 python -m unittest discover -s tests -v
 
+      - name: Build distributions
+        run: uv build
+
       - name: Smoke CLI fixture
         run: |
           set -euo pipefail
