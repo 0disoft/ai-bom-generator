@@ -18,6 +18,23 @@ This document owns stable validation names for this scaffold.
 - docs
 - check
 
+## Current Local Validation Commands
+
+These commands mirror the hosted CI workflow for the current Python 3.12 CLI
+implementation.
+
+| Validation name | Command |
+| --- | --- |
+| check | `uv sync --locked` |
+| check | `uv run --python 3.12 python -m compileall -q src tests` |
+| test | `uv run --python 3.12 python -m unittest discover -s tests -v` |
+| smoke | `uv run --python 3.12 python -m ai_bom_generator generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output <temp>/bom.cdx.json --warning-report <temp>/warnings.json --summary <temp>/summary.json` |
+| check | `git diff --check` |
+
+Docs validation is review-based until a documentation linter is configured.
+Format, lint, typecheck, contract, and migration-check are stable names but do
+not have configured runners yet.
+
 ## Required Final Report
 
 Final responses must list executed validations, passed validations, skipped validations, skip reasons, and remaining risk.
@@ -40,4 +57,3 @@ data validation routes must stay stack-neutral unless a runner file explicitly d
 ## Repository Shape
 
 cli-tool, github-action validation must stay repository-shape focused and must not imply generated application source code.
-
