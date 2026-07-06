@@ -17,6 +17,8 @@ collect. It must make explicit references easy and avoid broad hidden discovery.
 
 ## Draft Config Responsibilities
 
+- Declare model metadata and a model-card path without copying model-card
+  contents into generated output.
 - Select model artifact paths or globs.
 - Declare dataset references.
 - Declare prompt template references.

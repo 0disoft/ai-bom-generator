@@ -47,6 +47,41 @@ class CliTests(unittest.TestCase):
             self.assertEqual(warning_payload["warning_count"], 0)
             self.assertEqual(bom_payload["bomFormat"], "CycloneDX")
             self.assertEqual(bom_payload["specVersion"], "1.7")
+            model_properties = {
+                str(item["name"]): str(item["value"])
+                for item in bom_payload["metadata"]["component"]["properties"]
+            }
+            self.assertEqual(model_properties["ai-bom:model:model_card"], "MODEL_CARD.md")
+
+    def test_declared_missing_model_card_fails_as_invalid_input(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config_text = config.read_text(encoding="utf-8")
+            config.write_text(
+                config_text.replace('model_card = "MODEL_CARD.md"', 'model_card = "MISSING.md"'),
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(work / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
 
     def test_sparse_project_reports_machine_readable_warning(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

@@ -16,7 +16,7 @@ from ai_bom_generator.security import PathPolicy, Redactor
 
 def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redactor) -> NormalizedEvidence:
     warnings: list[Warning] = []
-    model_metadata = _collect_model(config, warnings, redactor)
+    model_metadata = _collect_model(config, policy, warnings, redactor)
     artifacts = _collect_artifacts(config, policy, warnings)
     dependencies = _collect_path_references("dependencies", config, policy, warnings, redactor)
     datasets = _collect_named_references("datasets", config, warnings, redactor)
@@ -39,7 +39,12 @@ def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redacto
     )
 
 
-def _collect_model(config: LoadedConfig, warnings: list[Warning], redactor: Redactor) -> list[DeclaredReference]:
+def _collect_model(
+    config: LoadedConfig,
+    policy: PathPolicy,
+    warnings: list[Warning],
+    redactor: Redactor,
+) -> list[DeclaredReference]:
     model = config.get_table("model")
     if not model:
         warnings.append(
@@ -54,7 +59,14 @@ def _collect_model(config: LoadedConfig, warnings: list[Warning], redactor: Reda
         )
         return []
 
-    values = _string_pairs(model, redactor, skip_keys={"model_card"})
+    values = dict(_string_pairs(model, redactor, skip_keys={"model_card"}))
+    model_card = model.get("model_card")
+    if model_card is not None:
+        if not isinstance(model_card, str):
+            raise InvalidInputError("[model].model_card must be a string path.", "config")
+        resolved = policy.resolve_existing_file(model_card, required=True)
+        values["model_card"] = policy.relative_to_root(resolved)
+
     if not values:
         warnings.append(
             Warning(
@@ -67,7 +79,14 @@ def _collect_model(config: LoadedConfig, warnings: list[Warning], redactor: Reda
                 remediation="Declare at least a model name, version, or license_declared value.",
             )
         )
-    return [DeclaredReference(kind="model", object_id=str(model.get("name", "model")), values=values, source=_source(config, "model"))]
+    return [
+        DeclaredReference(
+            kind="model",
+            object_id=str(model.get("name", "model")),
+            values=tuple(sorted(values.items())),
+            source=_source(config, "model"),
+        )
+    ]
 
 
 def _collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[Warning]) -> list[ModelArtifact]:
