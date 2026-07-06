@@ -19,7 +19,7 @@ and a warning report.
 1. Resolve the target model directory.
 2. Load explicit AI-BOM config when provided.
 3. Discover known metadata files without reading arbitrary generated output as truth.
-4. Collect model card fields, training-code references, dependency lockfile references, dataset references, prompt references, and eval references.
+4. Collect model card fields, training-code references, dependency lockfile references, dataset references, prompt references, eval references, and local Git commit references when in-root Git metadata is available.
 5. Hash selected model artifacts and checkpoints.
 6. Normalize collected evidence into an internal BOM model.
 7. Export to the selected standards-backed BOM format.
@@ -43,6 +43,7 @@ the filesystem directly. Reporters must not mutate normalized evidence.
 - Hash failure: failure.
 - Unsupported exporter mapping: failure.
 - Partial collector support: warning with unsupported field names.
+- Unresolved or unsupported Git metadata: warning without fabricating a commit.
 
 ## Validation Needed Before Merge
 

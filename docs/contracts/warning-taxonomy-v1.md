@@ -32,6 +32,7 @@ The executable warning-report schema lives at
 - Missing eval reference.
 - Unsupported lockfile type.
 - Unsupported exporter field.
+- Unsupported or unresolved local Git metadata.
 - Redacted secret-shaped value.
 - Skipped symlink.
 - Target-root escape blocked.

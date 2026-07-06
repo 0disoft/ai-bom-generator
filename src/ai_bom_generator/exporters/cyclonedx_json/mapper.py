@@ -67,4 +67,7 @@ def _model_properties(evidence: NormalizedEvidence) -> list[dict[str, str]]:
     for reference in evidence.model_metadata:
         for key, value in reference.values:
             properties.append({"name": f"ai-bom:model:{key}", "value": value})
+    for reference in evidence.git:
+        for key, value in reference.values:
+            properties.append({"name": f"ai-bom:git:{key}", "value": value})
     return sorted(properties, key=lambda item: item["name"])

@@ -16,6 +16,8 @@ mapping constraints that must stay true as the exporter matures.
 - Use SHA-256 digests for selected model artifacts.
 - Represent missing metadata as warnings, not fabricated BOM fields.
 - Keep prompt, dataset, eval, and model-card contents out of generated summaries.
+- Map collected local Git HEAD/ref/commit evidence into `ai-bom:git:*`
+  properties without reading Git metadata from the exporter.
 
 ## Required Fixtures
 
@@ -39,6 +41,8 @@ upstream license file. Runtime exporter validation uses that vendored schema.
 - Golden fixtures are deterministic.
 - Warning report and JSON summary stay consistent with the BOM output.
 - Mapping docs identify any field that is declared rather than independently verified.
+- Git commit properties appear only when the collector resolved a detached HEAD
+  or symbolic ref to a 40-character commit value.
 
 ## Review Blockers
 

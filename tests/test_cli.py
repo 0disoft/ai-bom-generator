@@ -55,6 +55,108 @@ class CliTests(unittest.TestCase):
             }
             self.assertEqual(model_properties["ai-bom:model:model_card"], "MODEL_CARD.md")
 
+    def test_git_head_ref_is_resolved_into_bom_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            commit = "0123456789abcdef0123456789abcdef01234567"
+            ref = project / ".git" / "refs" / "heads" / "main"
+            ref.parent.mkdir(parents=True)
+            (project / ".git" / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8", newline="\n")
+            ref.write_text(f"{commit}\n", encoding="utf-8", newline="\n")
+            bom = work / "out" / "bom.cdx.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "out" / "warnings.json"),
+                    "--summary",
+                    str(work / "out" / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            model_properties = _model_properties(_read_json(bom))
+            self.assertEqual(model_properties["ai-bom:git:head"], "ref: refs/heads/main")
+            self.assertEqual(model_properties["ai-bom:git:ref"], "refs/heads/main")
+            self.assertEqual(model_properties["ai-bom:git:commit"], commit)
+
+    def test_packed_git_ref_is_resolved_into_bom_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            commit = "abcdef0123456789abcdef0123456789abcdef01"
+            git_dir = project / ".git"
+            git_dir.mkdir()
+            (git_dir / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8", newline="\n")
+            (git_dir / "packed-refs").write_text(
+                f"# pack-refs with: peeled fully-peeled sorted\n{commit} refs/heads/main\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "out" / "bom.cdx.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "out" / "warnings.json"),
+                    "--summary",
+                    str(work / "out" / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            model_properties = _model_properties(_read_json(bom))
+            self.assertEqual(model_properties["ai-bom:git:commit"], commit)
+
+    def test_unresolved_git_ref_warns_without_fabricated_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            (project / ".git").mkdir()
+            (project / ".git" / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8", newline="\n")
+            bom = work / "out" / "bom.cdx.json"
+            summary = work / "out" / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "out" / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            summary_payload = _read_json(summary)
+            self.assertEqual(summary_payload["status"], "success-with-warnings")
+            self.assertEqual(summary_payload["warnings"][0]["code"], "GIT_REF_UNRESOLVED")
+            model_properties = _model_properties(_read_json(bom))
+            self.assertEqual(model_properties["ai-bom:git:head"], "ref: refs/heads/main")
+            self.assertEqual(model_properties["ai-bom:git:ref"], "refs/heads/main")
+            self.assertNotIn("ai-bom:git:commit", model_properties)
+
     def test_summary_dash_writes_machine_readable_summary_to_stdout(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
@@ -387,6 +489,20 @@ class CliTests(unittest.TestCase):
 
 def _read_json(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _model_properties(bom_payload: dict[str, object]) -> dict[str, str]:
+    metadata = bom_payload["metadata"]
+    assert isinstance(metadata, dict)
+    component = metadata["component"]
+    assert isinstance(component, dict)
+    properties = component["properties"]
+    assert isinstance(properties, list)
+    return {
+        str(item["name"]): str(item["value"])
+        for item in properties
+        if isinstance(item, dict)
+    }
 
 
 def _generate_fixture_outputs(work: Path, name: str, fixture: str) -> Path:

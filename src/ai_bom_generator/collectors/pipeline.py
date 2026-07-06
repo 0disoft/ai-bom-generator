@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 from typing import Any
 
 from ai_bom_generator.config import LoadedConfig
@@ -12,6 +13,9 @@ from ai_bom_generator.domain.warning import Warning
 from ai_bom_generator.errors import CollectorError, InvalidInputError
 from ai_bom_generator.hashing import sha256_file
 from ai_bom_generator.security import PathPolicy, Redactor
+
+
+_GIT_SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 
 
 def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redactor) -> NormalizedEvidence:
@@ -234,25 +238,134 @@ def _collect_named_references(
 
 
 def _collect_git(policy: PathPolicy, warnings: list[Warning]) -> list[DeclaredReference]:
-    git_head = policy.root / ".git" / "HEAD"
-    if not git_head.exists():
+    git_path = policy.root / ".git"
+    if not git_path.exists():
         return []
-    if git_head.is_symlink():
+    if git_path.is_symlink():
         warnings.append(
             Warning(
                 code="SKIPPED_GIT_SYMLINK",
                 severity="warning",
                 object_kind="git",
-                object_id="HEAD",
-                message="Git HEAD symlink was skipped.",
+                object_id=".git",
+                message="Git metadata symlink was skipped.",
+                source=SourceLocation(path=".git", collector="git"),
+                remediation="Use a target project with an in-root .git directory.",
             )
         )
         return []
-    try:
-        text = git_head.read_text(encoding="utf-8").strip()
-    except OSError:
+    if git_path.is_file():
+        warnings.append(
+            Warning(
+                code="UNSUPPORTED_GIT_METADATA_FILE",
+                severity="warning",
+                object_kind="git",
+                object_id=".git",
+                message="Git metadata file was skipped because MVP only reads in-root .git directories.",
+                source=SourceLocation(path=".git", collector="git"),
+                remediation="Run against a checkout with an in-root .git directory or omit Git evidence.",
+            )
+        )
         return []
-    return [DeclaredReference(kind="git", object_id="HEAD", values=(("head", text),), source=SourceLocation(path=".git/HEAD", collector="git"))]
+    if not git_path.is_dir():
+        return []
+
+    git_head = git_path / "HEAD"
+    try:
+        text = _read_git_text_file(git_head).strip()
+    except OSError as exc:
+        warnings.append(
+            Warning(
+                code="GIT_HEAD_UNREADABLE",
+                severity="warning",
+                object_kind="git",
+                object_id="HEAD",
+                message=f"Git HEAD could not be read: {exc}",
+                source=SourceLocation(path=".git/HEAD", collector="git"),
+                remediation="Check the local Git metadata or omit Git evidence.",
+            )
+        )
+        return []
+
+    values = {"head": text}
+    if _GIT_SHA_RE.fullmatch(text):
+        values["commit"] = text.lower()
+    elif text.startswith("ref: "):
+        ref_name = text.removeprefix("ref: ").strip()
+        values["ref"] = ref_name
+        commit = _resolve_git_ref(git_path, ref_name)
+        if commit:
+            values["commit"] = commit
+        else:
+            warnings.append(
+                Warning(
+                    code="GIT_REF_UNRESOLVED",
+                    severity="warning",
+                    object_kind="git",
+                    object_id=ref_name,
+                    message=f"Git ref could not be resolved to a commit: {ref_name}",
+                    source=SourceLocation(path=".git/HEAD", collector="git"),
+                    remediation="Ensure the referenced Git ref exists as a loose or packed ref.",
+                )
+            )
+    else:
+        warnings.append(
+            Warning(
+                code="GIT_HEAD_UNSUPPORTED",
+                severity="warning",
+                object_kind="git",
+                object_id="HEAD",
+                message="Git HEAD did not contain a detached commit or symbolic ref.",
+                source=SourceLocation(path=".git/HEAD", collector="git"),
+                remediation="Use a standard Git HEAD format.",
+            )
+        )
+
+    return [
+        DeclaredReference(
+            kind="git",
+            object_id="HEAD",
+            values=tuple(sorted(values.items())),
+            source=SourceLocation(path=".git/HEAD", collector="git"),
+        )
+    ]
+
+
+def _resolve_git_ref(git_dir: Path, ref_name: str) -> str | None:
+    if ref_name.startswith("/") or "\\" in ref_name:
+        return None
+
+    loose_ref = git_dir / ref_name
+    try:
+        loose_ref.resolve(strict=False).relative_to(git_dir.resolve(strict=True))
+    except (OSError, ValueError):
+        return None
+    if loose_ref.exists() and not loose_ref.is_symlink() and loose_ref.is_file():
+        try:
+            text = _read_git_text_file(loose_ref).strip()
+        except OSError:
+            return None
+        if _GIT_SHA_RE.fullmatch(text):
+            return text.lower()
+
+    packed_refs = git_dir / "packed-refs"
+    if packed_refs.exists() and not packed_refs.is_symlink() and packed_refs.is_file():
+        try:
+            for line in _read_git_text_file(packed_refs).splitlines():
+                if not line or line.startswith("#") or line.startswith("^"):
+                    continue
+                commit, _, packed_ref = line.partition(" ")
+                if packed_ref == ref_name and _GIT_SHA_RE.fullmatch(commit):
+                    return commit.lower()
+        except OSError:
+            return None
+    return None
+
+
+def _read_git_text_file(path: Path) -> str:
+    if path.is_symlink():
+        raise OSError("symlink Git metadata is not allowed")
+    return path.read_text(encoding="utf-8")
 
 
 def _string_pairs(data: dict[str, Any], redactor: Redactor, skip_keys: set[str] | None = None) -> tuple[tuple[str, str], ...]:
