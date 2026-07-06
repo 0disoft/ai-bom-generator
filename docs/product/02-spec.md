@@ -57,7 +57,7 @@ UNDECIDED until mapping fixtures are written and approved by ADR.
 - Repository license: Apache-2.0 is approved.
 - Package metadata: `pyproject.toml` with setuptools build backend is approved.
 - Schema validation dependency: `jsonschema>=4.25,<5` is approved.
-- Lockfile: UNDECIDED.
+- Project lockfile: `uv.lock` is approved.
 - Config filename and schema: `aibom.toml` plus config schema v1 is proposed, not approved.
 - First exporter: CycloneDX JSON 1.7 is implemented first and must stay schema-validated.
 - Lockfile support set: UNDECIDED.

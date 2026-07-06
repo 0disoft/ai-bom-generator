@@ -26,7 +26,7 @@ choices from plausible candidates that still need approval.
 | CLI adapter | `argparse` | Approved by owner on 2026-07-06 |
 | Package metadata | `pyproject.toml` with setuptools build backend | Approved by implementation kickoff on 2026-07-06 |
 | Schema validation dependency | `jsonschema>=4.25,<5` | Approved by implementation kickoff on 2026-07-06 |
-| Lockfile | `uv.lock` | Proposed |
+| Project lockfile | `uv.lock` | Approved by uv adoption on 2026-07-06 |
 | Action wrapper | Composite GitHub Action | Proposed |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
 | Network policy | No network in MVP | Proposed |

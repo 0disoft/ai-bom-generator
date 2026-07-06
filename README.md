@@ -71,6 +71,7 @@ binary diffs, local files, build outputs, caches, and secret files under control
 
 Runtime floor is Python 3.12, the initial CLI adapter is `argparse`, package
 metadata lives in `pyproject.toml`, JSON Schema validation uses `jsonschema`,
-and the repository license is Apache-2.0. Package manager, lockfile, second
-exporter priority, and release packaging remain UNDECIDED until the repository
-owner records them in the source-of-truth documents.
+the project lockfile is `uv.lock`, and the repository license is Apache-2.0.
+Package manager UX, second exporter priority, and release packaging remain
+UNDECIDED until the repository owner records them in the source-of-truth
+documents.
