@@ -75,6 +75,57 @@ class CliTests(unittest.TestCase):
             self.assertEqual(summary_payload["status"], "success-with-warnings")
             self.assertEqual(summary_payload["warnings"][0]["code"], "MISSING_ARTIFACT_SELECTION")
 
+    def test_missing_artifact_pattern_reports_warning_without_fabricated_artifact(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "missing-artifact", project)
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            summary_payload = _read_json(summary)
+            warning_payload = _read_json(warnings)
+            bom_payload = _read_json(bom)
+            self.assertEqual(summary_payload["status"], "success-with-warnings")
+            self.assertEqual(summary_payload["artifact_count"], 0)
+            self.assertEqual(summary_payload["warning_count"], 1)
+            self.assertEqual(warning_payload["warning_count"], 1)
+            self.assertEqual(warning_payload["warnings"][0]["code"], "MISSING_ARTIFACT")
+            self.assertEqual(warning_payload["warnings"][0]["object_id"], "models/missing.safetensors")
+            self.assertEqual(bom_payload.get("components"), [])
+
+    def test_stable_input_produces_deterministic_bom_and_warning_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            first = _generate_fixture_outputs(work, "first", "complete-project")
+            second = _generate_fixture_outputs(work, "second", "complete-project")
+
+            self.assertEqual(
+                (first / "bom.json").read_text(encoding="utf-8"),
+                (second / "bom.json").read_text(encoding="utf-8"),
+            )
+            self.assertEqual(
+                (first / "warnings.json").read_text(encoding="utf-8"),
+                (second / "warnings.json").read_text(encoding="utf-8"),
+            )
+
     def test_warning_policy_fail_returns_policy_exit_code(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
@@ -182,6 +233,29 @@ class CliTests(unittest.TestCase):
 
 def _read_json(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _generate_fixture_outputs(work: Path, name: str, fixture: str) -> Path:
+    project = work / f"{name}-project"
+    shutil.copytree(FIXTURES / fixture, project)
+    out = work / name / "out"
+    code = main(
+        [
+            "generate",
+            str(project),
+            "--config",
+            str(project / "aibom.toml"),
+            "--output",
+            str(out / "bom.json"),
+            "--warning-report",
+            str(out / "warnings.json"),
+            "--summary",
+            str(out / "summary.json"),
+        ]
+    )
+    if code != ExitCode.SUCCESS:
+        raise AssertionError(f"fixture generation failed with exit code {code}")
+    return out
 
 
 if __name__ == "__main__":

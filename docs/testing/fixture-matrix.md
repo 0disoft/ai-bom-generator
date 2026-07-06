@@ -12,15 +12,15 @@ honestly. They should be synthetic and safe to publish.
 
 | Fixture | Purpose |
 | --- | --- |
-| `complete-project` | Full metadata, artifact digest, dependencies, dataset, prompt, eval, and training references. |
-| `sparse-project` | Missing optional metadata appears as warnings, not inferred facts. |
-| `invalid-config` | Invalid config fails with actionable location. |
-| `missing-artifact` | Required artifact path fails or warns according to policy. |
+| `complete-project` | Full metadata, artifact digest, dependencies, dataset, prompt, eval, and training references. Covered by CLI smoke, schema, and deterministic-output tests. |
+| `sparse-project` | Missing optional metadata appears as warnings, not inferred facts. Covered by CLI warning tests. |
+| `invalid-config` | Invalid config fails with actionable location. Covered by CLI invalid-input tests. |
+| `missing-artifact` | Unmatched artifact include patterns warn without fabricating artifact evidence. Covered by CLI warning tests. |
 | `hash-failure` | Digest collection failure produces collector failure. |
 | `exporter-failure` | Invalid exporter mapping fails validation. |
-| `secret-redaction` | Secret-shaped values are redacted or rejected across outputs. |
-| `symlink-escape` | Symlink and target-root escape attempts are blocked. |
-| `nondeterministic-ordering-guard` | Stable input produces stable ordering. |
+| `secret-redaction` | Secret-shaped values are redacted or rejected across outputs. Covered by CLI redaction tests. |
+| `symlink-escape` | Symlink and target-root escape attempts are blocked. Covered by CLI path-policy tests. |
+| `nondeterministic-ordering-guard` | Stable input produces stable BOM and warning-report ordering. Covered by deterministic-output tests. |
 | `large-artifact-simulated` | Streaming hash behavior is tested without committing large binaries. |
 
 ## Fixture Rules
