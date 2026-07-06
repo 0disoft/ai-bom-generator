@@ -201,6 +201,9 @@ class CliTests(unittest.TestCase):
             work = Path(temp)
             project = work / "project"
             shutil.copytree(FIXTURES / "sparse-project", project)
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
 
             code = main(
                 [
@@ -209,17 +212,24 @@ class CliTests(unittest.TestCase):
                     "--config",
                     str(project / "aibom.toml"),
                     "--output",
-                    str(work / "bom.json"),
+                    str(bom),
                     "--warning-report",
-                    str(work / "warnings.json"),
+                    str(warnings),
                     "--summary",
-                    str(work / "summary.json"),
+                    str(summary),
                     "--warnings",
                     "fail",
                 ]
             )
 
             self.assertEqual(code, ExitCode.WARNING_POLICY_FAILED)
+            self.assertTrue(bom.exists())
+            self.assertTrue(warnings.exists())
+            summary_payload = _read_json(summary)
+            self.assertEqual(summary_payload["status"], "failed")
+            self.assertEqual(summary_payload["exit_code"], ExitCode.WARNING_POLICY_FAILED)
+            self.assertGreater(summary_payload["warning_count"], 0)
+            self.assertEqual(_read_json(warnings)["warning_count"], summary_payload["warning_count"])
 
     def test_invalid_config_returns_invalid_input(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
