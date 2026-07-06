@@ -33,6 +33,9 @@ act without reading prose.
 - `40`: exporter failure.
 - `70`: internal error.
 
+Argument parsing failures, including missing required flags and invalid choices,
+must use `20` rather than argparse's default process status.
+
 `success-with-warnings` should be a JSON summary status rather than a distinct
 process code when `--warnings allow` is active.
 

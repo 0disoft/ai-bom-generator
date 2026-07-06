@@ -220,6 +220,53 @@ class CliTests(unittest.TestCase):
 
             self.assertEqual(code, ExitCode.INVALID_INPUT)
 
+    def test_missing_command_returns_invalid_input(self) -> None:
+        code = main([])
+
+        self.assertEqual(code, ExitCode.INVALID_INPUT)
+
+    def test_missing_required_output_flag_returns_invalid_input(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+
+    def test_invalid_choice_returns_invalid_input(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--redaction",
+                    "lenient",
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+
     def test_sparse_project_reports_machine_readable_warning(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
