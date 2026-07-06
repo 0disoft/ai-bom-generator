@@ -38,6 +38,9 @@ process code when `--warnings allow` is active.
 
 ## JSON Summary Fields
 
+When `--summary -` is used, the same JSON summary object is written to stdout
+while BOM and warning-report outputs are still written to their explicit paths.
+
 - `schema_version`
 - `tool.name`
 - `tool.version`

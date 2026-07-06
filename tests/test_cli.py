@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import redirect_stdout
+import io
 import json
 from pathlib import Path
 import shutil
@@ -52,6 +54,39 @@ class CliTests(unittest.TestCase):
                 for item in bom_payload["metadata"]["component"]["properties"]
             }
             self.assertEqual(model_properties["ai-bom:model:model_card"], "MODEL_CARD.md")
+
+    def test_summary_dash_writes_machine_readable_summary_to_stdout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            stdout = io.StringIO()
+
+            with redirect_stdout(stdout):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(project / "aibom.toml"),
+                        "--output",
+                        str(bom),
+                        "--warning-report",
+                        str(warnings),
+                        "--summary",
+                        "-",
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            summary_payload = json.loads(stdout.getvalue())
+            self.assertEqual(summary_payload["status"], "success")
+            self.assertEqual(summary_payload["bom_path"], bom.as_posix())
+            self.assertEqual(summary_payload["warning_report_path"], warnings.as_posix())
+            self.assertTrue(bom.exists())
+            self.assertTrue(warnings.exists())
 
     def test_declared_missing_model_card_fails_as_invalid_input(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
