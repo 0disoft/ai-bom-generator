@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ai_bom_generator.domain.evidence import NormalizedEvidence
 from ai_bom_generator.errors import ExporterError
+from ai_bom_generator.exporters.cyclonedx_schema import validate_cyclonedx_1_7
 from ai_bom_generator.security import Redactor
 
 
@@ -54,6 +55,7 @@ def export_cyclonedx_json(evidence: NormalizedEvidence, redactor: Redactor) -> d
     redacted = redactor.redact_json(bom)
     if not isinstance(redacted, dict):
         raise ExporterError("CycloneDX exporter produced a non-object BOM.", "exporter")
+    validate_cyclonedx_1_7(redacted)
     return redacted
 
 

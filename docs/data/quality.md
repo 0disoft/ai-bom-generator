@@ -18,7 +18,7 @@ output from the same input project.
 
 - Stable input produces byte-stable or semantically stable output.
 - Hashes use a documented algorithm.
-- Exported BOM passes the selected schema or conformance check.
+- Exported CycloneDX JSON 1.7 BOM passes the vendored official schema.
 - Missing metadata appears in the warning report.
 - JSON output does not expose full source file contents.
 - Warnings are testable by code, not only prose.

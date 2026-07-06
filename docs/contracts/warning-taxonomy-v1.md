@@ -8,6 +8,9 @@ Owner: UNASSIGNED
 Warnings are machine-readable evidence gaps. They must be precise enough for CI
 policy while staying small enough that users do not ignore them.
 
+The executable warning-report schema lives at
+`schemas/aibom-warning-report-v1.schema.json`.
+
 ## Warning Shape
 
 - `code`

@@ -5,9 +5,9 @@ Owner: UNASSIGNED
 
 ## Purpose
 
-CycloneDX JSON 1.7 is the leading first-exporter candidate because official JSON
-schema validation can become an early contract test. This document does not
-approve the exporter; it records what must be proven before approval.
+CycloneDX JSON 1.7 is the first implemented exporter because official JSON
+schema validation can become an early contract test. This document records the
+mapping constraints that must stay true as the exporter matures.
 
 ## Mapping Principles
 
@@ -27,9 +27,15 @@ approve the exporter; it records what must be proven before approval.
 - Symlink escape.
 - Exporter schema failure.
 
+## Schema Source
+
+The official CycloneDX 1.7 JSON schema is vendored under
+`src/ai_bom_generator/exporters/cyclonedx_json/schema/` together with its
+upstream license file. Runtime exporter validation uses that vendored schema.
+
 ## Approval Criteria
 
-- Generated CycloneDX JSON validates against the selected official schema.
+- Generated CycloneDX JSON validates against the vendored official schema.
 - Golden fixtures are deterministic.
 - Warning report and JSON summary stay consistent with the BOM output.
 - Mapping docs identify any field that is declared rather than independently verified.

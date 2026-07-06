@@ -43,6 +43,16 @@ legal compliance engine, dataset auditor, or AI governance platform.
 - export one initial standards-backed BOM format;
 - report missing metadata as warnings without pretending the BOM is complete.
 
+## Current CLI Smoke
+
+```text
+ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --output <bom.json> --warning-report <warnings.json> --summary <summary.json>
+```
+
+The current implementation validates generated CycloneDX JSON 1.7 output against
+the vendored official schema and validates AI-BOM summary/warning contracts in
+tests.
+
 ## Non-Goals
 
 - no automatic legal license judgment;
@@ -60,7 +70,7 @@ binary diffs, local files, build outputs, caches, and secret files under control
 ## Scope Notes
 
 Runtime floor is Python 3.12, the initial CLI adapter is `argparse`, package
-metadata lives in `pyproject.toml`, and the repository license is Apache-2.0.
-Package manager, lockfile, SPDX/CycloneDX exporter priority, and release
-packaging remain UNDECIDED until the repository owner records them in the
-source-of-truth documents.
+metadata lives in `pyproject.toml`, JSON Schema validation uses `jsonschema`,
+and the repository license is Apache-2.0. Package manager, lockfile, second
+exporter priority, and release packaging remain UNDECIDED until the repository
+owner records them in the source-of-truth documents.

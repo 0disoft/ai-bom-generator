@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://0disoft.example/schemas/aibom-config-v1.schema.json",
+  "title": "AI-BOM Generator Config v1",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "1" },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "format": { "enum": ["cyclonedx-json-1.7"] }
+      }
+    },
+    "warning_policy": {
+      "type": "object",
+      "additionalProperties": { "enum": ["warn", "fail"] }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["string", "number", "boolean"]
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "include": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "exclude": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "dependencies": { "$ref": "#/$defs/referenceList" },
+    "datasets": { "$ref": "#/$defs/referenceList" },
+    "prompts": { "$ref": "#/$defs/referenceList" },
+    "evals": { "$ref": "#/$defs/referenceList" },
+    "training": { "$ref": "#/$defs/referenceList" }
+  },
+  "$defs": {
+    "referenceList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": {
+          "type": ["string", "number", "boolean"]
+        }
+      }
+    }
+  }
+}

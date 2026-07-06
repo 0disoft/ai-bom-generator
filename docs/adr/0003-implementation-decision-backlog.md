@@ -20,11 +20,12 @@ choices from plausible candidates that still need approval.
 | Area | Leading candidate | Status |
 | --- | --- | --- |
 | Config filename | `aibom.toml` | Proposed |
-| First exporter | CycloneDX JSON 1.7 | Proposed |
+| First exporter | CycloneDX JSON 1.7 | Approved by implementation kickoff on 2026-07-06 |
 | Second exporter | SPDX AI profile | Deferred |
 | Runtime | Python 3.12 | Approved by owner on 2026-07-06 |
 | CLI adapter | `argparse` | Approved by owner on 2026-07-06 |
 | Package metadata | `pyproject.toml` with setuptools build backend | Approved by implementation kickoff on 2026-07-06 |
+| Schema validation dependency | `jsonschema>=4.25,<5` | Approved by implementation kickoff on 2026-07-06 |
 | Lockfile | `uv.lock` | Proposed |
 | Action wrapper | Composite GitHub Action | Proposed |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
@@ -45,6 +46,6 @@ choices from plausible candidates that still need approval.
 ## Review Blockers
 
 - A change treats proposed or deferred rows as approval for implementation.
-- A change records a durable runtime, package, license, or exporter decision only
-  in examples or README prose.
+- A change records a durable runtime, package, dependency, license, or exporter
+  decision only in examples or README prose.
 - A change weakens validation or skips required evidence.

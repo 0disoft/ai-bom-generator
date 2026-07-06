@@ -12,10 +12,18 @@ license = { text = "Apache-2.0" }
 authors = [
   { name = "0disoft" }
 ]
-dependencies = []
+dependencies = [
+  "jsonschema>=4.25,<5"
+]
 
 [project.scripts]
 ai-bom = "ai_bom_generator.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+ai_bom_generator = [
+  "exporters/cyclonedx_json/schema/*.json",
+  "exporters/cyclonedx_json/schema/LICENSE"
+]

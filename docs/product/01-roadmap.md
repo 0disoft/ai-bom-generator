@@ -18,6 +18,7 @@ later exporter and CI integrations.
 
 - Lock the source-of-truth docs.
 - Choose runtime, packaging, config filename, and first exporter.
+- Keep CycloneDX JSON 1.7 schema validation passing for the implemented first exporter.
 - Decide license, visibility, redaction default, no-network posture, and cache policy.
 - Create fixtures for one complete and one sparse model directory.
 - Define JSON summary, warning report, warning taxonomy, and exit-code taxonomy.

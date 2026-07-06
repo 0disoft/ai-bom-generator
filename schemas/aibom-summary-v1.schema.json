@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://0disoft.example/schemas/aibom-summary-v1.schema.json",
+  "title": "AI-BOM Generator Summary v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "tool",
+    "status",
+    "format",
+    "bom_path",
+    "warning_report_path",
+    "hash_algorithm",
+    "artifact_count",
+    "warning_count",
+    "completeness_status",
+    "warnings",
+    "elapsed_ms",
+    "exit_code"
+  ],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "ai-bom-generator" },
+        "version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "status": { "enum": ["success", "success-with-warnings", "failed"] },
+    "format": { "type": "string", "minLength": 1 },
+    "bom_path": { "type": "string", "minLength": 1 },
+    "warning_report_path": { "type": "string", "minLength": 1 },
+    "hash_algorithm": { "const": "sha256" },
+    "artifact_count": { "type": "integer", "minimum": 0 },
+    "warning_count": { "type": "integer", "minimum": 0 },
+    "completeness_status": { "enum": ["complete", "partial", "empty"] },
+    "warnings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/warning" }
+    },
+    "elapsed_ms": { "type": "integer", "minimum": 0 },
+    "exit_code": { "enum": [0, 10, 20, 30, 40, 70] }
+  },
+  "$defs": {
+    "warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "object_kind", "object_id", "message"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[A-Z0-9_]+$" },
+        "severity": { "enum": ["warning", "error"] },
+        "object_kind": { "type": "string", "minLength": 1 },
+        "object_id": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 },
+        "remediation": { "type": "string", "minLength": 1 },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path"],
+          "properties": {
+            "path": { "type": "string", "minLength": 1 },
+            "field": { "type": "string", "minLength": 1 },
+            "collector": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

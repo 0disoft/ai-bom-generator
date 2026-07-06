@@ -29,12 +29,12 @@ CI without requiring a hosted service.
 
 - Binary name.
 - Config filename.
-- First exporter.
 
 ## Approved Baseline
 
 - Runtime compatibility floor: Python 3.12.
 - CLI adapter: `argparse`, isolated from application and domain layers.
+- First exporter: CycloneDX JSON 1.7.
 
 ## Review Blockers
 

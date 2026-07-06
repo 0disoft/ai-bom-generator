@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://0disoft.example/schemas/aibom-warning-report-v1.schema.json",
+  "title": "AI-BOM Generator Warning Report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "warning_count", "warnings"],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "warning_count": { "type": "integer", "minimum": 0 },
+    "warnings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/warning" }
+    }
+  },
+  "$defs": {
+    "warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "object_kind", "object_id", "message"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[A-Z0-9_]+$" },
+        "severity": { "enum": ["warning", "error"] },
+        "object_kind": { "type": "string", "minLength": 1 },
+        "object_id": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 },
+        "remediation": { "type": "string", "minLength": 1 },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path"],
+          "properties": {
+            "path": { "type": "string", "minLength": 1 },
+            "field": { "type": "string", "minLength": 1 },
+            "collector": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

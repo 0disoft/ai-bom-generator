@@ -18,7 +18,7 @@ values without implying that arbitrary file discovery is safe or complete.
 ## Completion Boundary
 
 - Complete command names and stable flag names after the CLI contract is implemented.
-- Complete supported exporter names after the first exporter decision is recorded.
+- Complete supported exporter names from the implemented exporter registry.
 - Do not auto-complete secrets, tokens, private URLs, or dataset contents.
 - File path completion should be delegated to the shell when possible.
 

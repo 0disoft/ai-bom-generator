@@ -8,6 +8,8 @@ Owner: UNASSIGNED
 This file defines the proposed config contract for AI-BOM Generator. It is not
 approved until the config ADR accepts the filename and schema.
 
+The executable draft schema lives at `schemas/aibom-config-v1.schema.json`.
+
 ## Filename Candidate
 
 `aibom.toml` is the leading filename candidate.

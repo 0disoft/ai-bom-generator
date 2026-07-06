@@ -29,6 +29,8 @@ honestly. They should be synthetic and safe to publish.
 - Do not commit real model weights, real private prompts, real customer data, or real private dataset URLs.
 - Dummy model files may use small binary files with model-like names.
 - Golden outputs must be stable and reviewed when schema or warning taxonomy changes.
+- Contract tests must validate generated summary and warning report JSON against `schemas/`.
+- Exporter tests must validate generated CycloneDX JSON against the vendored official schema.
 
 ## Review Blockers
 

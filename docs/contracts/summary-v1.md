@@ -9,6 +9,8 @@ The JSON summary is the automation surface for local CLI and GitHub Action runs.
 It should let CI decide whether a run generated an artifact, produced warnings,
 or failed without scraping terminal prose.
 
+The executable schema lives at `schemas/aibom-summary-v1.schema.json`.
+
 ## Candidate Fields
 
 - `schema_version`

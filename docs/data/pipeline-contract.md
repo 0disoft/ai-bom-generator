@@ -49,7 +49,7 @@ the filesystem directly. Reporters must not mutate normalized evidence.
 - Fixture coverage for complete, sparse, invalid-config, and missing-artifact projects.
 - Security fixture coverage for secret-redaction and symlink-escape projects.
 - Deterministic output check for stable input.
-- Exporter schema or conformance check once the first exporter is selected.
+- Exporter schema or conformance check for every implemented exporter.
 
 ## Review Blockers
 
