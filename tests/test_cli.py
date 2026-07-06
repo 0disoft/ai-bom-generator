@@ -250,6 +250,7 @@ class CliTests(unittest.TestCase):
             project = work / "project"
             shutil.copytree(FIXTURES / "secret-redaction", project)
             bom = work / "bom.json"
+            warnings = work / "warnings.json"
             summary = work / "summary.json"
 
             code = main(
@@ -261,7 +262,7 @@ class CliTests(unittest.TestCase):
                     "--output",
                     str(bom),
                     "--warning-report",
-                    str(work / "warnings.json"),
+                    str(warnings),
                     "--summary",
                     str(summary),
                 ]
@@ -269,8 +270,50 @@ class CliTests(unittest.TestCase):
 
             self.assertEqual(code, ExitCode.SUCCESS)
             self.assertNotIn("super-secret-token", bom.read_text(encoding="utf-8"))
+            self.assertNotIn("super-secret-token", warnings.read_text(encoding="utf-8"))
             self.assertNotIn("super-secret-token", summary.read_text(encoding="utf-8"))
             self.assertIn("token=REDACTED", bom.read_text(encoding="utf-8"))
+
+    def test_secret_shaped_identifiers_are_redacted_from_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "secret-redaction", project)
+            config = project / "aibom.toml"
+            secret_identifier_dataset = (
+                '\n[[datasets]]\n'
+                'name = "dataset?token=super-secret-token"\n'
+                'uri = "https://example.invalid/public"\n'
+            )
+            config.write_text(
+                config.read_text(encoding="utf-8") + secret_identifier_dataset,
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            for output in (bom, warnings, summary):
+                text = output.read_text(encoding="utf-8")
+                self.assertNotIn("super-secret-token", text)
+                self.assertIn("token=REDACTED", text)
 
     def test_target_root_escape_is_reported_for_optional_reference(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
