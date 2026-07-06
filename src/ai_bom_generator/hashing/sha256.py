@@ -7,6 +7,9 @@ from ai_bom_generator.errors import CollectorError
 
 
 def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
+    if chunk_size <= 0:
+        raise CollectorError("chunk_size must be positive for SHA-256 hashing.", "hash")
+
     digest = hashlib.sha256()
     try:
         with path.open("rb") as handle:

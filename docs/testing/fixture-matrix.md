@@ -16,12 +16,12 @@ honestly. They should be synthetic and safe to publish.
 | `sparse-project` | Missing optional metadata appears as warnings, not inferred facts. Covered by CLI warning tests. |
 | `invalid-config` | Invalid config fails with actionable location. Covered by CLI invalid-input tests. |
 | `missing-artifact` | Unmatched artifact include patterns warn without fabricating artifact evidence. Covered by CLI warning tests. |
-| `hash-failure` | Digest collection failure produces collector failure. |
+| `hash-failure` | Digest collection failure produces collector failure. Covered by hashing failure tests. |
 | `exporter-failure` | Invalid exporter mapping fails validation. |
 | `secret-redaction` | Secret-shaped values are redacted or rejected across outputs. Covered by CLI redaction tests. |
 | `symlink-escape` | Symlink and target-root escape attempts are blocked. Covered by CLI path-policy tests. |
 | `nondeterministic-ordering-guard` | Stable input produces stable BOM and warning-report ordering. Covered by deterministic-output tests. |
-| `large-artifact-simulated` | Streaming hash behavior is tested without committing large binaries. |
+| `large-artifact-simulated` | Streaming hash behavior is tested without committing large binaries. Covered by chunked hashing tests. |
 
 ## Fixture Rules
 
