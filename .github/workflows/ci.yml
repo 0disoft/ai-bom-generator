@@ -34,13 +34,16 @@ jobs:
         run: uv sync --locked
 
       - name: Compile sources
-        run: uv run --python 3.12 python -m compileall -q src tests
+        run: uv run --python 3.12 python -m compileall -q src tests scripts
 
       - name: Run unit and contract tests
         run: uv run --python 3.12 python -m unittest discover -s tests -v
 
       - name: Build distributions
         run: uv build
+
+      - name: Verify wheel contents
+        run: uv run --python 3.12 python scripts/verify_wheel.py dist
 
       - name: Smoke CLI fixture
         run: |

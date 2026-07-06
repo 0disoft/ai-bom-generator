@@ -41,9 +41,10 @@ belong to future GitHub Action wrapper decisions and must stay opt-in.
 | Validation name | CI step |
 | --- | --- |
 | check | Install locked environment with `uv sync --locked`. |
-| check | Compile `src` and `tests` with `python -m compileall`. |
+| check | Compile `src`, `tests`, and `scripts` with `python -m compileall`. |
 | test | Run `python -m unittest discover -s tests -v`. |
 | check | Build source and wheel distributions with `uv build`. |
+| check | Verify the wheel includes the CycloneDX schema files and `ai-bom` console script entry point. |
 | smoke | Generate a CycloneDX JSON 1.7 BOM, warning report, and summary from `tests/fixtures/complete-project` through the `ai-bom` console script. |
 | check | Run `git diff --check` for whitespace and diff hygiene. |
 
@@ -56,9 +57,10 @@ Run these commands from the repository root:
 
 ```powershell
 uv sync --locked
-uv run --python 3.12 python -m compileall -q src tests
+uv run --python 3.12 python -m compileall -q src tests scripts
 uv run --python 3.12 python -m unittest discover -s tests -v
 uv build
+uv run --python 3.12 python scripts/verify_wheel.py dist
 $out = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-bom-ci-" + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $out | Out-Null
 uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output $(Join-Path $out "bom.cdx.json") --warning-report $(Join-Path $out "warnings.json") --summary $(Join-Path $out "summary.json")

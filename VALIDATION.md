@@ -26,9 +26,10 @@ implementation.
 | Validation name | Command |
 | --- | --- |
 | check | `uv sync --locked` |
-| check | `uv run --python 3.12 python -m compileall -q src tests` |
+| check | `uv run --python 3.12 python -m compileall -q src tests scripts` |
 | test | `uv run --python 3.12 python -m unittest discover -s tests -v` |
 | check | `uv build` |
+| check | `uv run --python 3.12 python scripts/verify_wheel.py dist` |
 | smoke | `uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output <temp>/bom.cdx.json --warning-report <temp>/warnings.json --summary <temp>/summary.json` |
 | check | `git diff --check` |
 
