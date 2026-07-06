@@ -6,7 +6,7 @@ import time
 
 from ai_bom_generator.collectors import collect_evidence
 from ai_bom_generator.config import load_config
-from ai_bom_generator.errors import ExitCode, ExporterError
+from ai_bom_generator.errors import ExitCode, ExporterError, InvalidInputError
 from ai_bom_generator.exporters.cyclonedx_json import SUPPORTED_FORMAT, export_cyclonedx_json
 from ai_bom_generator.reporting import build_summary, build_warning_report, write_json_file
 from ai_bom_generator.reporting.json_writer import write_json_stream
@@ -34,6 +34,7 @@ def generate_bom(options: GenerateBomOptions) -> int:
         raise ExporterError(f"Unsupported warning policy: {options.warnings}", "input")
 
     policy = PathPolicy(options.model_directory)
+    _validate_output_destinations(options, policy)
     redactor = Redactor(options.redaction)
     config = load_config(options.config, policy)
     evidence = collect_evidence(config, policy, redactor)
@@ -62,3 +63,22 @@ def generate_bom(options: GenerateBomOptions) -> int:
         write_json_file(options.summary, summary)
 
     return ExitCode.WARNING_POLICY_FAILED if warning_policy_failed else ExitCode.SUCCESS
+
+
+def _validate_output_destinations(options: GenerateBomOptions, policy: PathPolicy) -> None:
+    destinations = {
+        "bom": policy.validate_output_file(options.output, "BOM"),
+        "warning_report": policy.validate_output_file(options.warning_report, "Warning report"),
+    }
+    if options.summary is not None:
+        destinations["summary"] = policy.validate_output_file(options.summary, "Summary")
+
+    seen: dict[Path, str] = {}
+    for label, path in destinations.items():
+        previous = seen.get(path)
+        if previous:
+            raise InvalidInputError(
+                f"Output paths must be distinct; {label} and {previous} both resolve to {path}",
+                "input",
+            )
+        seen[path] = label

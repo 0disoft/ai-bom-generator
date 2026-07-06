@@ -37,7 +37,8 @@ ai-bom generate <model-directory>
 
 The exact binary name, flag names, accepted formats, and output filename defaults
 remain draft until implementation starts. MVP should prefer explicit output paths
-over silently writing into the target model directory.
+over silently writing into the target model directory. Generated output paths
+must resolve outside the target model directory and must not overlap each other.
 
 ## Review Blockers
 

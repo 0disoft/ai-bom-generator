@@ -18,6 +18,8 @@ intended project boundary by default.
 - Do not read hidden, ignored, cache, dependency, or build-output paths as source
   truth unless explicitly configured.
 - Use explicit artifact include and exclude patterns for large model files.
+- Reject generated output paths that resolve inside the target model directory.
+- Reject generated output paths that are existing symlinks.
 
 ## Failure Behavior
 
@@ -25,6 +27,8 @@ intended project boundary by default.
 - Target-root escape: invalid-input failure or machine-readable warning, depending on whether the path was required.
 - Symlink skipped: machine-readable warning.
 - Required artifact inaccessible: collector failure.
+- Generated output path inside the target root: invalid-input failure before
+  collecting or writing artifacts.
 
 ## Review Blockers
 

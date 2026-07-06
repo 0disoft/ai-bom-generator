@@ -32,11 +32,28 @@ class PathPolicy:
         path = raw if raw.is_absolute() else Path.cwd() / raw
         return path.resolve(strict=False)
 
+    def validate_output_file(self, candidate: Path | str, label: str) -> Path:
+        raw = Path(candidate)
+        path = raw if raw.is_absolute() else Path.cwd() / raw
+        if path.exists() and path.is_symlink():
+            raise InvalidInputError(f"{label} output path must not be a symlink: {candidate}", "input")
+        resolved = path.resolve(strict=False)
+        if self.is_inside_root(resolved):
+            raise InvalidInputError(f"{label} output path must be outside target model directory: {candidate}", "input")
+        return resolved
+
     def ensure_inside_root(self, resolved: Path) -> None:
         try:
             resolved.relative_to(self.root)
         except ValueError as exc:
             raise InvalidInputError(f"Path escapes target root: {resolved}", "input") from exc
+
+    def is_inside_root(self, resolved: Path) -> bool:
+        try:
+            resolved.relative_to(self.root)
+        except ValueError:
+            return False
+        return True
 
     def relative_to_root(self, resolved: Path) -> str:
         self.ensure_inside_root(resolved)
