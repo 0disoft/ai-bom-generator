@@ -8,13 +8,15 @@ Dependency policy covers necessity, alternatives, license, maintenance health, v
 
 ## Required Evidence
 
-- Source of truth: UNDECIDED
+- Source of truth: docs/product/02-spec.md
 - Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 
 ## Review Blockers
 
-- A change bypasses the source of truth.
+- A dependency is added before runtime and package manager choices are recorded.
+- A dependency is used for standards mapping without license, maintenance, and conformance review.
+- A dependency introduces network behavior, native binaries, or CI permission needs without an ADR.
 - A change weakens validation or hides skipped checks.
 - A change lacks failure, recovery, security, performance, or test evidence where relevant.

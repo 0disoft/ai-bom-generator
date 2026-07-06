@@ -3,23 +3,38 @@
 Status: Draft
 Repository Type: cli-tool
 
-## Repository Type Contract
+## Purpose
 
-This repository type owns command behavior, arguments, flags, config loading, exit codes, terminal output, JSON output, runtime compatibility, and shell integration contracts.
+Configuration tells AI-BOM Generator which project metadata and artifacts to
+collect. It must make explicit references easy and avoid broad hidden discovery.
 
 ## Source of Truth
 
-- Product decision: UNDECIDED
+- Product decision: docs/product/02-spec.md
+- Command contract: docs/cli/command-contract.md
 - Technical owner: UNASSIGNED
-- Related ADR: UNDECIDED
+- Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
-## Required Decisions
+## Draft Config Responsibilities
 
-- Command list and flag ownership: UNDECIDED
-- Exit-code taxonomy: UNDECIDED
-- Machine-readable output contract: UNDECIDED
-- Config precedence and default behavior: UNDECIDED
-- Runtime compatibility floor: UNDECIDED
+- Select model artifact paths or globs.
+- Declare dataset references.
+- Declare prompt template references.
+- Declare eval artifact references.
+- Declare training-code references.
+- Choose exporter and output path when not supplied by CLI flags.
+- Configure warning policy.
+
+## Precedence
+
+Explicit CLI flags should override config values. Environment variables are
+UNDECIDED and should not be added until secret-redaction behavior is designed.
+
+## Still UNDECIDED
+
+- Config filename.
+- Config schema format.
+- Whether lockfile discovery is automatic or config-driven.
 
 ## Review Blockers
 

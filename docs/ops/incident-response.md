@@ -4,7 +4,9 @@ Status: Draft
 
 ## Operational Contract
 
-Define severity, roles, first 10 minutes, communication, timeline, postmortem, follow-up policy, and evidence preservation.
+Incidents are release or documentation failures that can mislead users about
+AI-BOM completeness, expose private input information, break CI pipelines, or
+change generated output without a migration path.
 
 ## Owners
 
@@ -15,5 +17,5 @@ Define severity, roles, first 10 minutes, communication, timeline, postmortem, f
 ## Validation
 
 - Required validation names: VALIDATION.md
-- Release blocker status: UNDECIDED
-- Remaining operational risk: UNDECIDED
+- Release blocker status: unresolved secret disclosure, invalid exporter output, or action permission escalation blocks release.
+- Remaining operational risk: public security advisory process and support response targets remain UNDECIDED.

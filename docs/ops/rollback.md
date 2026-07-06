@@ -4,7 +4,9 @@ Status: Draft
 
 ## Operational Contract
 
-Provide a short actionable decision tree with triggers, procedure, database rollback policy, validation, owners, and forward-fix criteria.
+Rollback focuses on reverting a bad CLI package, GitHub Action tag, docs
+contract, or exporter mapping. There is no database rollback in the current
+local-first scope.
 
 ## Owners
 
@@ -15,5 +17,5 @@ Provide a short actionable decision tree with triggers, procedure, database roll
 ## Validation
 
 - Required validation names: VALIDATION.md
-- Release blocker status: UNDECIDED
-- Remaining operational risk: UNDECIDED
+- Release blocker status: no tested way to restore the previous public CLI/action contract blocks release.
+- Remaining operational risk: registry-specific unpublish/yank/deprecate policy remains UNDECIDED.

@@ -4,17 +4,21 @@ Status: Draft
 
 ## Contract
 
-Operability standard connects code changes to logs, metrics, traces, rollback, runbooks, health checks, incident response, and failure evidence.
+Threat model covers untrusted local project paths, malicious metadata files,
+large model artifacts, secret-bearing config, dependency manifests, GitHub
+Action token scope, generated artifact disclosure, and misleading BOM claims.
 
 ## Required Evidence
 
-- Source of truth: UNDECIDED
+- Source of truth: docs/data/privacy-and-retention.md
 - Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 
 ## Review Blockers
 
-- A change bypasses the source of truth.
+- A change trusts caller-owned files without validation.
+- A change follows symlinks, expands globs, or reads hidden paths without an explicit policy.
+- A change makes compliance, license, safety, or vulnerability claims from incomplete evidence.
 - A change weakens validation or hides skipped checks.
 - A change lacks failure, recovery, security, performance, or test evidence where relevant.

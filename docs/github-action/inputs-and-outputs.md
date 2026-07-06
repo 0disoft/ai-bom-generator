@@ -3,23 +3,33 @@
 Status: Draft
 Repository Type: github-action
 
-## Repository Type Contract
+## Purpose
 
-This repository type owns action inputs, outputs, permissions, token handling, and runner compatibility.
+Inputs and outputs must mirror the CLI contract closely enough that local and CI
+behavior stay comparable.
 
 ## Source of Truth
 
-- Product decision: UNDECIDED
+- Product decision: docs/product/02-spec.md
+- Action contract: docs/github-action/action-contract.md
 - Technical owner: UNASSIGNED
-- Related ADR: UNDECIDED
+- Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
-## Required Decisions
+## Draft Inputs
 
-- GitHub Action ownership boundary: UNDECIDED
-- GitHub Action public contract: UNDECIDED
-- GitHub Action validation evidence: UNDECIDED
-- GitHub Action release or rollout policy: UNDECIDED
-- GitHub Action compatibility and migration policy: UNDECIDED
+- `model-directory`: required path to the model project directory.
+- `config`: optional config path.
+- `format`: selected exporter, exact accepted values UNDECIDED.
+- `output`: output path for generated BOM.
+- `warnings`: warning policy, such as allow or fail, exact values UNDECIDED.
+- `upload-artifact`: optional boolean, default false.
+
+## Draft Outputs
+
+- `bom-path`
+- `warning-count`
+- `completeness-status`
+- `format`
 
 ## Review Blockers
 

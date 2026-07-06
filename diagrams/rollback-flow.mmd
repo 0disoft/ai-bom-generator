@@ -1,5 +1,11 @@
 flowchart TD
-  A["rollback_flow: input"] --> B["Review source of truth"]
-  B --> C["Change plan"]
-  C --> D["Validation"]
-  D --> E["Release or rollback decision"]
+  Trigger["Bad CLI, Action, docs, or exporter release"] --> Classify{"Risk type"}
+  Classify -- "secret leak" --> RemoveArtifacts["Remove or revoke exposed artifacts"]
+  Classify -- "invalid BOM output" --> RestorePrevious["Restore previous package or action tag"]
+  Classify -- "permission escalation" --> PinSafe["Pin or republish least-privilege action"]
+  Classify -- "contract drift" --> PatchDocs["Patch source-of-truth docs and examples"]
+  RemoveArtifacts --> Notice["Publish user-facing notice"]
+  RestorePrevious --> Notice
+  PinSafe --> Notice
+  PatchDocs --> Notice
+  Notice --> Verify["Run validation against previous and fixed behavior"]

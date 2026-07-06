@@ -1,5 +1,10 @@
 flowchart TD
-  A["release_flow: input"] --> B["Review source of truth"]
-  B --> C["Change plan"]
-  C --> D["Validation"]
-  D --> E["Release or rollback decision"]
+  Contracts["Update source-of-truth docs"] --> Fixtures["Update collector and exporter fixtures"]
+  Fixtures --> Checks["Run docs, check, test validation when configured"]
+  Checks --> Permissions["Review GitHub Action permissions"]
+  Permissions --> Artifacts["Build package and action release artifacts"]
+  Artifacts --> Smoke["Smoke test CLI and Action wrapper"]
+  Smoke --> Decision{"Release blockers?"}
+  Decision -- "yes" --> Stop["Stop release and fix"]
+  Decision -- "no" --> Publish["Publish package or action tag"]
+  Publish --> Verify["Verify published contract and artifact checksums"]

@@ -4,7 +4,9 @@ Status: Draft
 
 ## Operational Contract
 
-Cover required checks, branch protection, pipeline stages, artifacts, failure policy, local parity, and stop conditions.
+CI must prove the CLI/action contract with docs checks, fixture tests, exporter
+validation once an exporter is selected, deterministic output checks, and
+permission review for the GitHub Action wrapper.
 
 ## Owners
 
@@ -15,5 +17,5 @@ Cover required checks, branch protection, pipeline stages, artifacts, failure po
 ## Validation
 
 - Required validation names: VALIDATION.md
-- Release blocker status: UNDECIDED
-- Remaining operational risk: UNDECIDED
+- Release blocker status: failing check/test/docs validation, nondeterministic fixture output, or action permission drift blocks release.
+- Remaining operational risk: exact branch protection and hosted CI matrix remain UNDECIDED.

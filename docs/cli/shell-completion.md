@@ -3,23 +3,30 @@
 Status: Draft
 Repository Type: cli-tool
 
-## Repository Type Contract
+## Purpose
 
-This repository type owns command behavior, arguments, flags, config loading, exit codes, terminal output, JSON output, runtime compatibility, and shell integration contracts.
+Shell completion should help users discover stable commands, flags, and enum
+values without implying that arbitrary file discovery is safe or complete.
 
 ## Source of Truth
 
-- Product decision: UNDECIDED
+- Product decision: docs/product/02-spec.md
+- Command contract: docs/cli/command-contract.md
 - Technical owner: UNASSIGNED
-- Related ADR: UNDECIDED
+- Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
-## Required Decisions
+## Completion Boundary
 
-- Command list and flag ownership: UNDECIDED
-- Exit-code taxonomy: UNDECIDED
-- Machine-readable output contract: UNDECIDED
-- Config precedence and default behavior: UNDECIDED
-- Runtime compatibility floor: UNDECIDED
+- Complete command names and stable flag names after the CLI contract is implemented.
+- Complete supported exporter names after the first exporter decision is recorded.
+- Do not auto-complete secrets, tokens, private URLs, or dataset contents.
+- File path completion should be delegated to the shell when possible.
+
+## Still UNDECIDED
+
+- Supported shells.
+- Completion generation command.
+- Whether completions are packaged or generated on demand.
 
 ## Review Blockers
 

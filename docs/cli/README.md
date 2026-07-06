@@ -3,22 +3,33 @@
 Status: Draft
 Repository Type: cli-tool
 
-## Repository Type Contract
+## Purpose
 
-This repository type owns command behavior, arguments, flags, config loading, exit codes, terminal output, JSON output, runtime compatibility, and shell integration contracts.
+The CLI is the primary AI-BOM Generator interface. It should work locally and in
+CI without requiring a hosted service.
 
 ## Source of Truth
 
-- Product decision: UNDECIDED
+- Product decision: docs/product/02-spec.md
+- Command contract: docs/cli/command-contract.md
 - Technical owner: UNASSIGNED
-- Related ADR: UNDECIDED
+- Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
-## Required Decisions
+## CLI Responsibilities
 
-- Command list and flag ownership: UNDECIDED
-- Exit-code taxonomy: UNDECIDED
-- Machine-readable output contract: UNDECIDED
-- Config precedence and default behavior: UNDECIDED
+- Resolve target model directory.
+- Load explicit config.
+- Collect model, dependency, dataset, prompt, eval, and training references.
+- Hash selected artifacts.
+- Export the selected BOM format.
+- Report warnings and failure reasons.
+- Emit JSON summary for automation.
+
+## Still UNDECIDED
+
+- Binary name.
+- Config filename.
+- First exporter.
 - Runtime compatibility floor: UNDECIDED
 
 ## Review Blockers

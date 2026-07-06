@@ -4,7 +4,9 @@ Status: Draft
 
 ## Operational Contract
 
-Define critical user journeys, operational priorities, SLO, RTO, RPO, release blocking conditions, ownership, and dependency tiers.
+Operational work centers on local CLI reliability, GitHub Action behavior,
+deterministic artifact generation, warning visibility, and release safety. There
+is no hosted service, database, or tenant runtime in the current product scope.
 
 ## Owners
 
@@ -15,5 +17,5 @@ Define critical user journeys, operational priorities, SLO, RTO, RPO, release bl
 ## Validation
 
 - Required validation names: VALIDATION.md
-- Release blocker status: UNDECIDED
-- Remaining operational risk: UNDECIDED
+- Release blocker status: failing CLI/action contract validation, nondeterministic output, secret leakage, or misleading BOM claims block release.
+- Remaining operational risk: exact release policy, owner rotation, and support targets remain UNDECIDED.

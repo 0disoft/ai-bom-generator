@@ -4,14 +4,22 @@ Status: Draft
 
 ## Boundary
 
-Define what this repository owns, what it consumes, and which contracts cannot drift.
+Quality attributes apply to the CLI, GitHub Action wrapper, collector pipeline,
+exporter mappings, warning report, JSON summary, and validation fixtures.
 
-## Runtime Flow
+## Required Attributes
 
-UNDECIDED. Add the minimal sequence needed to explain request, state, failure, and recovery behavior.
+- Deterministic output for stable input.
+- Honest warning behavior for missing or unsupported metadata.
+- Source traceability from BOM fields back to collected evidence where possible.
+- No mutation of caller-owned project files in MVP.
+- No private dataset contents, credentials, or model weights embedded in summaries or logs.
+- Clear separation between collected evidence and legal, security, or compliance conclusions.
+- Fixture-backed exporter mappings before standards compatibility is claimed.
 
-## Quality Attributes
+## Review Blockers
 
-- Maintainability: changes must preserve source-of-truth documents.
-- Security: authentication, authorization, tenant boundaries, and secrets need explicit owners.
-- Operability: logs, metrics, rollback, and incident response must be considered before release.
+- A change makes output nondeterministic without a documented reason.
+- A change hides warnings or treats missing metadata as collected evidence.
+- A change claims audit completeness, safety, compliance, or license correctness.
+- A change adds network access, caching, or dataset-content inspection without an ADR.

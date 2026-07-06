@@ -4,7 +4,10 @@ Status: Draft
 
 ## Operational Contract
 
-Cover logs, metrics, traces, dashboards, alerts, health checks, sampling, retention, and incident evidence quality.
+Observability means local terminal output, machine-readable JSON summaries,
+warning reports, GitHub Action logs, and generated artifact metadata. There are
+no dashboards, traces, or health checks unless a future hosted surface is
+explicitly added.
 
 ## Owners
 
@@ -15,5 +18,5 @@ Cover logs, metrics, traces, dashboards, alerts, health checks, sampling, retent
 ## Validation
 
 - Required validation names: VALIDATION.md
-- Release blocker status: UNDECIDED
-- Remaining operational risk: UNDECIDED
+- Release blocker status: warnings or failures missing from JSON/action logs block release.
+- Remaining operational risk: log redaction rules and long-term artifact retention remain UNDECIDED.

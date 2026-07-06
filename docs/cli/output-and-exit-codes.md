@@ -3,23 +3,39 @@
 Status: Draft
 Repository Type: cli-tool
 
-## Repository Type Contract
+## Purpose
 
-This repository type owns command behavior, arguments, flags, config loading, exit codes, terminal output, JSON output, runtime compatibility, and shell integration contracts.
+Output must separate successful generation, warnings, and hard failures so CI can
+act without reading prose.
 
 ## Source of Truth
 
-- Product decision: UNDECIDED
+- Product decision: docs/product/02-spec.md
+- Command contract: docs/cli/command-contract.md
 - Technical owner: UNASSIGNED
-- Related ADR: UNDECIDED
+- Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
-## Required Decisions
+## Draft Exit Categories
 
-- Command list and flag ownership: UNDECIDED
-- Exit-code taxonomy: UNDECIDED
-- Machine-readable output contract: UNDECIDED
-- Config precedence and default behavior: UNDECIDED
-- Runtime compatibility floor: UNDECIDED
+- success: BOM generated with no warnings.
+- success-with-warnings: BOM generated, but metadata is incomplete or ambiguous.
+- invalid-input: target directory, config, or flags are invalid.
+- collector-failure: evidence could not be collected or hashed.
+- exporter-failure: selected BOM output could not be produced or validated.
+- internal-error: unexpected implementation failure.
+
+Numeric values are UNDECIDED.
+
+## JSON Summary Fields
+
+- exporter
+- output_path
+- warning_count
+- warnings
+- hash_algorithm
+- artifact_count
+- completeness_status
+- elapsed_ms
 
 ## Review Blockers
 

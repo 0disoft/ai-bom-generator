@@ -1,5 +1,16 @@
 flowchart TD
-  A["core_runtime_flow: input"] --> B["Review source of truth"]
-  B --> C["Change plan"]
-  C --> D["Validation"]
-  D --> E["Release or rollback decision"]
+  Start["Invoke CLI or Action"] --> Resolve["Resolve model directory and config"]
+  Resolve --> ValidateConfig{"Config valid?"}
+  ValidateConfig -- "no" --> FailConfig["Fail with config location"]
+  ValidateConfig -- "yes" --> Discover["Discover supported metadata and artifacts"]
+  Discover --> Collect["Collect declared references and source locations"]
+  Discover --> Hash["Hash selected model artifacts"]
+  Collect --> Normalize["Normalize evidence and absence information"]
+  Hash --> Normalize
+  Normalize --> Export["Export selected BOM format"]
+  Export --> ValidateExport{"Exporter output valid?"}
+  ValidateExport -- "no" --> FailExport["Fail with exporter context"]
+  ValidateExport -- "yes" --> Report["Write BOM, warnings, and JSON summary"]
+  Report --> Exit{"Warnings present?"}
+  Exit -- "yes" --> WarnExit["Success with warnings or warning-policy failure"]
+  Exit -- "no" --> Success["Success"]

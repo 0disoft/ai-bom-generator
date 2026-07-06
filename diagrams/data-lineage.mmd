@@ -1,5 +1,13 @@
 flowchart TD
-  A["data_lineage: input"] --> B["Review source of truth"]
-  B --> C["Change plan"]
-  C --> D["Validation"]
-  D --> E["Release or rollback decision"]
+  ModelCard["Model card or metadata manifest"] --> Evidence["Normalized evidence"]
+  Lockfile["Dependency lockfile"] --> Evidence
+  Training["Training-code reference"] --> Evidence
+  Dataset["Dataset reference"] --> Evidence
+  Prompt["Prompt template reference"] --> Evidence
+  Eval["Evaluation artifact reference"] --> Evidence
+  Checkpoint["Model artifact or checkpoint"] --> Digest["SHA-256 digest"]
+  Digest --> Evidence
+  Evidence --> Exporter["Exporter mapping"]
+  Evidence --> WarningReport["Missing or ambiguous metadata warnings"]
+  Exporter --> BOM["Generated AI/ML BOM"]
+  Evidence --> Summary["JSON summary without full private source contents"]

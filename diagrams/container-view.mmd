@@ -1,5 +1,22 @@
 flowchart TD
-  A["container_view: input"] --> B["Review source of truth"]
-  B --> C["Change plan"]
-  C --> D["Validation"]
-  D --> E["Release or rollback decision"]
+  subgraph CLI["AI-BOM Generator CLI"]
+    Args["Argument and config resolver"]
+    Collectors["Evidence collectors"]
+    Hasher["Artifact digest collector"]
+    Normalizer["Normalized evidence model"]
+    Exporter["Standards-backed exporter"]
+    Reporter["Warning and JSON reporter"]
+  end
+
+  Action["GitHub Action wrapper"] --> Args
+  User["Local user"] --> Args
+  Project["Model directory"] --> Collectors
+  Project --> Hasher
+  Args --> Collectors
+  Collectors --> Normalizer
+  Hasher --> Normalizer
+  Normalizer --> Exporter
+  Normalizer --> Reporter
+  Exporter --> BOM["BOM file"]
+  Reporter --> Warnings["Warning report"]
+  Reporter --> Summary["JSON summary"]

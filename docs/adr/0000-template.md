@@ -5,24 +5,29 @@ Owner: UNASSIGNED
 
 ## Purpose
 
-This document captures the durable design contract for ADR Template.
-It is intentionally a scaffold and should be filled with project-specific decisions as they become known.
+Use this template for decisions that change the AI-BOM Generator contract.
+Each ADR should describe the evidence, options, selected approach, rejected
+alternatives, compatibility impact, and validation needed before release.
 
 ## Source of Truth
 
-- Product decision: UNDECIDED
+- Product decision: ADRs must tie decisions back to the local evidence collector and standards-backed BOM exporter scope.
 - Technical owner: UNASSIGNED
-- Related ADR: UNDECIDED
+- Related ADR: docs/adr/README.md
 
-## Required Decisions
+## Required Sections
 
-- Boundary: UNDECIDED
-- Data ownership: UNDECIDED
-- Failure and recovery behavior: UNDECIDED
-- Validation needed before merge: VALIDATION.md
+- Context: what product, data, CLI, action, exporter, or privacy question forced the decision.
+- Decision: the selected approach and the public contract it creates or changes.
+- Alternatives: credible options considered and why they were rejected.
+- Boundary: explicit non-goals preserved by the decision.
+- Data ownership: caller input, normalized evidence, generated artifact, or no data impact.
+- Failure and recovery behavior: warning/failure behavior and migration impact.
+- Validation needed before merge: VALIDATION.md.
 
 ## Review Blockers
 
-- The change invents a product domain without a source.
+- The ADR claims standards compatibility without mapping examples or fixture evidence.
+- The ADR introduces network access, dataset inspection, or compliance scoring without a privacy and risk decision.
 - The change weakens validation or skips required evidence.
 - The change relies on generated, cache, or build output as source truth.

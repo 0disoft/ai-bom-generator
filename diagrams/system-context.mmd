@@ -1,5 +1,12 @@
 flowchart TD
-  A["system_context: input"] --> B["Review source of truth"]
-  B --> C["Change plan"]
-  C --> D["Validation"]
-  D --> E["Release or rollback decision"]
+  Maintainer["Model project maintainer"] --> CLI["AI-BOM Generator CLI"]
+  CI["GitHub Actions workflow"] --> Action["AI-BOM Generator Action"]
+  Action --> CLI
+  Project["Caller-owned model project directory"] --> CLI
+  CLI --> BOM["AI/ML BOM artifact"]
+  CLI --> Warnings["Missing-metadata warning report"]
+  CLI --> Summary["JSON automation summary"]
+  Standards["SPDX AI or CycloneDX ML-BOM"] -. "export target" .-> BOM
+  Registry["Model registry"] -. "out of scope" .-> CLI
+  Scanner["Vulnerability scanner"] -. "out of scope" .-> CLI
+  Compliance["Compliance approval"] -. "out of scope" .-> CLI

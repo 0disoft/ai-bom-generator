@@ -8,13 +8,15 @@ Design review questions must cover problem boundary, ownership, data/state, fail
 
 ## Required Evidence
 
-- Source of truth: UNDECIDED
+- Source of truth: docs/product/02-spec.md
 - Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 
 ## Review Blockers
 
-- A change bypasses the source of truth.
+- A change expands the product boundary without updating the spec or an ADR.
+- A change omits how missing metadata is surfaced.
+- A change omits privacy impact for input files, logs, summaries, or artifacts.
 - A change weakens validation or hides skipped checks.
 - A change lacks failure, recovery, security, performance, or test evidence where relevant.

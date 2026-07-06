@@ -3,23 +3,30 @@
 Status: Draft
 Repository Type: github-action
 
-## Repository Type Contract
+## Purpose
 
-This repository type owns action inputs, outputs, permissions, token handling, and runner compatibility.
+The default action posture is read-only. The action should generate evidence from
+the checked-out repository, not mutate repository state or publish artifacts by
+default.
 
 ## Source of Truth
 
-- Product decision: UNDECIDED
+- Product decision: docs/product/02-spec.md
+- Action contract: docs/github-action/action-contract.md
 - Technical owner: UNASSIGNED
-- Related ADR: UNDECIDED
+- Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
-## Required Decisions
+## Default Permission Boundary
 
-- GitHub Action ownership boundary: UNDECIDED
-- GitHub Action public contract: UNDECIDED
-- GitHub Action validation evidence: UNDECIDED
-- GitHub Action release or rollout policy: UNDECIDED
-- GitHub Action compatibility and migration policy: UNDECIDED
+- `contents: read` should be sufficient for normal generation.
+- No write permissions by default.
+- No package, release, issue, pull request, or security-event writes unless a future feature explicitly owns them.
+- No secrets required for MVP generation.
+
+## Review Requirements
+
+Any permission expansion must name the user-facing capability, the smallest
+GitHub permission required, and the failure mode when that permission is absent.
 
 ## Review Blockers
 
