@@ -28,7 +28,7 @@ implementation.
 | check | `uv sync --locked` |
 | check | `uv run --python 3.12 python -m compileall -q src tests` |
 | test | `uv run --python 3.12 python -m unittest discover -s tests -v` |
-| smoke | `uv run --python 3.12 python -m ai_bom_generator generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output <temp>/bom.cdx.json --warning-report <temp>/warnings.json --summary <temp>/summary.json` |
+| smoke | `uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output <temp>/bom.cdx.json --warning-report <temp>/warnings.json --summary <temp>/summary.json` |
 | check | `git diff --check` |
 
 Docs validation is review-based until a documentation linter is configured.

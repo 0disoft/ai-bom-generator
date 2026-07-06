@@ -43,7 +43,7 @@ belong to future GitHub Action wrapper decisions and must stay opt-in.
 | check | Install locked environment with `uv sync --locked`. |
 | check | Compile `src` and `tests` with `python -m compileall`. |
 | test | Run `python -m unittest discover -s tests -v`. |
-| smoke | Generate a CycloneDX JSON 1.7 BOM, warning report, and summary from `tests/fixtures/complete-project`. |
+| smoke | Generate a CycloneDX JSON 1.7 BOM, warning report, and summary from `tests/fixtures/complete-project` through the `ai-bom` console script. |
 | check | Run `git diff --check` for whitespace and diff hygiene. |
 
 Docs validation is performed by reviewing changed documentation until a
@@ -59,7 +59,7 @@ uv run --python 3.12 python -m compileall -q src tests
 uv run --python 3.12 python -m unittest discover -s tests -v
 $out = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-bom-ci-" + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $out | Out-Null
-uv run --python 3.12 python -m ai_bom_generator generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output $(Join-Path $out "bom.cdx.json") --warning-report $(Join-Path $out "warnings.json") --summary $(Join-Path $out "summary.json")
+uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output $(Join-Path $out "bom.cdx.json") --warning-report $(Join-Path $out "warnings.json") --summary $(Join-Path $out "summary.json")
 git diff --check
 ```
 

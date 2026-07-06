@@ -43,7 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           out_dir="$(mktemp -d)"
-          uv run --python 3.12 python -m ai_bom_generator generate \
+          uv run --python 3.12 ai-bom generate \
             tests/fixtures/complete-project \
             --config tests/fixtures/complete-project/aibom.toml \
             --format cyclonedx-json-1.7 \
