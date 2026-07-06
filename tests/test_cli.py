@@ -231,6 +231,37 @@ class CliTests(unittest.TestCase):
             self.assertGreater(summary_payload["warning_count"], 0)
             self.assertEqual(_read_json(warnings)["warning_count"], summary_payload["warning_count"])
 
+    def test_unsupported_exporter_format_fails_before_writing_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--format",
+                    "spdx-ai",
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.EXPORTER_FAILURE)
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
     def test_invalid_config_returns_invalid_input(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
