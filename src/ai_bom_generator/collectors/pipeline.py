@@ -74,7 +74,19 @@ def _collect_model(
         )
         return []
 
-    values = dict(_string_pairs(model, redactor, skip_keys={"model_card"}))
+    object_id = _scalar_object_id(model.get("name"), "model")
+    values = dict(
+        _string_pairs(
+            model,
+            redactor,
+            warnings,
+            config,
+            "model",
+            "model",
+            object_id,
+            skip_keys={"model_card"},
+        )
+    )
     model_card = model.get("model_card")
     if model_card is not None:
         if not isinstance(model_card, str):
@@ -97,7 +109,7 @@ def _collect_model(
     return [
         DeclaredReference(
             kind="model",
-            object_id=str(model.get("name", "model")),
+            object_id=object_id,
             values=tuple(sorted(values.items())),
             source=_source(config, "model"),
         )
@@ -195,7 +207,19 @@ def _collect_path_references(
     for index, item in enumerate(items):
         source = _source(config, f"{section}[{index}]")
         raw_path = item.get("path") or item.get("artifact")
-        values = _string_pairs(item, redactor)
+        object_id = _scalar_object_id(
+            item.get("name") or item.get("type") or raw_path,
+            f"{section}-{index}",
+        )
+        values = _string_pairs(
+            item,
+            redactor,
+            warnings,
+            config,
+            f"{section}[{index}]",
+            _singular_kind(section),
+            object_id,
+        )
         if raw_path:
             if not isinstance(raw_path, str):
                 raise InvalidInputError(f"{section}[{index}] path must be a string.", "config")
@@ -219,7 +243,6 @@ def _collect_path_references(
                     )
                 else:
                     raise
-        object_id = str(item.get("name") or item.get("type") or raw_path or f"{section}-{index}")
         references.append(DeclaredReference(kind=_singular_kind(section), object_id=object_id, values=values, source=source))
     return references
 
@@ -233,8 +256,16 @@ def _collect_named_references(
     items = config.get_array(section)
     references: list[DeclaredReference] = []
     for index, item in enumerate(items):
-        object_id = str(item.get("name") or f"{section}-{index}")
-        values = _string_pairs(item, redactor)
+        object_id = _scalar_object_id(item.get("name"), f"{section}-{index}")
+        values = _string_pairs(
+            item,
+            redactor,
+            warnings,
+            config,
+            f"{section}[{index}]",
+            _singular_kind(section),
+            object_id,
+        )
         if section == "datasets" and "license_declared" not in item:
             warnings.append(
                 Warning(
@@ -382,15 +413,46 @@ def _read_git_text_file(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _string_pairs(data: dict[str, Any], redactor: Redactor, skip_keys: set[str] | None = None) -> tuple[tuple[str, str], ...]:
+def _string_pairs(
+    data: dict[str, Any],
+    redactor: Redactor,
+    warnings: list[Warning],
+    config: LoadedConfig,
+    source_prefix: str,
+    object_kind: str,
+    object_id: str,
+    skip_keys: set[str] | None = None,
+) -> tuple[tuple[str, str], ...]:
     skip = skip_keys or set()
     pairs: list[tuple[str, str]] = []
     for key, value in data.items():
         if key in skip:
             continue
-        if isinstance(value, (str, int, float, bool)):
+        if _is_scalar(value):
             pairs.append((str(key), redactor.redact_text(str(value))))
+        else:
+            warnings.append(
+                Warning(
+                    code="UNSUPPORTED_CONFIG_FIELD",
+                    severity="warning",
+                    object_kind=object_kind,
+                    object_id=object_id,
+                    message=f"Unsupported non-scalar config field was ignored: {source_prefix}.{key}",
+                    source=_source(config, f"{source_prefix}.{key}"),
+                    remediation="Use a scalar string, number, or boolean value until structured fields are supported.",
+                )
+            )
     return tuple(sorted(pairs))
+
+
+def _is_scalar(value: object) -> bool:
+    return isinstance(value, (str, int, float, bool))
+
+
+def _scalar_object_id(value: object, fallback: str) -> str:
+    if _is_scalar(value):
+        return str(value)
+    return fallback
 
 
 def _source(config: LoadedConfig, field: str) -> SourceLocation:

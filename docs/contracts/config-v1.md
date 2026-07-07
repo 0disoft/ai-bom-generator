@@ -30,6 +30,13 @@ The executable draft schema lives at `schemas/aibom-config-v1.schema.json`.
 - `evals`: declared eval artifact references.
 - `training`: declared training-code or pipeline references.
 
+## Supported Field Values
+
+The executable draft collects scalar string, number, and boolean values from
+metadata and reference sections. Structured values such as arrays or nested
+tables are ignored with an `UNSUPPORTED_CONFIG_FIELD` warning until the field is
+explicitly modeled.
+
 ## Precedence
 
 Explicit CLI flags override config values. Environment-variable config is out of
