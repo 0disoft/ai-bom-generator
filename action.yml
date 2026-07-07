@@ -47,8 +47,11 @@ outputs:
   warning-count:
     description: Warning count reported by the JSON summary when available.
     value: ${{ steps.generate.outputs['warning-count'] }}
+  status:
+    description: Run status reported by the JSON summary when available.
+    value: ${{ steps.generate.outputs.status }}
   completeness-status:
-    description: Summary status reported by the JSON summary when available.
+    description: Evidence completeness status reported by the JSON summary when available.
     value: ${{ steps.generate.outputs['completeness-status'] }}
   format:
     description: Output format reported by the JSON summary when available.

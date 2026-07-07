@@ -40,7 +40,10 @@ that diverge from the CLI contract.
 - `warning-report-path`
 - `summary-path`
 - `warning-count`
-- `completeness-status`
+- `status`: JSON summary run status, such as `success`, `success-with-warnings`,
+  or `failed`.
+- `completeness-status`: JSON summary evidence completeness status, such as
+  `complete`, `partial`, or `empty`.
 - `format`
 - `exit-code`
 

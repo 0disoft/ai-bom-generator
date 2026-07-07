@@ -20,7 +20,15 @@ def main(argv: list[str] | None = None) -> int:
     with tempfile.TemporaryDirectory() as temp:
         work = Path(temp)
         cases = [
-            ActionCase("clean", "tests/fixtures/complete-project", "tests/fixtures/complete-project/aibom.toml", "allow", 0, "success"),
+            ActionCase(
+                "clean",
+                "tests/fixtures/complete-project",
+                "tests/fixtures/complete-project/aibom.toml",
+                "allow",
+                0,
+                "success",
+                "complete",
+            ),
             ActionCase(
                 "default-paths",
                 "tests/fixtures/complete-project",
@@ -28,10 +36,27 @@ def main(argv: list[str] | None = None) -> int:
                 "allow",
                 0,
                 "success",
+                "complete",
                 explicit_output_paths=False,
             ),
-            ActionCase("warning", "tests/fixtures/sparse-project", "tests/fixtures/sparse-project/aibom.toml", "allow", 0, "success-with-warnings"),
-            ActionCase("fail-on-warning", "tests/fixtures/sparse-project", "tests/fixtures/sparse-project/aibom.toml", "fail", 10, "failed"),
+            ActionCase(
+                "warning",
+                "tests/fixtures/sparse-project",
+                "tests/fixtures/sparse-project/aibom.toml",
+                "allow",
+                0,
+                "success-with-warnings",
+                "partial",
+            ),
+            ActionCase(
+                "fail-on-warning",
+                "tests/fixtures/sparse-project",
+                "tests/fixtures/sparse-project/aibom.toml",
+                "fail",
+                10,
+                "failed",
+                "partial",
+            ),
         ]
         for case in cases:
             _run_case(case, work / case.name)
@@ -48,6 +73,7 @@ class ActionCase:
         warnings: str,
         expected_exit: int,
         expected_status: str,
+        expected_completeness_status: str,
         explicit_output_paths: bool = True,
     ) -> None:
         self.name = name
@@ -56,6 +82,7 @@ class ActionCase:
         self.warnings = warnings
         self.expected_exit = expected_exit
         self.expected_status = expected_status
+        self.expected_completeness_status = expected_completeness_status
         self.explicit_output_paths = explicit_output_paths
 
 
@@ -67,6 +94,7 @@ def _verify_action_metadata() -> None:
         "scripts/github_action_entrypoint.py",
         "steps.generate.outputs['bom-path']",
         "steps.generate.outputs['warning-count']",
+        "steps.generate.outputs.status",
         "steps.generate.outputs['completeness-status']",
         "steps.generate.outputs['exit-code']",
     ]
@@ -124,8 +152,10 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
     outputs = _read_github_output(github_output)
     if outputs.get("exit-code") != str(case.expected_exit):
         raise AssertionError(f"{case.name} output exit-code mismatch: {outputs.get('exit-code')}")
-    if outputs.get("completeness-status") != case.expected_status:
-        raise AssertionError(f"{case.name} output status mismatch: {outputs.get('completeness-status')}")
+    if outputs.get("status") != case.expected_status:
+        raise AssertionError(f"{case.name} output status mismatch: {outputs.get('status')}")
+    if outputs.get("completeness-status") != case.expected_completeness_status:
+        raise AssertionError(f"{case.name} output completeness-status mismatch: {outputs.get('completeness-status')}")
     if outputs.get("format") != "cyclonedx-json-1.7":
         raise AssertionError(f"{case.name} output format mismatch: {outputs.get('format')}")
     if outputs.get("bom-path") != output.as_posix():

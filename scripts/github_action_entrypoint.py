@@ -96,7 +96,8 @@ def _write_outputs(output: Path, warning_report: Path, summary: Path, exit_code:
         pairs.update(
             {
                 "warning-count": str(payload.get("warning_count", "")),
-                "completeness-status": str(payload.get("status", "")),
+                "status": str(payload.get("status", "")),
+                "completeness-status": str(payload.get("completeness_status", "")),
                 "format": str(payload.get("format", "")),
             }
         )
