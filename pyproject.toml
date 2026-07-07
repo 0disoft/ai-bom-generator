@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-bom-generator"
-version = "0.1.0"
+version = "0.1.1"
 description = "Local AI/ML bill-of-materials generator"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -12,9 +12,37 @@ license = "Apache-2.0"
 authors = [
   { name = "0disoft" }
 ]
+keywords = [
+  "ai",
+  "ai-bom",
+  "bill-of-materials",
+  "bom",
+  "cyclonedx",
+  "machine-learning",
+  "ml-bom",
+  "supply-chain"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Security",
+  "Topic :: Software Development :: Build Tools"
+]
 dependencies = [
   "jsonschema>=4.25,<5"
 ]
+
+[project.urls]
+Homepage = "https://github.com/0disoft/ai-bom-generator"
+Repository = "https://github.com/0disoft/ai-bom-generator"
+Issues = "https://github.com/0disoft/ai-bom-generator/issues"
+Changelog = "https://github.com/0disoft/ai-bom-generator/blob/main/CHANGELOG.md"
+Releases = "https://github.com/0disoft/ai-bom-generator/releases"
 
 [project.scripts]
 ai-bom = "ai_bom_generator.cli:main"

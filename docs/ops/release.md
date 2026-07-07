@@ -18,6 +18,11 @@ PyPI publishing, mutable major action tags such as `v0`, GitHub Marketplace
 registration, and generated artifact upload are deferred until explicitly
 approved.
 
+PyPI package metadata may be prepared before publishing by adding classifiers,
+keywords, and project URLs to `pyproject.toml` and validating README rendering
+with a package metadata checker. Publishing, trusted publisher setup, token use,
+and registry ownership remain deferred until explicitly approved.
+
 ## Owners
 
 - Primary owner: UNASSIGNED

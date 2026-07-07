@@ -33,6 +33,7 @@ choices from plausible candidates that still need approval.
 | Action wrapper | Composite GitHub Action invoking `uv run --project` | Approved for MVP on 2026-07-07 |
 | First public release | GitHub Release `v0.1.0` with no PyPI package | Approved by owner on 2026-07-07 |
 | Action tag policy | Immutable version tags only for MVP; no mutable `v0` tag yet | Approved by owner on 2026-07-07 |
+| PyPI package metadata | Classifiers, keywords, and project URLs in `pyproject.toml` | Approved for pre-publish preparation on 2026-07-07 |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
 | Network policy | No network in MVP | Proposed |
 | Telemetry policy | No telemetry in MVP | Proposed |
@@ -54,6 +55,9 @@ choices from plausible candidates that still need approval.
 - The first public release may create `v0.1.0` and a GitHub Release. It must not
   publish to PyPI, create a mutable `v0` action tag, or register the Action in a
   marketplace until those policies are explicitly approved.
+- PyPI metadata may be prepared and validated locally, but package upload,
+  trusted publishing, token setup, and registry ownership remain deferred until
+  a package-registry release policy is approved.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.1
+
+Unreleased PyPI packaging preparation.
+
+- Adds package classifiers, keywords, and project URLs for future PyPI publishing.
+- Keeps PyPI publishing deferred until package-registry policy is approved.
+
 ## v0.1.0
 
 First public MVP release.
