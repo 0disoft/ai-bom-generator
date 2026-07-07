@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 import io
 import json
 from pathlib import Path
@@ -266,6 +266,35 @@ class CliTests(unittest.TestCase):
             )
 
             self.assertEqual(code, ExitCode.INVALID_INPUT)
+
+    def test_terminal_error_output_redacts_secret_shaped_values(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            stderr = io.StringIO()
+
+            with redirect_stderr(stderr):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(project / "aibom.toml"),
+                        "--output",
+                        str(work / "bom.json"),
+                        "--warning-report",
+                        str(work / "warnings.json"),
+                        "--summary",
+                        str(work / "summary.json"),
+                        "--format",
+                        "spdx-ai?token=super-secret-token",
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.EXPORTER_FAILURE)
+            self.assertNotIn("super-secret-token", stderr.getvalue())
+            self.assertIn("token=REDACTED", stderr.getvalue())
 
     def test_sparse_project_reports_machine_readable_warning(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

@@ -6,6 +6,10 @@ import sys
 
 from ai_bom_generator.app import GenerateBomOptions, generate_bom
 from ai_bom_generator.errors import AIBomError, ExitCode, InvalidInputError
+from ai_bom_generator.security import Redactor
+
+
+_TERMINAL_REDACTOR = Redactor("strict")
 
 
 class AIBomArgumentParser(argparse.ArgumentParser):
@@ -54,8 +58,8 @@ def main(argv: list[str] | None = None) -> int:
             return ExitCode.SUCCESS
         raise
     except AIBomError as exc:
-        print(f"ai-bom: {exc.stage}: {exc.message}", file=sys.stderr)
+        print(f"ai-bom: {exc.stage}: {_TERMINAL_REDACTOR.redact_text(exc.message)}", file=sys.stderr)
         return exc.exit_code
     except Exception as exc:
-        print(f"ai-bom: internal-error: {exc}", file=sys.stderr)
+        print(f"ai-bom: internal-error: {_TERMINAL_REDACTOR.redact_text(str(exc))}", file=sys.stderr)
         return ExitCode.INTERNAL_ERROR

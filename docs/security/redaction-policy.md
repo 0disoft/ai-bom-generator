@@ -32,7 +32,9 @@ The redaction layer should detect obvious credential forms before output:
 - BOM file.
 - Warning report.
 - JSON summary.
-- Terminal output.
+- Terminal output. Error messages are safety-redacted even when generated
+  artifacts are requested with `--redaction off`, because failures may occur
+  before a warning report can be written.
 - GitHub Action logs and outputs.
 
 ## Review Blockers
