@@ -116,6 +116,35 @@ class CliTests(unittest.TestCase):
             self.assertIn("SKIPPED_SYMLINK", codes)
             self.assertIn("MISSING_MODEL_METADATA", codes)
 
+    def test_broken_model_card_symlink_is_warned(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            project.mkdir()
+            try:
+                os.symlink(work / "missing-model-card.md", project / "MODEL_CARD.md")
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            codes = _warning_codes(summary)
+            self.assertIn("SKIPPED_SYMLINK", codes)
+            self.assertIn("MISSING_MODEL_METADATA", codes)
+
     def test_config_output_format_is_used_when_cli_format_is_omitted(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
@@ -489,6 +518,38 @@ class CliTests(unittest.TestCase):
 
             self.assertEqual(code, ExitCode.SUCCESS)
             self.assertIn("SKIPPED_GIT_SYMLINK", _warning_codes(summary))
+
+    def test_broken_git_symlink_warns_without_fabricated_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            try:
+                os.symlink(work / "missing-git-dir", project / ".git", target_is_directory=True)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            summary = work / "out" / "summary.json"
+            bom = work / "out" / "bom.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "out" / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("SKIPPED_GIT_SYMLINK", _warning_codes(summary))
+            model_properties = _model_properties(_read_json(bom))
+            self.assertNotIn("ai-bom:git:commit", model_properties)
 
     def test_summary_dash_writes_machine_readable_summary_to_stdout(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

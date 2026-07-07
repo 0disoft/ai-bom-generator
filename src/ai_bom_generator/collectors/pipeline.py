@@ -132,8 +132,6 @@ def _collect_model(
 
 def _discover_model_card(policy: PathPolicy, warnings: list[Warning]) -> str | None:
     candidate = policy.root / _KNOWN_MODEL_CARD
-    if not candidate.exists():
-        return None
     source = SourceLocation(path=_KNOWN_MODEL_CARD, collector="model")
     if candidate.is_symlink():
         warnings.append(
@@ -147,6 +145,8 @@ def _discover_model_card(policy: PathPolicy, warnings: list[Warning]) -> str | N
                 remediation="Use a real model metadata file inside the target root.",
             )
         )
+        return None
+    if not candidate.exists():
         return None
     try:
         resolved = candidate.resolve(strict=True)
@@ -337,8 +337,6 @@ def _collect_named_references(
 
 def _collect_git(policy: PathPolicy, warnings: list[Warning]) -> list[DeclaredReference]:
     git_path = policy.root / ".git"
-    if not git_path.exists():
-        return []
     if git_path.is_symlink():
         warnings.append(
             Warning(
@@ -351,6 +349,8 @@ def _collect_git(policy: PathPolicy, warnings: list[Warning]) -> list[DeclaredRe
                 remediation="Use a target project with an in-root .git directory.",
             )
         )
+        return []
+    if not git_path.exists():
         return []
     if git_path.is_file():
         warnings.append(
