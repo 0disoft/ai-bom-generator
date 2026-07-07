@@ -22,7 +22,7 @@ intended project boundary by default.
 - Reject artifact include and exclude globs that are absolute or contain parent
   traversal.
 - Reject generated output paths that resolve inside the target model directory.
-- Reject generated output paths that are existing symlinks.
+- Reject generated output paths that are symlinks, including broken symlinks.
 
 ## Failure Behavior
 

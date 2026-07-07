@@ -35,7 +35,7 @@ class PathPolicy:
     def validate_output_file(self, candidate: Path | str, label: str) -> Path:
         raw = Path(candidate)
         path = raw if raw.is_absolute() else Path.cwd() / raw
-        if path.exists() and path.is_symlink():
+        if path.is_symlink():
             raise InvalidInputError(f"{label} output path must not be a symlink: {candidate}", "input")
         resolved = path.resolve(strict=False)
         if self.is_inside_root(resolved):

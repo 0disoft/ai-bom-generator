@@ -1277,6 +1277,40 @@ class CliTests(unittest.TestCase):
             self.assertFalse(warnings.exists())
             self.assertFalse(summary.exists())
 
+    def test_broken_output_symlink_is_rejected_before_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "bom.json"
+            try:
+                os.symlink(work / "missing-output-target.json", bom)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertTrue(bom.is_symlink())
+            self.assertFalse((work / "missing-output-target.json").exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
     def test_overlapping_output_paths_are_rejected_before_writing(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
