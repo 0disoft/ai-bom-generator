@@ -42,6 +42,10 @@ must resolve outside the target model directory and must not overlap each other.
 When `--format` is omitted, the explicit config file's `[output].format` value is
 used. If neither CLI nor config declares a format, `cyclonedx-json-1.7` is used
 as the current executable default.
+When `--warnings` is omitted, the explicit config file's
+`[warning_policy].missing_metadata` value is used. Config `warn` maps to the
+executable `allow` behavior and config `fail` maps to the executable `fail`
+behavior.
 
 ## Review Blockers
 

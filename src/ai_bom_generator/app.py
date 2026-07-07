@@ -22,15 +22,12 @@ class GenerateBomOptions:
     warning_report: Path
     summary: Path | None
     summary_stdout: bool
-    warnings: str
+    warnings: str | None
     redaction: str
 
 
 def generate_bom(options: GenerateBomOptions) -> int:
     start = time.perf_counter()
-    if options.warnings not in {"allow", "fail"}:
-        raise ExporterError(f"Unsupported warning policy: {options.warnings}", "input")
-
     policy = PathPolicy(options.model_directory)
     _validate_output_destinations(options, policy)
     redactor = Redactor(options.redaction)
@@ -38,11 +35,12 @@ def generate_bom(options: GenerateBomOptions) -> int:
     output_format = _resolve_output_format(options, config)
     if output_format != SUPPORTED_FORMAT:
         raise ExporterError(f"Unsupported output format: {output_format}", "exporter")
+    warning_policy = _resolve_warning_policy(options, config)
     evidence = collect_evidence(config, policy, redactor)
 
     bom = export_cyclonedx_json(evidence, redactor)
     warning_report = build_warning_report(evidence, redactor)
-    warning_policy_failed = options.warnings == "fail" and evidence.warning_count > 0
+    warning_policy_failed = warning_policy == "fail" and evidence.warning_count > 0
     elapsed_ms = int((time.perf_counter() - start) * 1000)
     summary = build_summary(
         evidence=evidence,
@@ -75,6 +73,21 @@ def _resolve_output_format(options: GenerateBomOptions, config: LoadedConfig) ->
     if not isinstance(configured, str):
         raise InvalidInputError("[output].format must be a string.", "config")
     return configured
+
+
+def _resolve_warning_policy(options: GenerateBomOptions, config: LoadedConfig) -> str:
+    if options.warnings is not None:
+        return options.warnings
+
+    warning_policy = config.get_table("warning_policy")
+    configured = warning_policy.get("missing_metadata", "warn")
+    if not isinstance(configured, str):
+        raise InvalidInputError("[warning_policy].missing_metadata must be a string.", "config")
+    if configured == "warn":
+        return "allow"
+    if configured == "fail":
+        return "fail"
+    raise InvalidInputError("[warning_policy].missing_metadata must be warn or fail.", "config")
 
 
 def _validate_output_destinations(options: GenerateBomOptions, policy: PathPolicy) -> None:

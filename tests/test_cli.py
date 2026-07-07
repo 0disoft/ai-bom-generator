@@ -680,6 +680,115 @@ class CliTests(unittest.TestCase):
             self.assertGreater(summary_payload["warning_count"], 0)
             self.assertEqual(_read_json(warnings)["warning_count"], summary_payload["warning_count"])
 
+    def test_config_warning_policy_fail_returns_policy_exit_code(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "sparse-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8") + '\n[warning_policy]\nmissing_metadata = "fail"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.WARNING_POLICY_FAILED)
+            self.assertTrue(bom.exists())
+            self.assertTrue(warnings.exists())
+            summary_payload = _read_json(summary)
+            self.assertEqual(summary_payload["status"], "failed")
+            self.assertEqual(summary_payload["exit_code"], ExitCode.WARNING_POLICY_FAILED)
+            self.assertGreater(summary_payload["warning_count"], 0)
+
+    def test_cli_warning_policy_overrides_config_warning_policy(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "sparse-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8") + '\n[warning_policy]\nmissing_metadata = "fail"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                    "--warnings",
+                    "allow",
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            summary_payload = _read_json(summary)
+            self.assertEqual(summary_payload["status"], "success-with-warnings")
+            self.assertEqual(summary_payload["exit_code"], ExitCode.SUCCESS)
+            self.assertGreater(summary_payload["warning_count"], 0)
+
+    def test_config_warning_policy_must_be_warn_or_fail(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "sparse-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8") + '\n[warning_policy]\nmissing_metadata = "block"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
     def test_unsupported_exporter_format_fails_before_writing_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)

@@ -42,6 +42,9 @@ explicitly modeled.
 Explicit CLI flags override config values. When `--format` is omitted, the
 executable draft uses `[output].format` from the explicit config file and falls
 back to `cyclonedx-json-1.7` when the config does not declare an output format.
+When `--warnings` is omitted, `[warning_policy].missing_metadata = "warn"` maps
+to the executable `allow` behavior and `"fail"` maps to the executable `fail`
+behavior. The CLI `--warnings` flag overrides this config value.
 Environment-variable config is out of MVP until redaction and precedence
 behavior are explicitly designed.
 

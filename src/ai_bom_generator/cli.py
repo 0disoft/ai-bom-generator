@@ -27,7 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--output", type=Path, required=True)
     generate.add_argument("--warning-report", type=Path, required=True)
     generate.add_argument("--summary", default="-")
-    generate.add_argument("--warnings", choices=["allow", "fail"], default="allow")
+    generate.add_argument("--warnings", choices=["allow", "fail"], default=None)
     generate.add_argument("--redaction", choices=["strict", "off"], default="strict")
     return parser
 
