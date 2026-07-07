@@ -55,6 +55,118 @@ class CliTests(unittest.TestCase):
             }
             self.assertEqual(model_properties["ai-bom:model:model_card"], "MODEL_CARD.md")
 
+    def test_config_output_format_is_used_when_cli_format_is_omitted(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'format = "cyclonedx-json-1.7"',
+                    'format = "spdx-ai"',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.EXPORTER_FAILURE)
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
+    def test_cli_output_format_overrides_config_output_format(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'format = "cyclonedx-json-1.7"',
+                    'format = "spdx-ai"',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--format",
+                    "cyclonedx-json-1.7",
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertEqual(_read_json(summary)["format"], "cyclonedx-json-1.7")
+
+    def test_config_output_format_must_be_a_string(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'format = "cyclonedx-json-1.7"',
+                    'format = 7',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
     def test_git_head_ref_is_resolved_into_bom_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)

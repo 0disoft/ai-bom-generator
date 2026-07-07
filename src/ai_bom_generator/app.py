@@ -5,7 +5,7 @@ from pathlib import Path
 import time
 
 from ai_bom_generator.collectors import collect_evidence
-from ai_bom_generator.config import load_config
+from ai_bom_generator.config import LoadedConfig, load_config
 from ai_bom_generator.errors import ExitCode, ExporterError, InvalidInputError
 from ai_bom_generator.exporters.cyclonedx_json import SUPPORTED_FORMAT, export_cyclonedx_json
 from ai_bom_generator.reporting import build_summary, build_warning_report, write_json_file
@@ -17,7 +17,7 @@ from ai_bom_generator.security import PathPolicy, Redactor
 class GenerateBomOptions:
     model_directory: Path
     config: Path | None
-    output_format: str
+    output_format: str | None
     output: Path
     warning_report: Path
     summary: Path | None
@@ -28,8 +28,6 @@ class GenerateBomOptions:
 
 def generate_bom(options: GenerateBomOptions) -> int:
     start = time.perf_counter()
-    if options.output_format != SUPPORTED_FORMAT:
-        raise ExporterError(f"Unsupported output format: {options.output_format}", "exporter")
     if options.warnings not in {"allow", "fail"}:
         raise ExporterError(f"Unsupported warning policy: {options.warnings}", "input")
 
@@ -37,6 +35,9 @@ def generate_bom(options: GenerateBomOptions) -> int:
     _validate_output_destinations(options, policy)
     redactor = Redactor(options.redaction)
     config = load_config(options.config, policy)
+    output_format = _resolve_output_format(options, config)
+    if output_format != SUPPORTED_FORMAT:
+        raise ExporterError(f"Unsupported output format: {output_format}", "exporter")
     evidence = collect_evidence(config, policy, redactor)
 
     bom = export_cyclonedx_json(evidence, redactor)
@@ -47,7 +48,7 @@ def generate_bom(options: GenerateBomOptions) -> int:
         evidence=evidence,
         bom_path=options.output,
         warning_report_path=options.warning_report,
-        output_format=options.output_format,
+        output_format=output_format,
         elapsed_ms=elapsed_ms,
         warning_policy_failed=warning_policy_failed,
         redactor=redactor,
@@ -63,6 +64,17 @@ def generate_bom(options: GenerateBomOptions) -> int:
         write_json_file(options.summary, summary)
 
     return ExitCode.WARNING_POLICY_FAILED if warning_policy_failed else ExitCode.SUCCESS
+
+
+def _resolve_output_format(options: GenerateBomOptions, config: LoadedConfig) -> str:
+    if options.output_format is not None:
+        return options.output_format
+
+    output = config.get_table("output")
+    configured = output.get("format", SUPPORTED_FORMAT)
+    if not isinstance(configured, str):
+        raise InvalidInputError("[output].format must be a string.", "config")
+    return configured
 
 
 def _validate_output_destinations(options: GenerateBomOptions, policy: PathPolicy) -> None:

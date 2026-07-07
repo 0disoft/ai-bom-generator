@@ -39,8 +39,11 @@ explicitly modeled.
 
 ## Precedence
 
-Explicit CLI flags override config values. Environment-variable config is out of
-MVP until redaction and precedence behavior are explicitly designed.
+Explicit CLI flags override config values. When `--format` is omitted, the
+executable draft uses `[output].format` from the explicit config file and falls
+back to `cyclonedx-json-1.7` when the config does not declare an output format.
+Environment-variable config is out of MVP until redaction and precedence
+behavior are explicitly designed.
 
 ## Review Blockers
 

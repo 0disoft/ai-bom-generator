@@ -23,7 +23,7 @@ def build_parser() -> argparse.ArgumentParser:
     generate = subparsers.add_parser("generate", help="Generate an AI/ML BOM from a model directory.")
     generate.add_argument("model_directory", type=Path)
     generate.add_argument("--config", type=Path, default=None)
-    generate.add_argument("--format", dest="output_format", default="cyclonedx-json-1.7")
+    generate.add_argument("--format", dest="output_format", default=None)
     generate.add_argument("--output", type=Path, required=True)
     generate.add_argument("--warning-report", type=Path, required=True)
     generate.add_argument("--summary", default="-")

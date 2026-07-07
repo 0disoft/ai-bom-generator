@@ -39,6 +39,9 @@ The exact binary name, flag names, accepted formats, and output filename default
 remain draft until implementation starts. MVP should prefer explicit output paths
 over silently writing into the target model directory. Generated output paths
 must resolve outside the target model directory and must not overlap each other.
+When `--format` is omitted, the explicit config file's `[output].format` value is
+used. If neither CLI nor config declares a format, `cyclonedx-json-1.7` is used
+as the current executable default.
 
 ## Review Blockers
 
