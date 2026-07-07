@@ -561,6 +561,40 @@ class CliTests(unittest.TestCase):
                 self.assertNotIn("super-secret-token", text)
                 self.assertIn("token=REDACTED", text)
 
+    def test_redaction_off_preserves_secret_shaped_values_with_warning(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "secret-redaction", project)
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                    "--redaction",
+                    "off",
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("super-secret-token", bom.read_text(encoding="utf-8"))
+            self.assertNotIn("token=REDACTED", bom.read_text(encoding="utf-8"))
+            warning_codes = {str(warning["code"]) for warning in _read_json(summary)["warnings"]}
+            self.assertIn("REDACTION_DISABLED", warning_codes)
+            self.assertEqual(_read_json(warnings)["warnings"][0]["code"], "REDACTION_DISABLED")
+            self.assertEqual(_read_json(summary)["status"], "success-with-warnings")
+
     def test_target_root_escape_is_reported_for_optional_reference(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)

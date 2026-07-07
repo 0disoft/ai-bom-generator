@@ -12,7 +12,8 @@ contract, not just terminal polish.
 ## Default Candidate
 
 Strict redaction is the leading default candidate. Redaction off may be useful
-for debugging, but it should require explicit user choice and clear warnings.
+for debugging, but it should require explicit user choice and a machine-readable
+`REDACTION_DISABLED` warning.
 
 ## Secret-Shaped Values
 
@@ -23,6 +24,8 @@ The redaction layer should detect obvious credential forms before output:
 - Private key blocks.
 - Credentialed Git remotes.
 - Common API-token-shaped strings.
+- Disabled redaction must be reported as a warning instead of silently producing
+  unredacted output.
 
 ## Output Surfaces
 

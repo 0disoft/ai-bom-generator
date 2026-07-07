@@ -34,6 +34,7 @@ The executable warning-report schema lives at
 - Unsupported exporter field.
 - Unsupported or unresolved local Git metadata.
 - Redacted secret-shaped value.
+- Disabled redaction mode.
 - Skipped symlink.
 - Target-root escape blocked.
 

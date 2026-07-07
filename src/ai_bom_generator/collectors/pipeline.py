@@ -20,6 +20,17 @@ _GIT_SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 
 def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redactor) -> NormalizedEvidence:
     warnings: list[Warning] = []
+    if redactor.mode == "off":
+        warnings.append(
+            Warning(
+                code="REDACTION_DISABLED",
+                severity="warning",
+                object_kind="run",
+                object_id="redaction",
+                message="Secret-shaped values will not be redacted because redaction mode is off.",
+                remediation="Use --redaction strict unless unredacted output is required for local debugging.",
+            )
+        )
     model_metadata = _collect_model(config, policy, warnings, redactor)
     artifacts = _collect_artifacts(config, policy, warnings)
     dependencies = _collect_path_references("dependencies", config, policy, warnings, redactor)
