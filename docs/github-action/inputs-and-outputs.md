@@ -47,6 +47,9 @@ that diverge from the CLI contract.
 - `format`
 - `exit-code`
 
+The wrapper writes GitHub outputs with the multiline `GITHUB_OUTPUT` form so
+path-like values remain output data even when they contain line breaks.
+
 ## Review Blockers
 
 - Action permission changes lack least-privilege review.

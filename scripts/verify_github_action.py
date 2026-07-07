@@ -7,6 +7,8 @@ import subprocess
 import sys
 import tempfile
 
+import github_action_entrypoint
+
 
 ROOT = Path(__file__).resolve().parents[1]
 ACTION = ROOT / "action.yml"
@@ -61,6 +63,7 @@ def main(argv: list[str] | None = None) -> int:
         for case in cases:
             _run_case(case, work / case.name)
         _run_missing_required_input_case(work / "missing-model-directory")
+        _verify_github_output_escaping(work / "escaped-github-output")
     return 0
 
 
@@ -204,12 +207,56 @@ def _run_missing_required_input_case(case_root: Path) -> None:
         raise AssertionError(f"missing-model-directory output exit-code mismatch: {outputs.get('exit-code')}")
 
 
+def _verify_github_output_escaping(case_root: Path) -> None:
+    case_root.mkdir(parents=True)
+    github_output = case_root / "github-output.txt"
+    previous = os.environ.get("GITHUB_OUTPUT")
+    os.environ["GITHUB_OUTPUT"] = str(github_output)
+    try:
+        github_action_entrypoint._append_github_outputs(
+            {
+                "bom-path": "safe-path\nforged-output=bad",
+                "status": "success",
+            }
+        )
+    finally:
+        if previous is None:
+            os.environ.pop("GITHUB_OUTPUT", None)
+        else:
+            os.environ["GITHUB_OUTPUT"] = previous
+    outputs = _read_github_output(github_output)
+    if outputs.get("bom-path") != "safe-path\nforged-output=bad":
+        raise AssertionError(f"escaped output value mismatch: {outputs.get('bom-path')}")
+    if outputs.get("status") != "success":
+        raise AssertionError(f"escaped status mismatch: {outputs.get('status')}")
+    if "forged-output" in outputs:
+        raise AssertionError("newline output value created a forged GitHub output key")
+
+
 def _read_github_output(path: Path) -> dict[str, str]:
     pairs: dict[str, str] = {}
-    for line in path.read_text(encoding="utf-8").splitlines():
+    lines = path.read_text(encoding="utf-8").splitlines()
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if "<<" in line:
+            key, _, delimiter = line.partition("<<")
+            if not key or not delimiter:
+                raise AssertionError(f"Malformed GitHub output line: {line}")
+            index += 1
+            value_lines: list[str] = []
+            while index < len(lines) and lines[index] != delimiter:
+                value_lines.append(lines[index])
+                index += 1
+            if index >= len(lines):
+                raise AssertionError(f"Missing GitHub output delimiter for {key}: {delimiter}")
+            pairs[key] = "\n".join(value_lines)
+            index += 1
+            continue
         key, _, value = line.partition("=")
         if key:
             pairs[key] = value
+        index += 1
     return pairs
 
 

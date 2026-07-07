@@ -114,7 +114,18 @@ def _append_github_outputs(pairs: dict[str, str]) -> None:
         return
     with Path(github_output).open("a", encoding="utf-8", newline="\n") as handle:
         for key, value in pairs.items():
-            handle.write(f"{key}={value}\n")
+            delimiter = _output_delimiter(key, value)
+            handle.write(f"{key}<<{delimiter}\n{value}\n{delimiter}\n")
+
+
+def _output_delimiter(key: str, value: str) -> str:
+    base = f"AI_BOM_{key.replace('-', '_').upper()}_EOF"
+    delimiter = base
+    suffix = 1
+    while delimiter in value:
+        delimiter = f"{base}_{suffix}"
+        suffix += 1
+    return delimiter
 
 
 if __name__ == "__main__":
