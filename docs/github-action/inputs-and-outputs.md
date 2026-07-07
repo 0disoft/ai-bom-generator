@@ -15,24 +15,26 @@ behavior stay comparable.
 - Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
-## Draft Inputs
+## Inputs
 
 - `model-directory`: required path to the model project directory.
-- `config`: optional config path.
+- `config`: optional config path. Empty means the CLI runs without an explicit
+  config file.
 - `format`: selected exporter. The Action wrapper must mirror the CLI's accepted
   values; the current CLI value is `cyclonedx-json-1.7`.
-- `output`: output path for generated BOM.
-- `warning-report`: output path for warning report.
-- `summary`: output path for JSON summary.
+- `output`: output path for generated BOM. Empty defaults under `RUNNER_TEMP`.
+- `warning-report`: output path for warning report. Empty defaults under
+  `RUNNER_TEMP`.
+- `summary`: output path for JSON summary. Empty defaults under `RUNNER_TEMP`.
 - `warnings`: warning policy. The Action wrapper must mirror the CLI's accepted
   values: `allow` and `fail`.
-- `upload-artifact`: optional boolean, default false.
+- `redaction`: redaction mode. The Action wrapper must mirror the CLI's accepted
+  values: `strict` and `off`.
 
-Exact GitHub Action input defaults, path conventions, and upload behavior remain
-UNDECIDED until the wrapper is implemented. The wrapper must not invent values
+Artifact upload behavior remains UNDECIDED. The wrapper must not invent values
 that diverge from the CLI contract.
 
-## Draft Outputs
+## Outputs
 
 - `bom-path`
 - `warning-report-path`
@@ -40,6 +42,7 @@ that diverge from the CLI contract.
 - `warning-count`
 - `completeness-status`
 - `format`
+- `exit-code`
 
 ## Review Blockers
 

@@ -1,0 +1,124 @@
+from __future__ import annotations
+
+import argparse
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+
+
+ROOT = Path(__file__).resolve().parents[1]
+ACTION = ROOT / "action.yml"
+ENTRYPOINT = ROOT / "scripts" / "github_action_entrypoint.py"
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Verify the local GitHub Action wrapper.")
+    parser.parse_args(argv)
+    _verify_action_metadata()
+    with tempfile.TemporaryDirectory() as temp:
+        work = Path(temp)
+        cases = [
+            ActionCase("clean", "tests/fixtures/complete-project", "tests/fixtures/complete-project/aibom.toml", "allow", 0, "success"),
+            ActionCase("warning", "tests/fixtures/sparse-project", "tests/fixtures/sparse-project/aibom.toml", "allow", 0, "success-with-warnings"),
+            ActionCase("fail-on-warning", "tests/fixtures/sparse-project", "tests/fixtures/sparse-project/aibom.toml", "fail", 10, "failed"),
+        ]
+        for case in cases:
+            _run_case(case, work / case.name)
+    return 0
+
+
+class ActionCase:
+    def __init__(
+        self,
+        name: str,
+        model_directory: str,
+        config: str,
+        warnings: str,
+        expected_exit: int,
+        expected_status: str,
+    ) -> None:
+        self.name = name
+        self.model_directory = model_directory
+        self.config = config
+        self.warnings = warnings
+        self.expected_exit = expected_exit
+        self.expected_status = expected_status
+
+
+def _verify_action_metadata() -> None:
+    text = ACTION.read_text(encoding="utf-8")
+    required_snippets = [
+        "using: composite",
+        "INPUT_MODEL_DIRECTORY",
+        "scripts/github_action_entrypoint.py",
+        "steps.generate.outputs['bom-path']",
+        "steps.generate.outputs['warning-count']",
+        "steps.generate.outputs['completeness-status']",
+        "steps.generate.outputs['exit-code']",
+    ]
+    missing = [snippet for snippet in required_snippets if snippet not in text]
+    if missing:
+        raise AssertionError(f"action.yml is missing required snippets: {', '.join(missing)}")
+
+
+def _run_case(case: ActionCase, case_root: Path) -> None:
+    case_root.mkdir(parents=True)
+    github_output = case_root / "github-output.txt"
+    output = case_root / "bom.cdx.json"
+    warning_report = case_root / "warnings.json"
+    summary = case_root / "summary.json"
+    env = os.environ.copy()
+    env.update(
+        {
+            "GITHUB_ACTION_PATH": str(ROOT),
+            "GITHUB_WORKSPACE": str(ROOT),
+            "GITHUB_OUTPUT": str(github_output),
+            "RUNNER_TEMP": str(case_root / "runner-temp"),
+            "INPUT_MODEL_DIRECTORY": case.model_directory,
+            "INPUT_CONFIG": case.config,
+            "INPUT_FORMAT": "cyclonedx-json-1.7",
+            "INPUT_OUTPUT": str(output),
+            "INPUT_WARNING_REPORT": str(warning_report),
+            "INPUT_SUMMARY": str(summary),
+            "INPUT_WARNINGS": case.warnings,
+            "INPUT_REDACTION": "strict",
+        }
+    )
+    result = subprocess.run(
+        [sys.executable, str(ENTRYPOINT)],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+    )
+    if result.returncode != case.expected_exit:
+        print(result.stdout, file=sys.stderr)
+        print(result.stderr, file=sys.stderr)
+        raise AssertionError(f"{case.name} returned {result.returncode}, expected {case.expected_exit}")
+    for path in (output, warning_report, summary, github_output):
+        if not path.is_file() or path.stat().st_size == 0:
+            raise AssertionError(f"{case.name} did not create non-empty file: {path}")
+    outputs = _read_github_output(github_output)
+    if outputs.get("exit-code") != str(case.expected_exit):
+        raise AssertionError(f"{case.name} output exit-code mismatch: {outputs.get('exit-code')}")
+    if outputs.get("completeness-status") != case.expected_status:
+        raise AssertionError(f"{case.name} output status mismatch: {outputs.get('completeness-status')}")
+    if outputs.get("format") != "cyclonedx-json-1.7":
+        raise AssertionError(f"{case.name} output format mismatch: {outputs.get('format')}")
+
+
+def _read_github_output(path: Path) -> dict[str, str]:
+    pairs: dict[str, str] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        key, _, value = line.partition("=")
+        if key:
+            pairs[key] = value
+    return pairs
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

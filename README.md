@@ -49,6 +49,16 @@ legal compliance engine, dataset auditor, or AI governance platform.
 ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --output <bom.json> --warning-report <warnings.json> --summary <summary.json>
 ```
 
+## Current GitHub Action Smoke
+
+```yaml
+- uses: 0disoft/ai-bom-generator@<ref>
+  with:
+    model-directory: .
+    config: aibom.toml
+    warnings: allow
+```
+
 The current implementation validates explicit `aibom.toml` config files against
 AI-BOM config schema v1, validates generated CycloneDX JSON 1.7 output against
 the vendored official schema, and validates AI-BOM summary/warning contracts in

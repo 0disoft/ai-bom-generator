@@ -45,6 +45,9 @@ jobs:
       - name: Verify wheel contents
         run: uv run --python 3.12 python scripts/verify_wheel.py dist
 
+      - name: Verify GitHub Action wrapper
+        run: uv run --python 3.12 python scripts/verify_github_action.py
+
       - name: Smoke CLI fixture
         run: |
           set -euo pipefail

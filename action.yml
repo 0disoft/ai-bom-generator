@@ -1,0 +1,76 @@
+name: AI-BOM Generator
+description: Generate an AI/ML bill of materials with the ai-bom CLI.
+
+inputs:
+  model-directory:
+    description: Path to the model project directory.
+    required: true
+  config:
+    description: Optional path to an explicit AI-BOM config file.
+    required: false
+    default: ""
+  format:
+    description: Output format passed to ai-bom.
+    required: false
+    default: cyclonedx-json-1.7
+  output:
+    description: Output path for the generated BOM. Defaults under RUNNER_TEMP.
+    required: false
+    default: ""
+  warning-report:
+    description: Output path for the warning report. Defaults under RUNNER_TEMP.
+    required: false
+    default: ""
+  summary:
+    description: Output path for the JSON summary. Defaults under RUNNER_TEMP.
+    required: false
+    default: ""
+  warnings:
+    description: Warning policy passed to ai-bom.
+    required: false
+    default: allow
+  redaction:
+    description: Redaction mode passed to ai-bom.
+    required: false
+    default: strict
+
+outputs:
+  bom-path:
+    description: Path to the generated BOM file.
+    value: ${{ steps.generate.outputs['bom-path'] }}
+  warning-report-path:
+    description: Path to the generated warning report.
+    value: ${{ steps.generate.outputs['warning-report-path'] }}
+  summary-path:
+    description: Path to the generated JSON summary.
+    value: ${{ steps.generate.outputs['summary-path'] }}
+  warning-count:
+    description: Warning count reported by the JSON summary when available.
+    value: ${{ steps.generate.outputs['warning-count'] }}
+  completeness-status:
+    description: Summary status reported by the JSON summary when available.
+    value: ${{ steps.generate.outputs['completeness-status'] }}
+  format:
+    description: Output format reported by the JSON summary when available.
+    value: ${{ steps.generate.outputs.format }}
+  exit-code:
+    description: ai-bom process exit code.
+    value: ${{ steps.generate.outputs['exit-code'] }}
+
+runs:
+  using: composite
+  steps:
+    - id: generate
+      name: Generate AI-BOM
+      shell: bash
+      env:
+        INPUT_MODEL_DIRECTORY: ${{ inputs.model-directory }}
+        INPUT_CONFIG: ${{ inputs.config }}
+        INPUT_FORMAT: ${{ inputs.format }}
+        INPUT_OUTPUT: ${{ inputs.output }}
+        INPUT_WARNING_REPORT: ${{ inputs.warning-report }}
+        INPUT_SUMMARY: ${{ inputs.summary }}
+        INPUT_WARNINGS: ${{ inputs.warnings }}
+        INPUT_REDACTION: ${{ inputs.redaction }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+      run: python "$GITHUB_ACTION_PATH/scripts/github_action_entrypoint.py"

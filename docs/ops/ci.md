@@ -45,6 +45,7 @@ belong to future GitHub Action wrapper decisions and must stay opt-in.
 | test | Run `python -m unittest discover -s tests -v`. |
 | check | Build source and wheel distributions with `uv build`. |
 | check | Verify the wheel includes runtime schemas, includes the `ai-bom` console script entry point, installs into an isolated virtual environment without dependency resolution, renders `ai-bom --help`, and can run an installed-console-script fixture smoke with the locked validation dependencies. |
+| smoke | Verify the composite GitHub Action wrapper with clean, warning-only, and fail-on-warning fixture cases. |
 | smoke | Generate a CycloneDX JSON 1.7 BOM, warning report, and summary from `tests/fixtures/complete-project` through the `ai-bom` console script. |
 | check | Run `git diff --check` for whitespace and diff hygiene. |
 
@@ -61,6 +62,7 @@ uv run --python 3.12 python -m compileall -q src tests scripts
 uv run --python 3.12 python -m unittest discover -s tests -v
 uv build
 uv run --python 3.12 python scripts/verify_wheel.py dist
+uv run --python 3.12 python scripts/verify_github_action.py
 $out = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-bom-ci-" + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $out | Out-Null
 uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output $(Join-Path $out "bom.cdx.json") --warning-report $(Join-Path $out "warnings.json") --summary $(Join-Path $out "summary.json")

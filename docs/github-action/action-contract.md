@@ -15,9 +15,13 @@ This repository type owns action inputs, outputs, permissions, token handling, a
 
 ## Required Decisions
 
-- GitHub Action ownership boundary: invoke the local CLI, expose outputs, and optionally upload artifacts; do not perform registry publication or compliance approval.
-- GitHub Action public contract: inputs should cover model directory, config path, output format, output path, and warning policy.
-- GitHub Action validation evidence: workflow fixtures must cover clean output, warning output, and failure output.
+- GitHub Action ownership boundary: invoke the local CLI through the packaged
+  action checkout, expose outputs, and do not perform registry publication or
+  compliance approval.
+- GitHub Action public contract: inputs cover model directory, config path,
+  output format, output path, warning policy, and redaction mode.
+- GitHub Action validation evidence: workflow fixtures must cover clean output,
+  warning output, and failure output.
 - GitHub Action release or rollout policy: UNDECIDED.
 - GitHub Action compatibility and migration policy: UNDECIDED
 

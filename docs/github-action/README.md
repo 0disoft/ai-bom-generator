@@ -17,14 +17,15 @@ state, registry publication, or compliance approval.
 
 ## Action Responsibilities
 
-- Install or invoke the packaged CLI.
+- Invoke the packaged CLI from the action checkout with `uv run --project`.
 - Pass model directory, config, exporter, output path, and warning policy inputs.
 - Expose BOM path, warning count, and completeness status as outputs.
-- Optionally upload BOM artifacts only when explicitly configured.
+- Write generated files under explicit paths or under `RUNNER_TEMP` defaults.
 - Preserve read-only default permissions.
 
 ## Still UNDECIDED
 
+- Artifact upload behavior: UNDECIDED
 - GitHub Action release or rollout policy: UNDECIDED
 - GitHub Action compatibility and migration policy: UNDECIDED
 

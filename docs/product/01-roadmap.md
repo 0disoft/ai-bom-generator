@@ -36,8 +36,8 @@ later exporter and CI integrations.
 ## Phase 2: CI Integration
 
 - Add GitHub Action wrapper around the CLI.
-- Support artifact upload examples without requiring repository secrets.
-- Add workflow examples for warning-only and fail-on-missing modes.
+- Validate clean, warning-only, and fail-on-missing action modes.
+- Defer artifact upload examples until upload behavior is explicitly designed.
 
 ## Phase 3: Exporter Expansion
 

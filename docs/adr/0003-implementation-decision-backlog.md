@@ -30,7 +30,7 @@ choices from plausible candidates that still need approval.
 | Schema validation dependency | `jsonschema>=4.25,<5` | Approved by implementation kickoff on 2026-07-06 |
 | Project lockfile | `uv.lock` | Approved by uv adoption on 2026-07-06 |
 | Dependency lockfile intake | Explicit config-declared dependency file references | Approved for MVP on 2026-07-07 |
-| Action wrapper | Composite GitHub Action | Proposed |
+| Action wrapper | Composite GitHub Action invoking `uv run --project` | Approved for MVP on 2026-07-07 |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
 | Network policy | No network in MVP | Proposed |
 | Telemetry policy | No telemetry in MVP | Proposed |
@@ -46,6 +46,9 @@ choices from plausible candidates that still need approval.
 - Dependency lockfile support is config-driven path evidence in MVP. Automatic
   discovery, lockfile parsing, and package-manager-specific completeness claims
   remain deferred until a later ADR approves them.
+- The GitHub Action wrapper may invoke the packaged CLI from the action checkout,
+  expose summary-derived outputs, and default output files under `RUNNER_TEMP`.
+  Artifact upload remains deferred and must not be enabled by default.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
 

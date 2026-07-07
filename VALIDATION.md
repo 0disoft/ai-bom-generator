@@ -30,6 +30,7 @@ implementation.
 | test | `uv run --python 3.12 python -m unittest discover -s tests -v` |
 | check | `uv build` |
 | check | `uv run --python 3.12 python scripts/verify_wheel.py dist` |
+| smoke | `uv run --python 3.12 python scripts/verify_github_action.py` |
 | smoke | `uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output <temp>/bom.cdx.json --warning-report <temp>/warnings.json --summary <temp>/summary.json` |
 | check | `git diff --check` |
 
@@ -41,6 +42,9 @@ not have configured runners yet.
 point metadata, installation of the built wheel into an isolated virtual
 environment, `ai-bom --help`, and an installed-console-script fixture smoke
 using the locked validation environment for dependencies.
+
+`scripts/verify_github_action.py` verifies the local composite `action.yml` and
+runs clean, warning-only, and fail-on-warning action wrapper smoke cases.
 
 ## Required Final Report
 
