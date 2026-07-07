@@ -16,7 +16,7 @@ honestly. They should be synthetic and safe to publish.
 | `sparse-project` | Missing optional metadata appears as warnings, not inferred facts. Covered by CLI warning tests. |
 | `invalid-config` | Invalid config fails with actionable location. Covered by CLI invalid-input tests. |
 | `missing-artifact` | Unmatched artifact include patterns warn without fabricating artifact evidence. Covered by CLI warning tests. |
-| `hash-failure` | Digest collection failure produces collector failure. Covered by hashing failure tests. |
+| `hash-failure` | Digest collection failure produces collector failure. Covered by hashing failure and CLI collector-failure tests. |
 | `exporter-failure` | Invalid exporter mapping fails validation. |
 | `secret-redaction` | Secret-shaped values are redacted or rejected across outputs. Covered by CLI redaction tests. |
 | `symlink-escape` | Symlink and target-root escape attempts are blocked. Covered by CLI path-policy and model-card symlink tests. |

@@ -11,7 +11,7 @@ import unittest
 from unittest.mock import patch
 
 from ai_bom_generator.cli import main
-from ai_bom_generator.errors import ExitCode
+from ai_bom_generator.errors import CollectorError, ExitCode
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -761,6 +761,44 @@ class CliTests(unittest.TestCase):
             self.assertEqual(warning_payload["warnings"][0]["code"], "MISSING_ARTIFACT")
             self.assertEqual(warning_payload["warnings"][0]["object_id"], "models/missing.safetensors")
             self.assertEqual(bom_payload.get("components"), [])
+
+    def test_hash_failure_returns_collector_failure_without_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+            stderr = io.StringIO()
+
+            with (
+                patch(
+                    "ai_bom_generator.collectors.pipeline.sha256_file",
+                    side_effect=CollectorError("blocked hash read", "hash"),
+                ),
+                redirect_stderr(stderr),
+            ):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(project / "aibom.toml"),
+                        "--output",
+                        str(bom),
+                        "--warning-report",
+                        str(warnings),
+                        "--summary",
+                        str(summary),
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.COLLECTOR_FAILURE)
+            self.assertIn("ai-bom: hash: blocked hash read", stderr.getvalue())
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
 
     def test_unsupported_structured_config_field_reports_warning(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
