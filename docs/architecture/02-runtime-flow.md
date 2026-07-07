@@ -13,7 +13,9 @@ model serving.
 1. Parse command arguments or GitHub Action inputs.
 2. Resolve the target model directory and config path.
 3. Validate config shape and warning policy.
-4. Discover supported metadata, lockfile, artifact, prompt, dataset, eval, and training-code references.
+4. Collect declared model metadata, dependency file references, prompt, dataset,
+   eval, and training-code references from explicit config. Select model
+   artifacts from explicit include/exclude patterns.
 5. Hash selected model artifacts.
 6. Normalize evidence and absence information.
 7. Run exporter mapping for the selected BOM family.

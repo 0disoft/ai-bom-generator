@@ -36,8 +36,8 @@ the config path with `--config`.
 
 ## Supported Field Values
 
-The executable draft collects scalar string, number, and boolean values from
-metadata and reference sections. Structured values such as arrays or nested
+The executable implementation collects scalar string, number, and boolean values
+from metadata and reference sections. Structured values such as arrays or nested
 tables are ignored with an `UNSUPPORTED_CONFIG_FIELD` warning until the field is
 explicitly modeled.
 
@@ -50,8 +50,9 @@ silently dropping user intent.
 ## Precedence
 
 Explicit CLI flags override config values. When `--format` is omitted, the
-executable draft uses `[output].format` from the explicit config file and falls
-back to `cyclonedx-json-1.7` when the config does not declare an output format.
+executable implementation uses `[output].format` from the explicit config file
+and falls back to `cyclonedx-json-1.7` when the config does not declare an output
+format.
 When `--warnings` is omitted, `[warning_policy].missing_metadata = "warn"` maps
 to the executable `allow` behavior and `"fail"` maps to the executable `fail`
 behavior. The CLI `--warnings` flag overrides this config value.

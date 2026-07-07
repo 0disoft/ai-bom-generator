@@ -19,12 +19,18 @@ behavior stay comparable.
 
 - `model-directory`: required path to the model project directory.
 - `config`: optional config path.
-- `format`: selected exporter. `cyclonedx-json-1.7` is the leading first value candidate; exact accepted values remain UNDECIDED.
+- `format`: selected exporter. The Action wrapper must mirror the CLI's accepted
+  values; the current CLI value is `cyclonedx-json-1.7`.
 - `output`: output path for generated BOM.
 - `warning-report`: output path for warning report.
 - `summary`: output path for JSON summary.
-- `warnings`: warning policy, with `allow` and `fail` as leading value candidates; exact values remain UNDECIDED.
+- `warnings`: warning policy. The Action wrapper must mirror the CLI's accepted
+  values: `allow` and `fail`.
 - `upload-artifact`: optional boolean, default false.
+
+Exact GitHub Action input defaults, path conventions, and upload behavior remain
+UNDECIDED until the wrapper is implemented. The wrapper must not invent values
+that diverge from the CLI contract.
 
 ## Draft Outputs
 

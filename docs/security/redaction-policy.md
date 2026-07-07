@@ -9,11 +9,12 @@ The tool writes BOMs, warning reports, and JSON summaries. Anything copied from 
 caller project can become a disclosure, so redaction is part of the product
 contract, not just terminal polish.
 
-## Default Candidate
+## Default
 
-Strict redaction is the leading default candidate. Redaction off may be useful
-for debugging, but it should require explicit user choice and a machine-readable
-`REDACTION_DISABLED` warning.
+Strict redaction is the approved CLI default. Redaction off may be useful for
+debugging, but it requires explicit user choice and emits a machine-readable
+`REDACTION_DISABLED` warning. Terminal error output remains safety-redacted even
+when generated artifacts are requested with redaction disabled.
 
 ## Secret-Shaped Values
 
