@@ -23,11 +23,14 @@ state, registry publication, or compliance approval.
 - Write generated files under explicit paths or under `RUNNER_TEMP` defaults.
 - Preserve read-only default permissions.
 
-## Still UNDECIDED
+## Release Policy
 
 - Artifact upload behavior: UNDECIDED
-- GitHub Action release or rollout policy: UNDECIDED
-- GitHub Action compatibility and migration policy: UNDECIDED
+- First MVP action release: immutable `v0.1.0` tag.
+- Mutable major tags such as `v0`: deferred.
+- Marketplace registration: deferred.
+- Compatibility policy: patch tags preserve the current input/output contract;
+  breaking changes require a new documented release decision.
 
 ## Review Blockers
 

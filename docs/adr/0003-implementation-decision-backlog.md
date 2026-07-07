@@ -31,6 +31,8 @@ choices from plausible candidates that still need approval.
 | Project lockfile | `uv.lock` | Approved by uv adoption on 2026-07-06 |
 | Dependency lockfile intake | Explicit config-declared dependency file references | Approved for MVP on 2026-07-07 |
 | Action wrapper | Composite GitHub Action invoking `uv run --project` | Approved for MVP on 2026-07-07 |
+| First public release | GitHub Release `v0.1.0` with no PyPI package | Approved by owner on 2026-07-07 |
+| Action tag policy | Immutable version tags only for MVP; no mutable `v0` tag yet | Approved by owner on 2026-07-07 |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
 | Network policy | No network in MVP | Proposed |
 | Telemetry policy | No telemetry in MVP | Proposed |
@@ -49,6 +51,9 @@ choices from plausible candidates that still need approval.
 - The GitHub Action wrapper may invoke the packaged CLI from the action checkout,
   expose summary-derived outputs, and default output files under `RUNNER_TEMP`.
   Artifact upload remains deferred and must not be enabled by default.
+- The first public release may create `v0.1.0` and a GitHub Release. It must not
+  publish to PyPI, create a mutable `v0` action tag, or register the Action in a
+  marketplace until those policies are explicitly approved.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
 

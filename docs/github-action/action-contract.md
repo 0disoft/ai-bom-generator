@@ -22,8 +22,12 @@ This repository type owns action inputs, outputs, permissions, token handling, a
   output format, output path, warning policy, and redaction mode.
 - GitHub Action validation evidence: workflow fixtures must cover clean output,
   warning output, and failure output.
-- GitHub Action release or rollout policy: UNDECIDED.
-- GitHub Action compatibility and migration policy: UNDECIDED
+- GitHub Action release or rollout policy: immutable version tag `v0.1.0` for
+  the first public MVP; mutable major tags and Marketplace registration are
+  deferred.
+- GitHub Action compatibility and migration policy: patch tags may preserve the
+  current input/output contract; breaking action contract changes require a new
+  documented release decision.
 
 ## Permission Policy
 

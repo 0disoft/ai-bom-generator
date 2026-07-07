@@ -43,6 +43,45 @@ legal compliance engine, dataset auditor, or AI governance platform.
 - export one initial standards-backed BOM format;
 - report missing metadata as warnings without pretending the BOM is complete.
 
+## Quickstart
+
+The first public MVP is distributed as a GitHub repository and GitHub Action.
+PyPI packaging is deferred until package-registry policy is approved.
+
+From a checkout:
+
+```powershell
+uv sync --locked
+uv run --python 3.12 ai-bom generate path/to/model-project --config path/to/model-project/aibom.toml --format cyclonedx-json-1.7 --output ai-bom-out/bom.cdx.json --warning-report ai-bom-out/warnings.json --summary ai-bom-out/summary.json
+```
+
+Example `aibom.toml`:
+
+```toml
+schema_version = "1"
+
+[output]
+format = "cyclonedx-json-1.7"
+
+[model]
+name = "example-model"
+version = "0.1.0"
+license_declared = "NOASSERTION"
+
+[artifacts]
+include = ["models/*.safetensors"]
+
+[[datasets]]
+name = "example-dataset"
+license_declared = "NOASSERTION"
+```
+
+The CLI writes a BOM, a warning report, and a JSON summary. Missing optional
+metadata is reported as machine-readable warnings. Unreadable required files,
+invalid config, unsupported exporters, unsafe paths, and invalid generated BOM
+output fail with non-zero exit codes. Generated output paths must resolve
+outside the target model project directory.
+
 ## Current CLI Smoke
 
 ```text
@@ -52,7 +91,7 @@ ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --
 ## Current GitHub Action Smoke
 
 ```yaml
-- uses: 0disoft/ai-bom-generator@<ref>
+- uses: 0disoft/ai-bom-generator@v0.1.0
   with:
     model-directory: .
     config: aibom.toml
@@ -84,7 +123,8 @@ Runtime floor is Python 3.12, the initial CLI adapter is `argparse`, package
 metadata lives in `pyproject.toml`, JSON Schema validation uses `jsonschema`,
 the project lockfile is `uv.lock`, explicit config files use `aibom.toml`, the
 first exporter is CycloneDX JSON 1.7, strict redaction is the default, and the
-repository license is Apache-2.0. Package manager UX, second exporter priority,
-automatic config discovery, model artifact discovery defaults, and release
-packaging remain UNDECIDED until the repository owner records them in the
-source-of-truth documents.
+repository license is Apache-2.0. The first public MVP release uses immutable
+GitHub tag `v0.1.0`; PyPI packaging, mutable major action tags, package manager
+UX, second exporter priority, automatic config discovery, and model artifact
+discovery defaults remain deferred until the repository owner records them in
+the source-of-truth documents.
