@@ -56,6 +56,17 @@ class CliTests(unittest.TestCase):
                 for item in bom_payload["metadata"]["component"]["properties"]
             }
             self.assertEqual(model_properties["ai-bom:model:model_card"], "MODEL_CARD.md")
+            eval_component = next(
+                component
+                for component in bom_payload["components"]
+                if component["bom-ref"] == "eval:smoke-eval"
+            )
+            eval_properties = {
+                str(item["name"]): str(item["value"])
+                for item in eval_component["properties"]
+            }
+            self.assertEqual(eval_properties["ai-bom:artifact"], "evals/result.json")
+            self.assertEqual(eval_properties["ai-bom:path"], "evals/result.json")
 
     def test_model_card_is_discovered_without_config(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -1601,6 +1612,8 @@ class CliTests(unittest.TestCase):
             warnings = _read_json(summary)["warnings"]
             codes = {str(warning["code"]) for warning in warnings}
             self.assertIn("MISSING_PROMPTS_REFERENCE_FILE", codes)
+            bom_text = (work / "bom.json").read_text(encoding="utf-8")
+            self.assertNotIn("../outside.txt", bom_text)
 
 
 def _read_json(path: Path) -> dict[str, object]:

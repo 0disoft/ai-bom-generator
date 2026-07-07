@@ -259,11 +259,14 @@ def _collect_path_references(
     references: list[DeclaredReference] = []
     for index, item in enumerate(items):
         source = _source(config, f"{section}[{index}]")
-        raw_path = item.get("path") or item.get("artifact")
-        object_id = _scalar_object_id(
-            item.get("name") or item.get("type") or raw_path,
-            f"{section}-{index}",
-        )
+        raw_path_field = None
+        if item.get("path"):
+            raw_path_field = "path"
+        elif item.get("artifact"):
+            raw_path_field = "artifact"
+        raw_path = item.get(raw_path_field) if raw_path_field else None
+        object_id_source = item.get("name") or item.get("type")
+        object_id = _scalar_object_id(object_id_source, f"{section}-{index}")
         values = _string_pairs(
             item,
             redactor,
@@ -272,15 +275,21 @@ def _collect_path_references(
             f"{section}[{index}]",
             _singular_kind(section),
             object_id,
+            skip_keys={"path", "artifact"},
         )
         if raw_path:
             if not isinstance(raw_path, str):
                 raise InvalidInputError(f"{section}[{index}] path must be a string.", "config")
             try:
                 resolved = policy.resolve_existing_file(raw_path, required=not optional_paths)
+                normalized_path = policy.relative_to_root(resolved)
                 merged = dict(values)
-                merged["path"] = policy.relative_to_root(resolved)
+                merged["path"] = normalized_path
+                if raw_path_field == "artifact":
+                    merged["artifact"] = normalized_path
                 values = tuple(sorted(merged.items()))
+                if object_id_source is None:
+                    object_id = normalized_path
             except InvalidInputError:
                 if optional_paths:
                     warnings.append(

@@ -28,6 +28,8 @@ intended project boundary by default.
 
 - Invalid path: invalid-input failure.
 - Target-root escape: invalid-input failure or machine-readable warning, depending on whether the path was required.
+- Rejected optional reference path: machine-readable warning without emitting
+  the rejected path as collected BOM evidence.
 - Symlink skipped: machine-readable warning.
 - Required artifact inaccessible: collector failure.
 - Unsafe artifact include or exclude glob: invalid-input failure before

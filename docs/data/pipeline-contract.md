@@ -42,6 +42,8 @@ the filesystem directly. Reporters must not mutate normalized evidence.
 - Missing optional metadata: warning.
 - Invalid config: failure with actionable location.
 - Unreadable required input: failure.
+- Unreadable or unsafe optional reference path: warning without adding the
+  rejected path to normalized BOM evidence.
 - Hash failure: failure.
 - Unsupported exporter mapping: failure.
 - Partial collector support: warning with unsupported field names.
