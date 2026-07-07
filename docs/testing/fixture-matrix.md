@@ -17,7 +17,7 @@ honestly. They should be synthetic and safe to publish.
 | `invalid-config` | Invalid config fails with actionable location. Covered by CLI invalid-input tests. |
 | `missing-artifact` | Unmatched artifact include patterns warn without fabricating artifact evidence. Covered by CLI warning tests. |
 | `hash-failure` | Digest collection failure produces collector failure. Covered by hashing failure and CLI collector-failure tests. |
-| `exporter-failure` | Invalid exporter mapping fails validation. |
+| `exporter-failure` | Invalid exporter mapping fails validation. Covered by CLI exporter-failure tests. |
 | `secret-redaction` | Secret-shaped values are redacted or rejected across outputs. Covered by CLI redaction tests. |
 | `symlink-escape` | Symlink and target-root escape attempts are blocked. Covered by CLI path-policy and model-card symlink tests. |
 | `nondeterministic-ordering-guard` | Stable input produces stable BOM and warning-report ordering. Covered by deterministic-output tests. |
