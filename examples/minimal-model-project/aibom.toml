@@ -1,0 +1,21 @@
+schema_version = "1"
+
+[output]
+format = "cyclonedx-json-1.7"
+
+[model]
+name = "minimal-example-model"
+version = "0.1.0"
+model_card = "MODEL_CARD.md"
+license_declared = "NOASSERTION"
+
+[artifacts]
+include = ["models/*.safetensors"]
+
+[[dependencies]]
+path = "requirements.lock"
+type = "pip"
+
+[[datasets]]
+name = "minimal-example-dataset"
+license_declared = "NOASSERTION"

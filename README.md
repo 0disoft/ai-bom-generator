@@ -48,14 +48,20 @@ legal compliance engine, dataset auditor, or AI governance platform.
 The first public MVP is distributed as a GitHub repository and GitHub Action.
 PyPI packaging is deferred until package-registry policy is approved.
 
-From a checkout:
+Try the bundled minimal project from a checkout:
 
 ```powershell
 uv sync --locked
-uv run --python 3.12 ai-bom generate path/to/model-project --config path/to/model-project/aibom.toml --format cyclonedx-json-1.7 --output ai-bom-out/bom.cdx.json --warning-report ai-bom-out/warnings.json --summary ai-bom-out/summary.json
+$out = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-bom-example-" + [System.Guid]::NewGuid().ToString("N"))
+New-Item -ItemType Directory -Path $out | Out-Null
+uv run --python 3.12 ai-bom generate examples/minimal-model-project --config examples/minimal-model-project/aibom.toml --format cyclonedx-json-1.7 --output (Join-Path $out "bom.cdx.json") --warning-report (Join-Path $out "warnings.json") --summary (Join-Path $out "summary.json")
+Get-ChildItem -LiteralPath $out
 ```
 
-Example `aibom.toml`:
+The same command shape works for your own model project as long as generated
+output paths resolve outside the target model directory.
+
+Example `aibom.toml` from `examples/minimal-model-project`:
 
 ```toml
 schema_version = "1"
@@ -66,10 +72,15 @@ format = "cyclonedx-json-1.7"
 [model]
 name = "example-model"
 version = "0.1.0"
+model_card = "MODEL_CARD.md"
 license_declared = "NOASSERTION"
 
 [artifacts]
 include = ["models/*.safetensors"]
+
+[[dependencies]]
+path = "requirements.lock"
+type = "pip"
 
 [[datasets]]
 name = "example-dataset"
