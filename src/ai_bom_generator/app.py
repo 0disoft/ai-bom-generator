@@ -106,4 +106,24 @@ def _validate_output_destinations(options: GenerateBomOptions, policy: PathPolic
                 f"Output paths must be distinct; {label} and {previous} both resolve to {path}",
                 "input",
             )
+        for existing_path, existing_label in seen.items():
+            if _paths_overlap(path, existing_path):
+                raise InvalidInputError(
+                    "Output paths must not overlap; "
+                    f"{label} resolves to {path} and {existing_label} resolves to {existing_path}",
+                    "input",
+                )
         seen[path] = label
+
+
+def _paths_overlap(left: Path, right: Path) -> bool:
+    try:
+        left.relative_to(right)
+        return True
+    except ValueError:
+        pass
+    try:
+        right.relative_to(left)
+        return True
+    except ValueError:
+        return False

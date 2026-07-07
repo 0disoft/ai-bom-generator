@@ -946,6 +946,35 @@ class CliTests(unittest.TestCase):
             self.assertFalse(output.exists())
             self.assertFalse(summary.exists())
 
+    def test_nested_output_paths_are_rejected_before_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            output = work / "generated"
+            warnings = output / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(output),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertFalse(output.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
     def test_invalid_config_returns_invalid_input(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
