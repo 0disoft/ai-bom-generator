@@ -27,12 +27,15 @@ CI without requiring a hosted service.
 
 ## Still UNDECIDED
 
-- Binary name.
-- Config filename.
+- Automatic config discovery.
+- Format-specific dependency lockfile parsing.
 
 ## Approved Baseline
 
 - Runtime compatibility floor: Python 3.12.
+- Binary name: `ai-bom`.
+- Explicit config filename: `aibom.toml`.
+- Config schema: AI-BOM config schema v1.
 - CLI adapter: `argparse`, isolated from application and domain layers.
 - First exporter: CycloneDX JSON 1.7.
 

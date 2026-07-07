@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from importlib import resources
 from pathlib import Path
 import shutil
 import tempfile
@@ -27,6 +28,14 @@ class ContractSchemaTests(unittest.TestCase):
 
                 payload = tomllib.loads(config.read_text(encoding="utf-8"))
                 validate_with_schema(payload, schema, "AI-BOM config v1")
+
+    def test_packaged_config_schema_matches_contract_schema(self) -> None:
+        packaged = resources.files("ai_bom_generator.config.schema").joinpath("aibom-config-v1.schema.json")
+        with resources.as_file(packaged) as packaged_path:
+            self.assertEqual(
+                json.loads(packaged_path.read_text(encoding="utf-8")),
+                json.loads((SCHEMAS / "aibom-config-v1.schema.json").read_text(encoding="utf-8")),
+            )
 
     def test_generated_summary_and_warning_report_validate_against_schemas(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

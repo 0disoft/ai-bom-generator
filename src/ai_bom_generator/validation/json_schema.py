@@ -8,7 +8,7 @@ from typing import Any
 from jsonschema import Draft7Validator, validators
 
 
-@dataclass(frozen=True)
+@dataclass
 class SchemaValidationError(Exception):
     schema_name: str
     message: str

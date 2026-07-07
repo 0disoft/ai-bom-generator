@@ -19,7 +19,9 @@ choices from plausible candidates that still need approval.
 
 | Area | Leading candidate | Status |
 | --- | --- | --- |
-| Config filename | `aibom.toml` | Proposed |
+| Config filename | `aibom.toml` | Approved for explicit config files on 2026-07-07 |
+| Config schema | AI-BOM config schema v1 | Approved for runtime validation on 2026-07-07 |
+| CLI command | `ai-bom generate` | Approved for MVP on 2026-07-07 |
 | First exporter | CycloneDX JSON 1.7 | Approved by implementation kickoff on 2026-07-06 |
 | Second exporter | SPDX AI profile | Deferred |
 | Runtime | Python 3.12 | Approved by owner on 2026-07-06 |
@@ -27,12 +29,13 @@ choices from plausible candidates that still need approval.
 | Package metadata | `pyproject.toml` with setuptools build backend | Approved by implementation kickoff on 2026-07-06 |
 | Schema validation dependency | `jsonschema>=4.25,<5` | Approved by implementation kickoff on 2026-07-06 |
 | Project lockfile | `uv.lock` | Approved by uv adoption on 2026-07-06 |
+| Dependency lockfile intake | Explicit config-declared dependency file references | Approved for MVP on 2026-07-07 |
 | Action wrapper | Composite GitHub Action | Proposed |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
 | Network policy | No network in MVP | Proposed |
 | Telemetry policy | No telemetry in MVP | Proposed |
 | Cache policy | No hidden cache in MVP | Proposed |
-| Redaction default | strict | Proposed |
+| Redaction default | strict | Approved for CLI and terminal output on 2026-07-07 |
 
 ## Guardrails
 
@@ -40,6 +43,9 @@ choices from plausible candidates that still need approval.
 - Proposed and deferred decisions must not be implemented as final choices until
   the matching ADR or source-of-truth doc moves them out of proposed status.
 - Do not let exporter-specific fields leak into the normalized evidence model.
+- Dependency lockfile support is config-driven path evidence in MVP. Automatic
+  discovery, lockfile parsing, and package-manager-specific completeness claims
+  remain deferred until a later ADR approves them.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
 

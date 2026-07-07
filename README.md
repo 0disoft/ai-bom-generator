@@ -49,8 +49,9 @@ legal compliance engine, dataset auditor, or AI governance platform.
 ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --output <bom.json> --warning-report <warnings.json> --summary <summary.json>
 ```
 
-The current implementation validates generated CycloneDX JSON 1.7 output against
-the vendored official schema and validates AI-BOM summary/warning contracts in
+The current implementation validates explicit `aibom.toml` config files against
+AI-BOM config schema v1, validates generated CycloneDX JSON 1.7 output against
+the vendored official schema, and validates AI-BOM summary/warning contracts in
 tests.
 
 ## Non-Goals
@@ -71,7 +72,9 @@ binary diffs, local files, build outputs, caches, and secret files under control
 
 Runtime floor is Python 3.12, the initial CLI adapter is `argparse`, package
 metadata lives in `pyproject.toml`, JSON Schema validation uses `jsonschema`,
-the project lockfile is `uv.lock`, and the repository license is Apache-2.0.
-Package manager UX, second exporter priority, and release packaging remain
-UNDECIDED until the repository owner records them in the source-of-truth
-documents.
+the project lockfile is `uv.lock`, explicit config files use `aibom.toml`, the
+first exporter is CycloneDX JSON 1.7, strict redaction is the default, and the
+repository license is Apache-2.0. Package manager UX, second exporter priority,
+automatic config discovery, model artifact discovery defaults, and release
+packaging remain UNDECIDED until the repository owner records them in the
+source-of-truth documents.

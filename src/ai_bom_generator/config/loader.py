@@ -1,12 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from importlib import resources
 from pathlib import Path
 import tomllib
 from typing import Any
 
 from ai_bom_generator.errors import InvalidInputError
 from ai_bom_generator.security.path_policy import PathPolicy
+from ai_bom_generator.validation import SchemaValidationError, validate_with_schema
+
+
+CONFIG_SCHEMA_PACKAGE = "ai_bom_generator.config.schema"
+CONFIG_SCHEMA_NAME = "aibom-config-v1.schema.json"
 
 
 @dataclass(frozen=True)
@@ -54,6 +60,7 @@ def load_config(config_path: Path | None, policy: PathPolicy) -> LoadedConfig:
     if not isinstance(data, dict):
         raise InvalidInputError("Config root must be a table.", "config")
     _validate_schema_version(data)
+    _validate_config_schema(data)
     return LoadedConfig(path=resolved, data=data)
 
 
@@ -63,3 +70,12 @@ def _validate_schema_version(data: dict[str, Any]) -> None:
         raise InvalidInputError("Config schema_version is required.", "config")
     if schema_version != "1":
         raise InvalidInputError("Config schema_version must be \"1\".", "config")
+
+
+def _validate_config_schema(data: dict[str, Any]) -> None:
+    schema = resources.files(CONFIG_SCHEMA_PACKAGE).joinpath(CONFIG_SCHEMA_NAME)
+    try:
+        with resources.as_file(schema) as schema_path:
+            validate_with_schema(data, schema_path, "AI-BOM config v1")
+    except SchemaValidationError as exc:
+        raise InvalidInputError(str(exc), "config") from exc

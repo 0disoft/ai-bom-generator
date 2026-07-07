@@ -44,7 +44,7 @@ belong to future GitHub Action wrapper decisions and must stay opt-in.
 | check | Compile `src`, `tests`, and `scripts` with `python -m compileall`. |
 | test | Run `python -m unittest discover -s tests -v`. |
 | check | Build source and wheel distributions with `uv build`. |
-| check | Verify the wheel includes the CycloneDX schema files and `ai-bom` console script entry point. |
+| check | Verify the wheel includes runtime schemas, includes the `ai-bom` console script entry point, installs into an isolated virtual environment without dependency resolution, renders `ai-bom --help`, and can run an installed-console-script fixture smoke with the locked validation dependencies. |
 | smoke | Generate a CycloneDX JSON 1.7 BOM, warning report, and summary from `tests/fixtures/complete-project` through the `ai-bom` console script. |
 | check | Run `git diff --check` for whitespace and diff hygiene. |
 

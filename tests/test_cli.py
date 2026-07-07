@@ -167,6 +167,47 @@ class CliTests(unittest.TestCase):
             self.assertFalse(warnings.exists())
             self.assertFalse(summary.exists())
 
+    def test_config_schema_rejects_invalid_artifact_include_before_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'include = ["models/model.safetensors"]',
+                    "include = [7]",
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+            stderr = io.StringIO()
+
+            with redirect_stderr(stderr):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(config),
+                        "--output",
+                        str(bom),
+                        "--warning-report",
+                        str(warnings),
+                        "--summary",
+                        str(summary),
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertIn("AI-BOM config v1 validation failed", stderr.getvalue())
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
     def test_git_head_ref_is_resolved_into_bom_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)

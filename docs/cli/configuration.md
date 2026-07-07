@@ -33,19 +33,19 @@ Explicit CLI flags should override config values. Environment variables are
 out of MVP and should not be added until secret-redaction behavior and precedence
 are designed.
 
-## Config v1 Candidate
+## Config v1
 
-`aibom.toml` is the leading filename candidate because it is explicit, local, and
-keeps configuration separate from model-card prose. The proposed v1 schema should
-cover output format, warning policy, model metadata pointers, artifact include
-and exclude patterns, dependency lockfiles, dataset references, prompt references,
-eval references, and training references.
+`aibom.toml` is the approved MVP filename for explicit config files because it
+is local and keeps configuration separate from model-card prose. Config schema
+v1 covers output format, warning policy, model metadata pointers, artifact
+include and exclude patterns, dependency references, dataset references, prompt
+references, eval references, and training references. The runtime validates the
+config against the packaged schema before output files are written.
 
 ## Still UNDECIDED
 
-- Config filename approval.
-- Config schema approval.
-- Whether lockfile discovery is automatic or config-driven.
+- Automatic config discovery.
+- Format-specific dependency lockfile parsing.
 
 ## Review Blockers
 

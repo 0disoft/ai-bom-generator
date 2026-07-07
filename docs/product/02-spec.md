@@ -20,10 +20,13 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 ## MVP Input
 
 - A target model directory.
-- Optional config file path. The leading filename candidate is `aibom.toml`, pending ADR approval.
+- Optional explicit config file path. The approved MVP config filename and
+  schema are `aibom.toml` and config schema v1.
 - Model card or model metadata file when present.
 - Model artifact or checkpoint files selected by explicit patterns.
-- Dependency lockfiles from an initial supported set.
+- Dependency lockfile references declared in config. MVP records dependency
+  file paths and scalar metadata; automatic lockfile discovery and
+  package-manager-specific parsing remain deferred.
 - Dataset, prompt template, eval dataset, and training script references from explicit config.
 - Git commit reference when the target project is a Git repository.
 
@@ -47,8 +50,8 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 SPDX AI and CycloneDX ML-BOM are the candidate output families because they already
 model AI artifacts, datasets, configurations, and provenance-oriented metadata.
 CycloneDX JSON 1.7 is the leading first-exporter candidate because its JSON schema
-can support contract validation early. The first implemented exporter remains
-UNDECIDED until mapping fixtures are written and approved by ADR.
+can support contract validation early. CycloneDX JSON 1.7 is the approved first
+implemented exporter and must remain schema-validated.
 
 ## Required Decisions Before Implementation
 
@@ -58,11 +61,13 @@ UNDECIDED until mapping fixtures are written and approved by ADR.
 - Package metadata: `pyproject.toml` with setuptools build backend is approved.
 - Schema validation dependency: `jsonschema>=4.25,<5` is approved.
 - Project lockfile: `uv.lock` is approved.
-- Config filename and schema: `aibom.toml` plus config schema v1 is proposed, not approved.
+- Config filename and schema: `aibom.toml` plus config schema v1 is approved
+  for explicit config files.
 - First exporter: CycloneDX JSON 1.7 is implemented first and must stay schema-validated.
-- Lockfile support set: UNDECIDED.
+- Lockfile support set: explicit config-declared dependency file references
+  only in MVP; automatic discovery and format-specific parsing remain deferred.
 - Model artifact discovery defaults: UNDECIDED.
-- Redaction default: strict redaction is proposed, not approved.
+- Redaction default: strict redaction is approved for CLI and terminal output.
 - Validation needed before merge: VALIDATION.md.
 
 ## Review Blockers
