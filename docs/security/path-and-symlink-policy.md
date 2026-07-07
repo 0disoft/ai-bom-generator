@@ -18,6 +18,9 @@ intended project boundary by default.
 - Do not read hidden, ignored, cache, dependency, or build-output paths as source
   truth unless explicitly configured.
 - Use explicit artifact include and exclude patterns for large model files.
+- Require artifact include and exclude globs to be target-root-relative patterns.
+- Reject artifact include and exclude globs that are absolute or contain parent
+  traversal.
 - Reject generated output paths that resolve inside the target model directory.
 - Reject generated output paths that are existing symlinks.
 
@@ -27,6 +30,8 @@ intended project boundary by default.
 - Target-root escape: invalid-input failure or machine-readable warning, depending on whether the path was required.
 - Symlink skipped: machine-readable warning.
 - Required artifact inaccessible: collector failure.
+- Unsafe artifact include or exclude glob: invalid-input failure before
+  collecting or writing artifacts.
 - Generated output path inside the target root: invalid-input failure before
   collecting or writing artifacts.
 

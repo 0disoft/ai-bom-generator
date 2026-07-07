@@ -127,8 +127,11 @@ def _collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[
     if excludes and (not isinstance(excludes, list) or any(not isinstance(item, str) for item in excludes)):
         raise InvalidInputError("[artifacts].exclude must be an array of strings.", "config")
 
+    include_patterns = [policy.validate_relative_glob(pattern, "[artifacts].include") for pattern in includes]
+    exclude_patterns = [policy.validate_relative_glob(pattern, "[artifacts].exclude") for pattern in excludes]
+
     selected: list[ModelArtifact] = []
-    for pattern in sorted(includes):
+    for pattern in sorted(include_patterns):
         matches = sorted(policy.root.glob(pattern))
         if not matches:
             warnings.append(
@@ -144,7 +147,7 @@ def _collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[
             )
             continue
         for match in matches:
-            if _is_excluded(match, policy.root, excludes):
+            if _is_excluded(match, policy.root, exclude_patterns):
                 continue
             try:
                 if match.is_symlink():

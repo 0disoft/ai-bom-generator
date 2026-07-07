@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 from ai_bom_generator.errors import InvalidInputError
 
@@ -41,6 +41,17 @@ class PathPolicy:
         if self.is_inside_root(resolved):
             raise InvalidInputError(f"{label} output path must be outside target model directory: {candidate}", "input")
         return resolved
+
+    def validate_relative_glob(self, pattern: str, label: str) -> str:
+        if not pattern:
+            raise InvalidInputError(f"{label} glob pattern must not be empty.", "config")
+        posix = PurePosixPath(pattern)
+        windows = PureWindowsPath(pattern)
+        if posix.is_absolute() or windows.is_absolute() or posix.anchor or windows.drive or windows.root:
+            raise InvalidInputError(f"{label} glob pattern must be relative to the target root: {pattern}", "config")
+        if ".." in posix.parts or ".." in windows.parts:
+            raise InvalidInputError(f"{label} glob pattern must not contain parent traversal: {pattern}", "config")
+        return pattern
 
     def ensure_inside_root(self, resolved: Path) -> None:
         try:
