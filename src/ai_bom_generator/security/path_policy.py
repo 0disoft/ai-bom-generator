@@ -37,6 +37,10 @@ class PathPolicy:
         path = raw if raw.is_absolute() else Path.cwd() / raw
         if path.is_symlink():
             raise InvalidInputError(f"{label} output path must not be a symlink: {candidate}", "input")
+        if path.exists() and path.is_dir():
+            raise InvalidInputError(f"{label} output path must be a file path, not a directory: {candidate}", "input")
+        if path.parent.exists() and not path.parent.is_dir():
+            raise InvalidInputError(f"{label} output parent path must be a directory: {path.parent}", "input")
         resolved = path.resolve(strict=False)
         if self.is_inside_root(resolved):
             raise InvalidInputError(f"{label} output path must be outside target model directory: {candidate}", "input")

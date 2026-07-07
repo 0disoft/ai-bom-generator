@@ -23,6 +23,8 @@ intended project boundary by default.
   traversal.
 - Reject generated output paths that resolve inside the target model directory.
 - Reject generated output paths that are symlinks, including broken symlinks.
+- Reject generated output paths that are existing directories or whose existing
+  parent path is not a directory.
 
 ## Failure Behavior
 
@@ -36,6 +38,8 @@ intended project boundary by default.
   collecting or writing artifacts.
 - Generated output path inside the target root: invalid-input failure before
   collecting or writing artifacts.
+- Existing output directory or non-directory output parent: invalid-input
+  failure before collecting or writing artifacts.
 
 ## Review Blockers
 

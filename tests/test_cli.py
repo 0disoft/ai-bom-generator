@@ -1322,6 +1322,67 @@ class CliTests(unittest.TestCase):
             self.assertFalse(warnings.exists())
             self.assertFalse(summary.exists())
 
+    def test_existing_directory_output_path_is_rejected_before_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "existing-output-directory"
+            bom.mkdir()
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertTrue(bom.is_dir())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
+    def test_output_parent_file_is_rejected_before_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            parent = work / "not-a-directory"
+            parent.write_text("occupied", encoding="utf-8", newline="\n")
+            bom = parent / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertEqual(parent.read_text(encoding="utf-8"), "occupied")
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
     def test_overlapping_output_paths_are_rejected_before_writing(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
