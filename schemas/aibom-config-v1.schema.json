@@ -4,6 +4,7 @@
   "title": "AI-BOM Generator Config v1",
   "type": "object",
   "additionalProperties": true,
+  "required": ["schema_version"],
   "properties": {
     "schema_version": { "const": "1" },
     "output": {

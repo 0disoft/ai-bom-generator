@@ -53,4 +53,13 @@ def load_config(config_path: Path | None, policy: PathPolicy) -> LoadedConfig:
 
     if not isinstance(data, dict):
         raise InvalidInputError("Config root must be a table.", "config")
+    _validate_schema_version(data)
     return LoadedConfig(path=resolved, data=data)
+
+
+def _validate_schema_version(data: dict[str, Any]) -> None:
+    schema_version = data.get("schema_version")
+    if schema_version is None:
+        raise InvalidInputError("Config schema_version is required.", "config")
+    if schema_version != "1":
+        raise InvalidInputError("Config schema_version must be \"1\".", "config")
