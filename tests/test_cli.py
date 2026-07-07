@@ -3,10 +3,12 @@ from __future__ import annotations
 from contextlib import redirect_stderr, redirect_stdout
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from ai_bom_generator.cli import main
 from ai_bom_generator.errors import ExitCode
@@ -309,6 +311,125 @@ class CliTests(unittest.TestCase):
             self.assertEqual(model_properties["ai-bom:git:head"], "ref: refs/heads/main")
             self.assertEqual(model_properties["ai-bom:git:ref"], "refs/heads/main")
             self.assertNotIn("ai-bom:git:commit", model_properties)
+
+    def test_git_metadata_file_warns_without_fabricated_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            (project / ".git").write_text("gitdir: ../actual.git\n", encoding="utf-8", newline="\n")
+            summary = work / "out" / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(work / "out" / "bom.json"),
+                    "--warning-report",
+                    str(work / "out" / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            codes = _warning_codes(summary)
+            self.assertIn("UNSUPPORTED_GIT_METADATA_FILE", codes)
+            model_properties = _model_properties(_read_json(work / "out" / "bom.json"))
+            self.assertNotIn("ai-bom:git:commit", model_properties)
+
+    def test_git_head_unsupported_warns_without_fabricated_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            (project / ".git").mkdir()
+            (project / ".git" / "HEAD").write_text("not-a-supported-head\n", encoding="utf-8", newline="\n")
+            summary = work / "out" / "summary.json"
+            bom = work / "out" / "bom.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "out" / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("GIT_HEAD_UNSUPPORTED", _warning_codes(summary))
+            model_properties = _model_properties(_read_json(bom))
+            self.assertEqual(model_properties["ai-bom:git:head"], "not-a-supported-head")
+            self.assertNotIn("ai-bom:git:commit", model_properties)
+
+    def test_git_head_unreadable_warns_without_fabricated_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            (project / ".git").mkdir()
+            (project / ".git" / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8", newline="\n")
+            summary = work / "out" / "summary.json"
+
+            with patch("ai_bom_generator.collectors.pipeline._read_git_text_file", side_effect=OSError("blocked")):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(project / "aibom.toml"),
+                        "--output",
+                        str(work / "out" / "bom.json"),
+                        "--warning-report",
+                        str(work / "out" / "warnings.json"),
+                        "--summary",
+                        str(summary),
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("GIT_HEAD_UNREADABLE", _warning_codes(summary))
+
+    def test_git_symlink_warns_without_fabricated_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            target = work / "external-git"
+            target.mkdir()
+            try:
+                os.symlink(target, project / ".git", target_is_directory=True)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            summary = work / "out" / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(work / "out" / "bom.json"),
+                    "--warning-report",
+                    str(work / "out" / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("SKIPPED_GIT_SYMLINK", _warning_codes(summary))
 
     def test_summary_dash_writes_machine_readable_summary_to_stdout(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -1144,6 +1265,84 @@ class CliTests(unittest.TestCase):
             self.assertEqual(_read_json(warnings)["warnings"][0]["code"], "REDACTION_DISABLED")
             self.assertEqual(_read_json(summary)["status"], "success-with-warnings")
 
+    def test_empty_model_metadata_reports_machine_readable_warning(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config_text = config.read_text(encoding="utf-8")
+            config.write_text(
+                config_text.replace(
+                    (
+                        '[model]\n'
+                        'name = "example-model"\n'
+                        'version = "0.1.0"\n'
+                        'model_card = "MODEL_CARD.md"\n'
+                        'license_declared = "NOASSERTION"\n'
+                    ),
+                    '[model]\naliases = ["example-model"]\n',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            codes = _warning_codes(summary)
+            self.assertIn("EMPTY_MODEL_METADATA", codes)
+            self.assertIn("UNSUPPORTED_CONFIG_FIELD", codes)
+
+    def test_missing_eval_and_training_reference_files_warn_without_fabrication(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8")
+                + '\n[[evals]]\nname = "stale-eval"\nartifact = "evals/missing.json"\n'
+                + '\n[[training]]\nname = "stale-training"\npath = "missing-train.py"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            codes = _warning_codes(summary)
+            self.assertIn("MISSING_EVALS_REFERENCE_FILE", codes)
+            self.assertIn("MISSING_TRAINING_REFERENCE_FILE", codes)
+
     def test_target_root_escape_is_reported_for_optional_reference(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
@@ -1175,6 +1374,10 @@ class CliTests(unittest.TestCase):
 
 def _read_json(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _warning_codes(summary_path: Path) -> set[str]:
+    return {str(warning["code"]) for warning in _read_json(summary_path)["warnings"]}
 
 
 def _model_properties(bom_payload: dict[str, object]) -> dict[str, str]:
