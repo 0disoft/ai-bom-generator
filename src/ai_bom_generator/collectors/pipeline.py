@@ -16,6 +16,7 @@ from ai_bom_generator.security import PathPolicy, Redactor
 
 
 _GIT_SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
+_KNOWN_MODEL_CARD = "MODEL_CARD.md"
 
 
 def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redactor) -> NormalizedEvidence:
@@ -61,17 +62,28 @@ def _collect_model(
     redactor: Redactor,
 ) -> list[DeclaredReference]:
     model = config.get_table("model")
+    discovered_model_card = _discover_model_card(policy, warnings)
     if not model:
-        warnings.append(
-            Warning(
-                code="MISSING_MODEL_METADATA",
-                severity="warning",
-                object_kind="model",
-                object_id="model",
-                message="No [model] metadata was declared.",
-                remediation="Add [model] metadata to the AI-BOM config.",
+        if discovered_model_card:
+            return [
+                DeclaredReference(
+                    kind="model",
+                    object_id="model",
+                    values=(("model_card", discovered_model_card),),
+                    source=SourceLocation(path=discovered_model_card, collector="model"),
+                )
+            ]
+        if not any(warning.code == "MISSING_MODEL_METADATA" and warning.object_kind == "model" for warning in warnings):
+            warnings.append(
+                Warning(
+                    code="MISSING_MODEL_METADATA",
+                    severity="warning",
+                    object_kind="model",
+                    object_id="model",
+                    message="No [model] metadata was declared.",
+                    remediation="Add [model] metadata to the AI-BOM config.",
+                )
             )
-        )
         return []
 
     object_id = _scalar_object_id(model.get("name"), "model")
@@ -93,6 +105,8 @@ def _collect_model(
             raise InvalidInputError("[model].model_card must be a string path.", "config")
         resolved = policy.resolve_existing_file(model_card, required=True)
         values["model_card"] = policy.relative_to_root(resolved)
+    elif discovered_model_card:
+        values["model_card"] = discovered_model_card
 
     if not values:
         warnings.append(
@@ -114,6 +128,45 @@ def _collect_model(
             source=_source(config, "model"),
         )
     ]
+
+
+def _discover_model_card(policy: PathPolicy, warnings: list[Warning]) -> str | None:
+    candidate = policy.root / _KNOWN_MODEL_CARD
+    if not candidate.exists():
+        return None
+    source = SourceLocation(path=_KNOWN_MODEL_CARD, collector="model")
+    if candidate.is_symlink():
+        warnings.append(
+            Warning(
+                code="SKIPPED_SYMLINK",
+                severity="warning",
+                object_kind="model",
+                object_id=_KNOWN_MODEL_CARD,
+                message="Symlink model metadata file was skipped by default.",
+                source=source,
+                remediation="Use a real model metadata file inside the target root.",
+            )
+        )
+        return None
+    try:
+        resolved = candidate.resolve(strict=True)
+    except OSError as exc:
+        warnings.append(
+            Warning(
+                code="MISSING_MODEL_METADATA",
+                severity="warning",
+                object_kind="model",
+                object_id=_KNOWN_MODEL_CARD,
+                message=f"Known model metadata file could not be read: {_KNOWN_MODEL_CARD}: {exc}",
+                source=source,
+                remediation="Check the model metadata file or declare [model] metadata in config.",
+            )
+        )
+        return None
+    policy.ensure_inside_root(resolved)
+    if not resolved.is_file():
+        return None
+    return policy.relative_to_root(resolved)
 
 
 def _collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[Warning]) -> list[ModelArtifact]:

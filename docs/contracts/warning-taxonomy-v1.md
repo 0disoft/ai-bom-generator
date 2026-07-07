@@ -41,7 +41,7 @@ The executable warning-report schema lives at
 | `EMPTY_MODEL_METADATA` | `[model]` exists without scalar metadata. | CLI empty model metadata warning test |
 | `MISSING_ARTIFACT_SELECTION` | No artifact include patterns were declared. | `sparse-project` CLI tests |
 | `MISSING_ARTIFACT` | Include pattern matched no artifact. | `missing-artifact` CLI tests |
-| `SKIPPED_SYMLINK` | Symlink artifact skipped. | `symlink-escape` fixture family |
+| `SKIPPED_SYMLINK` | Symlink artifact or metadata file skipped. | `symlink-escape` fixture family and CLI model-card symlink test |
 | `MISSING_PROMPTS_REFERENCE_FILE` | Optional prompt file reference could not be read. | `symlink-escape` CLI tests |
 | `MISSING_EVALS_REFERENCE_FILE` | Optional eval file reference could not be read. | CLI stale eval/training reference test |
 | `MISSING_TRAINING_REFERENCE_FILE` | Optional training file reference could not be read. | CLI stale eval/training reference test |

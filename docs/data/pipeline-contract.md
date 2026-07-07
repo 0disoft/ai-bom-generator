@@ -19,7 +19,9 @@ and a warning report.
 1. Resolve the target model directory.
 2. Load explicit AI-BOM config when provided.
 3. Discover known metadata files without reading arbitrary generated output as truth.
-4. Collect model card fields, training-code references, dependency lockfile references, dataset references, prompt references, eval references, and local Git commit references when in-root Git metadata is available.
+   MVP discovers the in-root `MODEL_CARD.md` path only; it does not copy or
+   parse model-card contents.
+4. Collect model card paths, training-code references, dependency lockfile references, dataset references, prompt references, eval references, and local Git commit references when in-root Git metadata is available.
 5. Hash selected model artifacts and checkpoints.
 6. Normalize collected evidence into an internal BOM model.
 7. Export to the selected standards-backed BOM format.

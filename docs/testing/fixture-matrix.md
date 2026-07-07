@@ -19,7 +19,7 @@ honestly. They should be synthetic and safe to publish.
 | `hash-failure` | Digest collection failure produces collector failure. Covered by hashing failure tests. |
 | `exporter-failure` | Invalid exporter mapping fails validation. |
 | `secret-redaction` | Secret-shaped values are redacted or rejected across outputs. Covered by CLI redaction tests. |
-| `symlink-escape` | Symlink and target-root escape attempts are blocked. Covered by CLI path-policy tests. |
+| `symlink-escape` | Symlink and target-root escape attempts are blocked. Covered by CLI path-policy and model-card symlink tests. |
 | `nondeterministic-ordering-guard` | Stable input produces stable BOM and warning-report ordering. Covered by deterministic-output tests. |
 | `large-artifact-simulated` | Streaming hash behavior is tested without committing large binaries. Covered by chunked hashing tests. |
 

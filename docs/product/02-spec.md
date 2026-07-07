@@ -22,7 +22,8 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 - A target model directory.
 - Optional explicit config file path. The approved MVP config filename and
   schema are `aibom.toml` and config schema v1.
-- Model card or model metadata file when present.
+- Model card or model metadata file when present. MVP discovers an in-root
+  `MODEL_CARD.md` path as evidence without copying or parsing its contents.
 - Model artifact or checkpoint files selected by explicit patterns.
 - Dependency lockfile references declared in config. MVP records dependency
   file paths and scalar metadata; automatic lockfile discovery and

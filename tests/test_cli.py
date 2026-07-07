@@ -57,6 +57,65 @@ class CliTests(unittest.TestCase):
             }
             self.assertEqual(model_properties["ai-bom:model:model_card"], "MODEL_CARD.md")
 
+    def test_model_card_is_discovered_without_config(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "out" / "bom.cdx.json"
+            summary = work / "out" / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "out" / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            model_properties = _model_properties(_read_json(bom))
+            self.assertEqual(model_properties["ai-bom:model:model_card"], "MODEL_CARD.md")
+            codes = _warning_codes(summary)
+            self.assertNotIn("MISSING_MODEL_METADATA", codes)
+            self.assertIn("MISSING_ARTIFACT_SELECTION", codes)
+
+    def test_model_card_symlink_is_warned_and_not_followed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            project.mkdir()
+            target = work / "outside-model-card.md"
+            target.write_text("outside", encoding="utf-8", newline="\n")
+            try:
+                os.symlink(target, project / "MODEL_CARD.md")
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            codes = _warning_codes(summary)
+            self.assertIn("SKIPPED_SYMLINK", codes)
+            self.assertIn("MISSING_MODEL_METADATA", codes)
+
     def test_config_output_format_is_used_when_cli_format_is_omitted(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
@@ -1270,6 +1329,7 @@ class CliTests(unittest.TestCase):
             work = Path(temp)
             project = work / "project"
             shutil.copytree(FIXTURES / "complete-project", project)
+            (project / "MODEL_CARD.md").unlink()
             config = project / "aibom.toml"
             config_text = config.read_text(encoding="utf-8")
             config.write_text(

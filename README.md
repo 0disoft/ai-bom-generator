@@ -8,10 +8,10 @@ Addons: github-action
 AI-BOM Generator is a small CLI and optional GitHub Action for producing an AI
 bill of materials from a model project directory.
 
-The tool will collect model cards, model or checkpoint digests, training-code
-references, dependency lockfiles, dataset references, prompt templates, and eval
-artifact references, then export them to an existing BOM family such as SPDX AI
-or CycloneDX ML-BOM.
+The tool records declared model metadata, discovered `MODEL_CARD.md` paths,
+model or checkpoint digests, training-code references, dependency lockfiles,
+dataset references, prompt templates, and eval artifact references, then exports
+them to an existing BOM family such as SPDX AI or CycloneDX ML-BOM.
 
 It is a generator and evidence reporter. It is not a model registry, scanner,
 legal compliance engine, dataset auditor, or AI governance platform.
@@ -36,7 +36,7 @@ legal compliance engine, dataset auditor, or AI governance platform.
 ## MVP Direction
 
 - accept one model directory as input;
-- discover model cards and optional project manifests;
+- discover in-root `MODEL_CARD.md` paths without copying model-card contents;
 - compute SHA-256 digests for model artifacts and checkpoints;
 - collect dependency and training-code references from known lockfile or config locations;
 - read dataset, prompt, and eval references from explicit config;
