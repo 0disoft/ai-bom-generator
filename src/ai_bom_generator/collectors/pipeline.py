@@ -196,6 +196,7 @@ def _collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[
     exclude_patterns = [policy.validate_relative_glob(pattern, "[artifacts].exclude") for pattern in excludes]
 
     selected: list[ModelArtifact] = []
+    selected_paths: set[str] = set()
     for pattern in sorted(include_patterns):
         matches = sorted(policy.root.glob(pattern))
         if not matches:
@@ -232,9 +233,13 @@ def _collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[
                 policy.ensure_inside_root(resolved)
                 if not resolved.is_file():
                     continue
+                relative_path = policy.relative_to_root(resolved)
+                if relative_path in selected_paths:
+                    continue
+                selected_paths.add(relative_path)
                 selected.append(
                     ModelArtifact(
-                        path=policy.relative_to_root(resolved),
+                        path=relative_path,
                         size=resolved.stat().st_size,
                         digest=sha256_file(resolved),
                         digest_algorithm="sha256",

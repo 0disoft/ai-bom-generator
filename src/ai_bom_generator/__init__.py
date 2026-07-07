@@ -1,3 +1,3 @@
 """AI-BOM Generator package."""
 
-__version__ = "0.0.15"
+__version__ = "0.0.16"

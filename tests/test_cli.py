@@ -1046,6 +1046,47 @@ class CliTests(unittest.TestCase):
                 (second / "warnings.json").read_text(encoding="utf-8"),
             )
 
+    def test_overlapping_artifact_patterns_emit_one_bom_component(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'include = ["models/model.safetensors"]',
+                    'include = ["models/*.safetensors", "models/model.safetensors"]',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(work / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            components = _read_json(bom)["components"]
+            artifact_refs = [
+                component["bom-ref"]
+                for component in components
+                if str(component["bom-ref"]).startswith("artifact:")
+            ]
+            self.assertEqual(artifact_refs, ["artifact:models/model.safetensors"])
+            self.assertEqual(len(artifact_refs), len(set(artifact_refs)))
+
     def test_warning_policy_fail_returns_policy_exit_code(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)

@@ -29,6 +29,8 @@ and a warning report.
 
 Collectors must not know exporter-specific field names. Exporters must not read
 the filesystem directly. Reporters must not mutate normalized evidence.
+Overlapping artifact include patterns must normalize to one artifact evidence
+record per resolved target-root-relative file path.
 
 ## Ownership Boundary
 
