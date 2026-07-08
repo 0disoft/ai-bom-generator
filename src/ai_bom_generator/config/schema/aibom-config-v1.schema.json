@@ -39,7 +39,8 @@
         "exclude": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 }
-        }
+        },
+        "discovery": { "type": "boolean" }
       }
     },
     "dependencies": { "$ref": "#/$defs/referenceList" },

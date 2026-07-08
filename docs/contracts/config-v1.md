@@ -29,7 +29,8 @@ the CLI uses inline defaults and reports missing optional metadata as warnings.
 
 - `warning_policy`: missing metadata and unsupported field behavior.
 - `model`: declared model metadata and model-card path.
-- `artifacts`: include and exclude patterns for model artifacts and checkpoints.
+- `artifacts`: include and exclude patterns for model artifacts and checkpoints,
+  plus explicit opt-in artifact discovery.
 - `dependencies`: explicit dependency lockfile references and scalar metadata.
 - `datasets`: declared dataset references.
 - `prompts`: declared prompt references, with content inclusion disabled by default.
@@ -44,11 +45,25 @@ tables are ignored with an `UNSUPPORTED_CONFIG_FIELD` warning until the field is
 explicitly modeled.
 
 The runtime schema validates section shape, config version, artifact pattern
-types, warning-policy field names and values, known top-level sections, and
-known path fields before output files are written. It intentionally allows
+types, artifact discovery opt-in type, warning-policy field names and values,
+known top-level sections, and known path fields before output files are written.
+It intentionally allows
 unknown nested values in metadata/reference
 objects so the collector can emit `UNSUPPORTED_CONFIG_FIELD` warnings instead of
 silently dropping user intent.
+
+## Artifact Discovery
+
+Artifact discovery is disabled by default. `[artifacts].discovery = true` is the
+only MVP opt-in control; there is no CLI flag. When enabled, the collector adds
+bounded default model artifact patterns for `.safetensors`, `.gguf`, `.bin`,
+`.pt`, `.pth`, `.ckpt`, and `.onnx` files. Explicit `[artifacts].include`
+patterns may still be used with discovery.
+
+Discovery applies built-in excludes for hidden, cache, dependency, virtualenv,
+build, and Git metadata paths before hashing. Discovery still uses the artifact
+match-count, single-file byte, total-byte, target-root, symlink, and
+no-fabrication warning policies.
 
 ## Precedence
 

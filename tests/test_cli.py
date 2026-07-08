@@ -1047,6 +1047,192 @@ class CliTests(unittest.TestCase):
             self.assertEqual(warning_payload["warnings"][0]["object_id"], "models/missing.safetensors")
             self.assertEqual(bom_payload.get("components"), [])
 
+    def test_artifact_discovery_is_opt_in(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            project.mkdir()
+            (project / "models").mkdir()
+            (project / "models" / "auto.safetensors").write_bytes(b"model")
+            config = project / "aibom.toml"
+            config.write_text(
+                'schema_version = "1"\n\n[model]\nname = "discovery-model"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            summary_payload = _read_json(summary)
+            self.assertEqual(summary_payload["artifact_count"], 0)
+            self.assertIn("MISSING_ARTIFACT_SELECTION", _warning_codes(summary))
+
+    def test_artifact_discovery_collects_default_model_artifact_patterns(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            project.mkdir()
+            (project / "models").mkdir()
+            (project / "models" / "auto.safetensors").write_bytes(b"model")
+            config = project / "aibom.toml"
+            config.write_text(
+                'schema_version = "1"\n\n[model]\nname = "discovery-model"\n\n[artifacts]\ndiscovery = true\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertEqual(_read_json(summary)["artifact_count"], 1)
+            self.assertIn("artifact:models/auto.safetensors", _component_refs(_read_json(bom)))
+
+    def test_artifact_discovery_warns_when_no_default_patterns_match(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            project.mkdir()
+            config = project / "aibom.toml"
+            config.write_text(
+                'schema_version = "1"\n\n[model]\nname = "discovery-model"\n\n[artifacts]\ndiscovery = true\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            summary_payload = _read_json(summary)
+            self.assertEqual(summary_payload["artifact_count"], 0)
+            warning = _first_warning(summary_payload, "MISSING_ARTIFACT")
+            self.assertEqual(warning["object_id"], "artifacts.discovery")
+            self.assertEqual(warning["source"]["field"], "artifacts.discovery")
+
+    def test_artifact_discovery_applies_default_excludes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            project.mkdir()
+            (project / "models").mkdir()
+            (project / "models" / "auto.safetensors").write_bytes(b"model")
+            (project / ".cache").mkdir()
+            (project / ".cache" / "hidden.safetensors").write_bytes(b"hidden")
+            (project / "build").mkdir()
+            (project / "build" / "built.safetensors").write_bytes(b"built")
+            config = project / "aibom.toml"
+            config.write_text(
+                'schema_version = "1"\n\n[model]\nname = "discovery-model"\n\n[artifacts]\ndiscovery = true\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(work / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            component_refs = _component_refs(_read_json(bom))
+            self.assertIn("artifact:models/auto.safetensors", component_refs)
+            self.assertNotIn("artifact:.cache/hidden.safetensors", component_refs)
+            self.assertNotIn("artifact:build/built.safetensors", component_refs)
+
+    def test_artifact_discovery_warns_and_skips_symlinks(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            project.mkdir()
+            outside = work / "outside.safetensors"
+            outside.write_bytes(b"outside")
+            (project / "models").mkdir()
+            try:
+                os.symlink(outside, project / "models" / "linked.safetensors")
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            config = project / "aibom.toml"
+            config.write_text(
+                'schema_version = "1"\n\n[model]\nname = "discovery-model"\n\n[artifacts]\ndiscovery = true\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertEqual(_read_json(summary)["artifact_count"], 0)
+            self.assertIn("SKIPPED_SYMLINK", _warning_codes(summary))
+            self.assertEqual(_component_refs(_read_json(bom)), set())
+
     def test_artifact_match_limit_warns_and_skips_broad_pattern(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)

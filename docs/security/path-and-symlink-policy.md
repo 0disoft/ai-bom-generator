@@ -18,6 +18,9 @@ intended project boundary by default.
 - Do not read hidden, ignored, cache, dependency, or build-output paths as source
   truth unless explicitly configured.
 - Use explicit artifact include and exclude patterns for large model files.
+- Run artifact discovery only when `[artifacts].discovery = true` is explicitly
+  configured. Discovery must use built-in excludes for hidden, cache,
+  dependency, virtualenv, build, and Git metadata paths.
 - Bound artifact include expansion with fixed MVP budgets before hashing:
   256 candidate paths per include pattern after excludes, 16 GiB per artifact,
   and 25 GiB total selected artifact bytes per run.

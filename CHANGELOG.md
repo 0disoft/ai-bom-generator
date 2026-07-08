@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.1.3
+
 - Adds `ai-bom --version` for installed CLI version checks.
 - Discovers `<model-directory>/aibom.toml` when `--config` is omitted.
 - Improves the README and PyPI landing-page quickstart for first-time users.
@@ -12,6 +14,8 @@
   warnings for skipped over-budget artifact patterns and files.
 - Expands strict redaction with Hugging Face and GCP token shapes plus
   key-aware masking for sensitive config and JSON fields.
+- Adds config-only opt-in artifact discovery with bounded default model artifact
+  patterns and built-in discovery excludes.
 
 ## v0.1.2
 

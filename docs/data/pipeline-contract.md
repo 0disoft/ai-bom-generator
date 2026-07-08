@@ -23,23 +23,26 @@ and a warning report.
    MVP discovers the in-root `MODEL_CARD.md` path only; it does not copy or
    parse model-card contents.
 4. Collect model card paths, training-code references, dependency lockfile references, dataset references, prompt references, eval references, and local Git commit references when in-root Git metadata is available.
-5. Apply fixed MVP artifact budgets before hashing: at most 256 candidate paths
+5. Select artifacts from explicit include patterns and, only when
+   `[artifacts].discovery = true`, bounded default model artifact patterns for
+   `.safetensors`, `.gguf`, `.bin`, `.pt`, `.pth`, `.ckpt`, and `.onnx` files.
+6. Apply fixed MVP artifact budgets before hashing: at most 256 candidate paths
    per include pattern after excludes, at most 16 GiB for one artifact, and at
    most 25 GiB of selected artifacts per run. Budget hits are machine-readable
    warnings and the over-budget pattern or artifact is skipped.
-6. Hash selected model artifacts and checkpoints through one open file
+7. Hash selected model artifacts and checkpoints through one open file
    descriptor. The recorded size and SHA-256 digest must come from the same
    stable file snapshot, verified by comparing file metadata before and after
    hashing.
-7. Normalize collected evidence into an internal BOM model.
-8. Export to the selected standards-backed BOM format.
-9. Stage requested JSON outputs in destination-local temporary files.
-10. Build a generation manifest from the staged file bytes, including a
+8. Normalize collected evidence into an internal BOM model.
+9. Export to the selected standards-backed BOM format.
+10. Stage requested JSON outputs in destination-local temporary files.
+11. Build a generation manifest from the staged file bytes, including a
    run-unique generation id plus role, path, size, and SHA-256 digest for every
    final output in the set.
-11. Replace final BOM, warning-report, and summary files, then replace the
+12. Replace final BOM, warning-report, and summary files, then replace the
    manifest last as the commit marker for the output set.
-12. Emit missing-metadata warnings and machine-readable summary output.
+13. Emit missing-metadata warnings and machine-readable summary output.
 
 Collectors must not know exporter-specific field names. Exporters must not read
 the filesystem directly. Reporters must not mutate normalized evidence.
@@ -81,6 +84,10 @@ component `bom-ref` values are derived from that identity.
 - Oversized Git metadata files: warning without fabricating a commit.
 - Missing dataset license declarations include absent or blank
   `license_declared` values.
+- Artifact discovery disabled or no include patterns declared: warning without
+  fabricating artifact evidence.
+- Artifact discovery enabled but no default patterns match: warning without
+  fabricating artifact evidence.
 - Stale generated output from a previous run: removed after output-path
   validation and before collection or export starts, so a failed run does not
   leave old BOM, warning-report, summary, or manifest files at the requested

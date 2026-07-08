@@ -15,7 +15,8 @@ model serving.
 3. Validate config shape and warning policy.
 4. Collect declared model metadata, dependency file references, prompt, dataset,
    eval, and training-code references from discovered or explicit config. Select model
-   artifacts from explicit include/exclude patterns.
+   artifacts from explicit include/exclude patterns and config-enabled artifact
+   discovery defaults.
 5. Apply fixed artifact match-count, single-file byte, and total-byte budgets.
 6. Hash selected model artifacts through one open file descriptor and reject
    artifacts that change before hashing completes.

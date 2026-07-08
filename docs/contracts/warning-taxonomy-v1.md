@@ -40,8 +40,8 @@ The executable warning-report schema lives at
 | --- | --- | --- |
 | `MISSING_MODEL_METADATA` | No `[model]` metadata was declared. | `sparse-project` CLI tests |
 | `EMPTY_MODEL_METADATA` | `[model]` exists without scalar metadata. | CLI empty model metadata warning test |
-| `MISSING_ARTIFACT_SELECTION` | No artifact include patterns were declared. | `sparse-project` CLI tests |
-| `MISSING_ARTIFACT` | Include pattern matched no artifact. | `missing-artifact` CLI tests |
+| `MISSING_ARTIFACT_SELECTION` | No artifact include patterns were declared and discovery was not enabled. | `sparse-project` CLI tests |
+| `MISSING_ARTIFACT` | Include pattern or enabled discovery matched no artifact. | `missing-artifact` and artifact discovery CLI tests |
 | `ARTIFACT_MATCH_LIMIT_EXCEEDED` | Include pattern matched more candidate paths than the fixed MVP budget allows. | CLI artifact budget tests |
 | `ARTIFACT_SIZE_LIMIT_EXCEEDED` | Selected artifact exceeded the fixed MVP single-file byte budget. | CLI artifact budget tests |
 | `ARTIFACT_TOTAL_SIZE_LIMIT_EXCEEDED` | Selected artifact would exceed the fixed MVP total artifact byte budget. | CLI artifact budget tests |

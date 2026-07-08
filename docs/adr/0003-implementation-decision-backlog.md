@@ -31,6 +31,8 @@ choices from plausible candidates that still need approval.
 | Schema validation dependency | `jsonschema>=4.25,<5` | Approved by implementation kickoff on 2026-07-06 |
 | Project lockfile | `uv.lock` | Approved by uv adoption on 2026-07-06 |
 | Dependency lockfile intake | Explicit config-declared dependency file references | Approved for MVP on 2026-07-07 |
+| Artifact discovery opt-in | `[artifacts].discovery = true` adds bounded default model artifact patterns in config only | Approved for MVP polish on 2026-07-09 |
+| Artifact discovery CLI flag | CLI override for artifact discovery | Deferred |
 | Action wrapper | Composite GitHub Action invoking `uv run --project` | Approved for MVP on 2026-07-07 |
 | First public release | GitHub Release `v0.1.0` with no PyPI package | Approved by owner on 2026-07-07 |
 | Action tag policy | Immutable patch tags plus mutable `v0` for compatible 0.x action updates | Approved by owner on 2026-07-08 |
@@ -61,6 +63,9 @@ choices from plausible candidates that still need approval.
 - Dependency lockfile support is config-driven path evidence in MVP. Automatic
   discovery, lockfile parsing, and package-manager-specific completeness claims
   remain deferred until a later ADR approves them.
+- Artifact discovery is config-driven opt-in only. It must not run when
+  `[artifacts].discovery` is absent or false, and it must reuse artifact budget,
+  symlink, target-root, and no-fabrication warning policies.
 - Config discovery is limited to the target-root `aibom.toml` filename. Parent
   directory search, alternate filenames, and environment-variable config remain
   deferred.
@@ -78,9 +83,9 @@ choices from plausible candidates that still need approval.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
 - Do not claim action-managed runtime setup, immutable artifact staging,
-  configurable artifact budgets, or schema-aware secret-key warnings until the
-  corresponding deferred/proposed decision is approved and implemented with
-  fixtures.
+  artifact discovery CLI overrides, configurable artifact budgets, or
+  schema-aware secret-key warnings until the corresponding deferred/proposed
+  decision is approved and implemented with fixtures.
 
 ## Review Blockers
 

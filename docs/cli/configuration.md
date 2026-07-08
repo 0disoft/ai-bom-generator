@@ -44,10 +44,16 @@ directories, alternate filenames, or environment variables. If the target-root
 optional metadata as warnings.
 
 Config schema v1 covers output format, warning policy, model metadata pointers,
-artifact include and exclude patterns, dependency references, dataset
-references, prompt references, eval references, and training references. The
-runtime validates discovered and explicit config files against the packaged
-schema before output files are written.
+artifact include and exclude patterns, artifact discovery opt-in, dependency
+references, dataset references, prompt references, eval references, and training
+references. The runtime validates discovered and explicit config files against
+the packaged schema before output files are written.
+
+Artifact discovery is disabled unless `[artifacts].discovery = true` appears in
+the config. It is config-only in MVP; there is no CLI flag. Discovery adds
+bounded defaults for common model artifact extensions: `.safetensors`, `.gguf`,
+`.bin`, `.pt`, `.pth`, `.ckpt`, and `.onnx`. It excludes hidden, cache,
+dependency, virtualenv, build, and Git metadata paths before hashing.
 
 Artifact budget limits are fixed in MVP and are not config or CLI options yet:
 256 candidate paths per include pattern after excludes, 16 GiB per artifact,
@@ -58,6 +64,7 @@ skipped.
 ## Still UNDECIDED
 
 - Format-specific dependency lockfile parsing.
+- CLI override for artifact discovery.
 - Configurable artifact budget overrides.
 
 ## Review Blockers
