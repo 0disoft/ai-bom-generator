@@ -32,7 +32,7 @@ choices from plausible candidates that still need approval.
 | Dependency lockfile intake | Explicit config-declared dependency file references | Approved for MVP on 2026-07-07 |
 | Action wrapper | Composite GitHub Action invoking `uv run --project` | Approved for MVP on 2026-07-07 |
 | First public release | GitHub Release `v0.1.0` with no PyPI package | Approved by owner on 2026-07-07 |
-| Action tag policy | Immutable version tags only for MVP; no mutable `v0` tag yet | Approved by owner on 2026-07-07 |
+| Action tag policy | Immutable patch tags plus mutable `v0` for compatible 0.x action updates | Approved by owner on 2026-07-08 |
 | PyPI package metadata | Classifiers, keywords, and project URLs in `pyproject.toml` | Approved for pre-publish preparation on 2026-07-07 |
 | PyPI package publishing | `.github/workflows/publish-pypi.yml` publishes `v0.1.2` or later patch tags via PyPI Trusted Publishing after registry setup and external action smoke | Approved workflow policy on 2026-07-08 |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
@@ -60,9 +60,10 @@ choices from plausible candidates that still need approval.
 - The GitHub Action wrapper may invoke the packaged CLI from the action checkout,
   expose summary-derived outputs, and default output files under `RUNNER_TEMP`.
   Artifact upload remains deferred and must not be enabled by default.
-- The first public release may create `v0.1.0` and a GitHub Release. It must not
-  publish to PyPI, create a mutable `v0` action tag, or register the Action in a
-  marketplace until those policies are explicitly approved.
+- The first public release may create `v0.1.0` and a GitHub Release. Mutable
+  `v0` may point to the latest compatible 0.x action release after external
+  smoke verification. Marketplace registration remains deferred until that
+  policy is explicitly approved.
 - PyPI metadata may be prepared and validated locally. Package upload requires
   PyPI Trusted Publishing through `.github/workflows/publish-pypi.yml`,
   registry ownership confirmation, package-name recheck at release time, full

@@ -15,9 +15,10 @@ CLI/action contract.
 
 The first public MVP release is `v0.1.0` as an immutable GitHub Release tag.
 Patch releases such as `v0.1.2` remain immutable GitHub Release tags and may be
-used directly as GitHub Action refs. Mutable major action tags such as `v0`,
-GitHub Marketplace registration, and generated artifact upload are deferred
-until explicitly approved.
+used directly as exact GitHub Action refs. The mutable `v0` action tag may point
+to the latest compatible 0.x action release after external smoke verification.
+GitHub Marketplace registration and generated artifact upload are deferred until
+explicitly approved.
 
 PyPI package metadata may be prepared before publishing by adding classifiers,
 keywords, and project URLs to `pyproject.toml` and validating README rendering
@@ -79,6 +80,21 @@ The script checks:
 - the latest external smoke workflow in
   `0disoft/ai-bom-generator-action-smoke` completed successfully.
 
+## Mutable Action Tag
+
+`v0` is a convenience ref for users who want compatible patch updates without
+editing workflow files. Keep immutable patch tags such as `v0.1.2` for exact
+release reproducibility.
+
+Only move `v0` after:
+
+- the target immutable patch tag is published;
+- the repository CI and package release verification pass;
+- an external smoke repository passes against the new `v0` target.
+
+The PyPI publish workflow intentionally triggers only strict
+`vMAJOR.MINOR.PATCH` tags, so moving `v0` must not upload a package.
+
 ## Owners
 
 - Primary owner: UNASSIGNED
@@ -94,5 +110,5 @@ The script checks:
 - Rollback: mark a broken GitHub Release in release notes, then publish a patch
   tag after validation. Do not retarget or delete an existing immutable release
   tag.
-- Remaining operational risk: mutable action tag policy, marketplace rollout,
-  maintainer escalation path, and long-term rollout cadence remain UNDECIDED.
+- Remaining operational risk: marketplace rollout, maintainer escalation path,
+  and long-term rollout cadence remain UNDECIDED.

@@ -81,8 +81,8 @@ license_declared = "NOASSERTION"
 ```
 
 The current MVP reads explicit config files only. Automatic config discovery,
-artifact discovery defaults, SPDX export, mutable major action tags, and GitHub
-Marketplace registration are deferred.
+artifact discovery defaults, SPDX export, and GitHub Marketplace registration
+are deferred.
 
 ## CLI
 
@@ -106,7 +106,7 @@ unsafe paths, and invalid generated BOM output fail with non-zero exit codes.
 - uses: astral-sh/setup-uv@v8.3.1
 
 - id: ai-bom
-  uses: 0disoft/ai-bom-generator@v0.1.2
+  uses: 0disoft/ai-bom-generator@v0
   with:
     model-directory: .
     config: aibom.toml
@@ -130,6 +130,9 @@ paths when provided, or to a run-unique directory under `RUNNER_TEMP`.
 
 Summary-derived action outputs are published only when the generation manifest
 matches the BOM, warning report, and summary files from the current run.
+
+Use `@v0` for compatible patch updates, or pin an immutable patch tag such as
+`@v0.1.2` when a workflow needs exact release reproducibility.
 
 ## Validation
 

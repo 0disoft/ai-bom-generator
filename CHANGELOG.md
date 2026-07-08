@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Improves the README and PyPI landing-page quickstart for first-time users.
+- Documents the mutable `v0` GitHub Action tag for compatible patch updates.
 
 ## v0.1.2
 
@@ -43,8 +44,6 @@ First public MVP release.
 
 Deferred:
 
-- PyPI publishing.
-- Mutable major action tags such as `v0`.
 - GitHub Marketplace registration.
 - Automatic config, artifact, and lockfile discovery.
 - SPDX AI exporter.
