@@ -21,6 +21,8 @@ intended project boundary by default.
 - Require artifact include and exclude globs to be target-root-relative patterns.
 - Reject artifact include and exclude globs that are absolute or contain parent
   traversal.
+- Apply recursive exclude globs such as `**/.git/**` and `**/__pycache__/**`
+  to target-root-relative artifact paths before hashing.
 - Reject generated output paths that resolve inside the target model directory.
 - Reject generated output paths that are symlinks, including broken symlinks.
 - Reject generated output paths that are existing directories or whose existing

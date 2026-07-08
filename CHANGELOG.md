@@ -2,7 +2,7 @@
 
 ## v0.1.1
 
-Unreleased PyPI packaging preparation.
+GitHub Release patch with PyPI publishing still deferred.
 
 - Adds package classifiers, keywords, and project URLs for future PyPI publishing.
 - Adds Ruff as the configured lint runner for local and CI validation.
@@ -10,6 +10,10 @@ Unreleased PyPI packaging preparation.
 - Uses run-unique default GitHub Action output directories under `RUNNER_TEMP`.
 - Rejects duplicate declared reference identities before exporting duplicate CycloneDX `bom-ref` values.
 - Excludes optional prompt, eval, and training references from BOM output when their declared paths are unreadable or unsafe.
+- Applies recursive artifact exclude globs before hashing, including `.git` and `__pycache__` subtrees selected by broad include patterns.
+- Expands strict redaction coverage for common AWS, Slack, GitLab, Google API key, Bearer, and JWT-shaped values.
+- Reports blank dataset `license_declared` values as missing license warnings.
+- Caps Git metadata reads so oversized packed refs resolve as warnings instead of unbounded reads.
 - Stages generated JSON files through destination-local temporary files, writes a generation manifest as the commit marker, and removes stale or partial outputs on generation/write failures.
 - Tightens config schema validation for unknown top-level sections and `warning_policy` keys.
 - Keeps PyPI publishing deferred until package-registry policy is approved.

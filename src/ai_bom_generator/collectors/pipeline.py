@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import fnmatch
 from pathlib import Path
 import re
-from typing import Any
+from typing import Any, Iterator
 
 from ai_bom_generator.config import LoadedConfig
 from ai_bom_generator.domain.artifact import ModelArtifact
@@ -16,6 +17,7 @@ from ai_bom_generator.security import PathPolicy, Redactor
 
 
 _GIT_SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
+_MAX_GIT_METADATA_BYTES = 1024 * 1024
 _KNOWN_MODEL_CARD = "MODEL_CARD.md"
 
 
@@ -335,7 +337,7 @@ def _collect_named_references(
             _singular_kind(section),
             object_id,
         )
-        if section == "datasets" and "license_declared" not in item:
+        if section == "datasets" and not str(item.get("license_declared", "")).strip():
             warnings.append(
                 Warning(
                     code="MISSING_DATASET_LICENSE",
@@ -465,7 +467,7 @@ def _resolve_git_ref(git_dir: Path, ref_name: str) -> str | None:
     packed_refs = git_dir / "packed-refs"
     if packed_refs.exists() and not packed_refs.is_symlink() and packed_refs.is_file():
         try:
-            for line in _read_git_text_file(packed_refs).splitlines():
+            for line in _iter_git_text_lines(packed_refs):
                 if not line or line.startswith("#") or line.startswith("^"):
                     continue
                 commit, _, packed_ref = line.partition(" ")
@@ -479,7 +481,19 @@ def _resolve_git_ref(git_dir: Path, ref_name: str) -> str | None:
 def _read_git_text_file(path: Path) -> str:
     if path.is_symlink():
         raise OSError("symlink Git metadata is not allowed")
+    if path.stat().st_size > _MAX_GIT_METADATA_BYTES:
+        raise OSError("Git metadata file exceeds the 1 MiB read limit")
     return path.read_text(encoding="utf-8")
+
+
+def _iter_git_text_lines(path: Path) -> Iterator[str]:
+    if path.is_symlink():
+        raise OSError("symlink Git metadata is not allowed")
+    if path.stat().st_size > _MAX_GIT_METADATA_BYTES:
+        raise OSError("Git metadata file exceeds the 1 MiB read limit")
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            yield line.rstrip("\r\n")
 
 
 def _string_pairs(
@@ -531,7 +545,22 @@ def _source(config: LoadedConfig, field: str) -> SourceLocation:
 
 def _is_excluded(path: Path, root: Path, excludes: list[str]) -> bool:
     relative = path.relative_to(root).as_posix()
-    return any(path.match(pattern) or relative == pattern or Path(relative).match(pattern) for pattern in excludes)
+    return any(_matches_glob(relative, pattern) for pattern in excludes)
+
+
+def _matches_glob(relative_path: str, pattern: str) -> bool:
+    normalized = pattern.replace("\\", "/")
+    if normalized.startswith("./"):
+        normalized = normalized[2:]
+    if not normalized:
+        return False
+    if relative_path == normalized:
+        return True
+    if normalized.startswith("**/"):
+        trimmed = normalized[3:]
+        if fnmatch.fnmatchcase(relative_path, trimmed):
+            return True
+    return fnmatch.fnmatchcase(relative_path, normalized)
 
 
 def _singular_kind(section: str) -> str:

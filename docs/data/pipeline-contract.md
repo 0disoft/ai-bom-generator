@@ -61,6 +61,9 @@ component `bom-ref` values are derived from that identity.
 - Unsupported exporter mapping: failure.
 - Partial collector support: warning with unsupported field names.
 - Unresolved or unsupported Git metadata: warning without fabricating a commit.
+- Oversized Git metadata files: warning without fabricating a commit.
+- Missing dataset license declarations include absent or blank
+  `license_declared` values.
 - Stale generated output from a previous run: removed after output-path
   validation and before collection or export starts, so a failed run does not
   leave old BOM, warning-report, summary, or manifest files at the requested

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ai_bom_generator import __version__
 from ai_bom_generator.domain.evidence import NormalizedEvidence
-from ai_bom_generator.errors import ExitCode
+from ai_bom_generator.errors import ExitCode, ExporterError
 from ai_bom_generator.security import Redactor
 
 
@@ -39,5 +39,6 @@ def build_summary(
         "exit_code": ExitCode.WARNING_POLICY_FAILED if warning_policy_failed else ExitCode.SUCCESS,
     }
     redacted = redactor.redact_json(payload)
-    assert isinstance(redacted, dict)
+    if not isinstance(redacted, dict):
+        raise ExporterError("Summary redaction returned an invalid JSON object.", "summary")
     return redacted

@@ -41,10 +41,11 @@ choices from plausible candidates that still need approval.
 | Redaction default | strict | Approved for CLI and terminal output on 2026-07-07 |
 | Action-managed runtime setup | Composite action installs or prepares Python and `uv` itself | Deferred |
 | Staged output writes | Destination-local temp-file writes, stale-output cleanup, and partial-output cleanup | Approved for MVP hardening on 2026-07-08 |
-| Generation manifest | Manifest-backed run identity and full multi-file transaction audit trail | Approved for MVP hardening on 2026-07-08 |
+| Generation manifest | Manifest-backed run identity and output-set verification | Approved for MVP hardening on 2026-07-08 |
 | Artifact snapshot consistency | Single-descriptor stat/hash validation or immutable staging | Deferred |
 | Artifact glob budgets | Match-count and byte budgets for broad artifact patterns | Deferred |
-| Provider-aware redaction matrix | Key-aware and provider-token redaction beyond current strict patterns | Proposed |
+| Common provider-token redaction | AWS, Slack, GitLab, Google API key, Bearer, and JWT-shaped values in strict mode | Approved for MVP hardening on 2026-07-08 |
+| Key-aware redaction matrix | Schema-aware secret-key warnings and provider-specific validators beyond obvious token shapes | Proposed |
 
 ## Guardrails
 
@@ -67,7 +68,7 @@ choices from plausible candidates that still need approval.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
 - Do not claim action-managed runtime setup, artifact snapshot consistency
-  guarantees, broad-glob budgets, or expanded provider-token coverage until the
+  guarantees, broad-glob budgets, or schema-aware redaction coverage until the
   corresponding deferred/proposed decision is approved and implemented with
   fixtures.
 

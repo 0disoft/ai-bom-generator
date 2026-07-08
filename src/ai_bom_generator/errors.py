@@ -18,6 +18,9 @@ class AIBomError(Exception):
     exit_code: int
     stage: str
 
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "args", (self.message,))
+
     def __str__(self) -> str:
         return self.message
 

@@ -12,7 +12,7 @@ import unittest
 from unittest.mock import patch
 
 from ai_bom_generator.cli import main
-from ai_bom_generator.errors import CollectorError, ExitCode, ExporterError
+from ai_bom_generator.errors import CollectorError, ExitCode, ExporterError, InvalidInputError
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -386,6 +386,39 @@ class CliTests(unittest.TestCase):
             self.assertEqual(code, ExitCode.SUCCESS)
             model_properties = _model_properties(_read_json(bom))
             self.assertEqual(model_properties["ai-bom:git:commit"], commit)
+
+    def test_oversized_packed_git_ref_warns_without_fabricated_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            git_dir = project / ".git"
+            git_dir.mkdir()
+            (git_dir / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8", newline="\n")
+            (git_dir / "packed-refs").write_text("x" * (1024 * 1024 + 1), encoding="utf-8", newline="\n")
+            bom = work / "out" / "bom.cdx.json"
+            summary = work / "out" / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "out" / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("GIT_REF_UNRESOLVED", _warning_codes(summary))
+            model_properties = _model_properties(_read_json(bom))
+            self.assertEqual(model_properties["ai-bom:git:ref"], "refs/heads/main")
+            self.assertNotIn("ai-bom:git:commit", model_properties)
 
     def test_unresolved_git_ref_warns_without_fabricated_commit(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -933,6 +966,81 @@ class CliTests(unittest.TestCase):
             self.assertEqual(warning_payload["warnings"][0]["source"]["field"], "datasets[0].annotations")
             self.assertNotIn("team-a", bom_text)
             self.assertNotIn("ai-bom:annotations", bom_text)
+
+    def test_empty_dataset_license_reports_missing_license_warning(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'uri = "https://example.invalid/datasets/example"\nlicense_declared = "NOASSERTION"',
+                    'uri = "https://example.invalid/datasets/example"\nlicense_declared = ""',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("MISSING_DATASET_LICENSE", _warning_codes(summary))
+
+    def test_recursive_artifact_excludes_skip_git_and_pycache_files(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            (project / ".git" / "objects").mkdir(parents=True)
+            (project / ".git" / "objects" / "secret-pack").write_text("git metadata", encoding="utf-8", newline="\n")
+            (project / "pkg" / "__pycache__").mkdir(parents=True)
+            (project / "pkg" / "__pycache__" / "model.pyc").write_bytes(b"cache")
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'include = ["models/model.safetensors"]',
+                    'include = ["**/*"]',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(work / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            component_refs = _component_refs(_read_json(bom))
+            self.assertIn("artifact:models/model.safetensors", component_refs)
+            self.assertFalse(any(".git/" in ref for ref in component_refs))
+            self.assertFalse(any("__pycache__/" in ref for ref in component_refs))
 
     def test_artifact_include_parent_traversal_is_rejected_before_writing(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -1779,6 +1887,68 @@ class CliTests(unittest.TestCase):
                 self.assertNotIn("super-secret-token", text)
                 self.assertIn("token=REDACTED", text)
 
+    def test_common_provider_secrets_are_redacted_from_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "secret-redaction", project)
+            config = project / "aibom.toml"
+            aws_key = "AKIA1234567890ABCDEF"
+            slack_token = "xoxb-1234567890abcdefghijkl"
+            gitlab_token = "glpat-1234567890abcdef"
+            google_key = f"AIza{'A' * 35}"
+            bearer_token = "Bearer abcdefghijklmnop123456"
+            jwt_token = "eyJabcdefghijklmno.eyJabcdefghijklmnop.signature1234567890"
+            config_text = config.read_text(encoding="utf-8").replace(
+                'name = "redaction-model"',
+                'name = "redaction-model"\n'
+                + f'aws_access_key = "{aws_key}"\n'
+                + f'google_api_key = "{google_key}"\n'
+                + f'authorization = "{bearer_token}"\n'
+                + f'identity_token = "{jwt_token}"',
+            )
+            config.write_text(
+                config_text
+                + "\n[[dependencies]]\n"
+                + f'name = "{gitlab_token}"\n'
+                + 'type = "gitlab"\n'
+                + "\n[[datasets]]\n"
+                + f'name = "{slack_token}"\n'
+                + 'uri = "https://example.invalid/public"\n'
+                + 'license_declared = "NOASSERTION"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            for output in (bom, warnings, summary):
+                text = output.read_text(encoding="utf-8")
+                self.assertNotIn(aws_key, text)
+                self.assertNotIn(slack_token, text)
+                self.assertNotIn(gitlab_token, text)
+                self.assertNotIn(google_key, text)
+                self.assertNotIn("abcdefghijklmnop123456", text)
+                self.assertNotIn(jwt_token, text)
+            self.assertIn("REDACTED", bom.read_text(encoding="utf-8"))
+
     def test_redaction_off_preserves_secret_shaped_values_with_warning(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
@@ -1927,6 +2097,12 @@ class CliTests(unittest.TestCase):
             bom_text = bom.read_text(encoding="utf-8")
             self.assertNotIn("../outside.txt", bom_text)
             self.assertNotIn("prompt:outside", _component_refs(_read_json(bom)))
+
+    def test_aibom_error_preserves_exception_args(self) -> None:
+        exc = InvalidInputError("bad config", "config")
+
+        self.assertEqual(exc.args, ("bad config",))
+        self.assertEqual(str(exc), "bad config")
 
 
 def _read_json(path: Path) -> dict[str, object]:

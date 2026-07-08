@@ -9,6 +9,12 @@ SECRET_PATTERNS = [
     re.compile(r"(?i)([?&](?:token|access_token|api_key|key|secret)=)[^&\s]+"),
     re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----", re.DOTALL),
     re.compile(r"(?i)\b(?:ghp|gho|github_pat|sk|sk-proj)-[A-Za-z0-9_\-]{12,}\b"),
+    re.compile(r"\b(?:AKIA|ASIA)[0-9A-Z]{16}\b"),
+    re.compile(r"\bxox(?:a|b|p|r)-[A-Za-z0-9-]{10,}\b"),
+    re.compile(r"\bglpat-[A-Za-z0-9_\-]{12,}\b"),
+    re.compile(r"\bAIza[0-9A-Za-z_-]{35}\b"),
+    re.compile(r"(?i)\b(Bearer\s+)[A-Za-z0-9._~+/=-]{16,}\b"),
+    re.compile(r"\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b"),
 ]
 
 

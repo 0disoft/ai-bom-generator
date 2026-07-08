@@ -45,13 +45,13 @@ The executable warning-report schema lives at
 | `MISSING_PROMPTS_REFERENCE_FILE` | Optional prompt file reference could not be read. | `symlink-escape` CLI tests |
 | `MISSING_EVALS_REFERENCE_FILE` | Optional eval file reference could not be read. | CLI stale eval/training reference test |
 | `MISSING_TRAINING_REFERENCE_FILE` | Optional training file reference could not be read. | CLI stale eval/training reference test |
-| `MISSING_DATASET_LICENSE` | Dataset license was not declared. | `secret-redaction` and warning-policy tests |
+| `MISSING_DATASET_LICENSE` | Dataset license was absent or blank. | `secret-redaction` and warning-policy tests |
 | `UNSUPPORTED_CONFIG_FIELD` | Non-scalar metadata/reference field ignored. | CLI unsupported structured config test |
 | `REDACTION_DISABLED` | `--redaction off` was selected. | `secret-redaction` CLI tests |
 | `SKIPPED_GIT_SYMLINK` | Git metadata symlink skipped. | CLI Git symlink warning tests; skipped on hosts without symlink support |
 | `UNSUPPORTED_GIT_METADATA_FILE` | `.git` file skipped. | CLI Git metadata file warning test |
 | `GIT_HEAD_UNREADABLE` | Git HEAD could not be read. | CLI Git HEAD unreadable warning test |
-| `GIT_REF_UNRESOLVED` | Symbolic Git ref could not resolve to a commit. | CLI Git ref tests |
+| `GIT_REF_UNRESOLVED` | Symbolic Git ref could not resolve to a commit, including oversized packed refs. | CLI Git ref tests |
 | `GIT_HEAD_UNSUPPORTED` | Git HEAD format is unsupported. | CLI Git HEAD unsupported warning test |
 
 ## Severity

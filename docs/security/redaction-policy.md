@@ -24,7 +24,10 @@ The redaction layer should detect obvious credential forms before output:
 - Basic-auth URLs.
 - Private key blocks.
 - Credentialed Git remotes.
-- Common API-token-shaped strings.
+- Common API-token-shaped strings, including GitHub/OpenAI-style API keys.
+- Common provider and DevOps token shapes, including AWS access keys, Slack
+  tokens, GitLab personal access tokens, Google API keys, Bearer credentials,
+  and JWT-shaped values.
 - Disabled redaction must be reported as a warning instead of silently producing
   unredacted output.
 
