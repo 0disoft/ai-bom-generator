@@ -44,6 +44,16 @@ def main(argv: list[str] | None = None) -> int:
                 explicit_output_paths=False,
             ),
             ActionCase(
+                "discovered-config",
+                "tests/fixtures/complete-project",
+                None,
+                "allow",
+                0,
+                "success",
+                "complete",
+                format=None,
+            ),
+            ActionCase(
                 "config-warning-policy",
                 "tests/fixtures/sparse-project",
                 None,

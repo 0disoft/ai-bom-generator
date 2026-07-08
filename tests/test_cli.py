@@ -78,7 +78,7 @@ class CliTests(unittest.TestCase):
             self.assertEqual(eval_properties["ai-bom:artifact"], "evals/result.json")
             self.assertEqual(eval_properties["ai-bom:path"], "evals/result.json")
 
-    def test_model_card_is_discovered_without_config(self) -> None:
+    def test_aibom_toml_is_discovered_when_config_is_omitted(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
             project = work / "project"
@@ -100,11 +100,162 @@ class CliTests(unittest.TestCase):
             )
 
             self.assertEqual(code, ExitCode.SUCCESS)
+            summary_payload = _read_json(summary)
+            self.assertEqual(summary_payload["artifact_count"], 1)
+            self.assertEqual(summary_payload["warning_count"], 0)
             model_properties = _model_properties(_read_json(bom))
+            self.assertEqual(model_properties["ai-bom:model:name"], "example-model")
             self.assertEqual(model_properties["ai-bom:model:model_card"], "MODEL_CARD.md")
+            codes = _warning_codes(summary)
+            self.assertNotIn("MISSING_ARTIFACT_SELECTION", codes)
+            self.assertNotIn("MISSING_MODEL_METADATA", codes)
+
+    def test_missing_discovered_config_falls_back_to_inline_defaults(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            project.mkdir()
+            (project / "MODEL_CARD.md").write_text("# Model\n", encoding="utf-8", newline="\n")
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
             codes = _warning_codes(summary)
             self.assertNotIn("MISSING_MODEL_METADATA", codes)
             self.assertIn("MISSING_ARTIFACT_SELECTION", codes)
+
+    def test_config_discovery_does_not_search_parent_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            parent = work / "parent"
+            project = parent / "project"
+            project.mkdir(parents=True)
+            (project / "MODEL_CARD.md").write_text("# Model\n", encoding="utf-8", newline="\n")
+            (parent / "aibom.toml").write_text(
+                'schema_version = "1"\n\n[warning_policy]\nmissing_metadata = "fail"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(work / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+
+    def test_explicit_config_overrides_discovered_aibom_toml(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            explicit_config = project / "custom-aibom.toml"
+            explicit_config.write_text(
+                (project / "aibom.toml").read_text(encoding="utf-8").replace(
+                    'format = "cyclonedx-json-1.7"',
+                    'format = "spdx-ai"',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(explicit_config),
+                    "--output",
+                    str(work / "bom.json"),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(work / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.EXPORTER_FAILURE)
+
+    def test_invalid_discovered_config_returns_invalid_input_before_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "invalid-config", project)
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
+    def test_discovered_config_symlink_is_rejected_before_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            (project / "aibom.toml").unlink()
+            outside_config = work / "outside-aibom.toml"
+            outside_config.write_text('schema_version = "1"\n', encoding="utf-8", newline="\n")
+            try:
+                os.symlink(outside_config, project / "aibom.toml")
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
 
     def test_model_card_symlink_is_warned_and_not_followed(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

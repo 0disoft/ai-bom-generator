@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Adds `ai-bom --version` for installed CLI version checks.
+- Discovers `<model-directory>/aibom.toml` when `--config` is omitted.
 - Improves the README and PyPI landing-page quickstart for first-time users.
 - Documents the mutable `v0` GitHub Action tag for compatible patch updates.
 
@@ -46,5 +47,5 @@ First public MVP release.
 Deferred:
 
 - GitHub Marketplace registration.
-- Automatic config, artifact, and lockfile discovery.
+- Artifact and lockfile discovery.
 - SPDX AI exporter.

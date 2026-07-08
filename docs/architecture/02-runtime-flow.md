@@ -11,10 +11,10 @@ model serving.
 ## Runtime Flow
 
 1. Parse command arguments or GitHub Action inputs.
-2. Resolve the target model directory and config path.
+2. Resolve the target model directory and explicit or discovered config path.
 3. Validate config shape and warning policy.
 4. Collect declared model metadata, dependency file references, prompt, dataset,
-   eval, and training-code references from explicit config. Select model
+   eval, and training-code references from discovered or explicit config. Select model
    artifacts from explicit include/exclude patterns.
 5. Hash selected model artifacts.
 6. Normalize evidence and absence information.

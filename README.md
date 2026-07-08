@@ -39,9 +39,10 @@ Clone the repository so the bundled minimal model project is available:
 ```powershell
 git clone https://github.com/0disoft/ai-bom-generator.git
 cd ai-bom-generator
+uv sync --locked
 $out = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-bom-example-" + [System.Guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $out | Out-Null
-uv run --python 3.12 --with ai-bom-generator ai-bom generate examples/minimal-model-project --config examples/minimal-model-project/aibom.toml --format cyclonedx-json-1.7 --output (Join-Path $out "bom.cdx.json") --warning-report (Join-Path $out "warnings.json") --summary (Join-Path $out "summary.json")
+uv run --python 3.12 ai-bom generate examples/minimal-model-project --format cyclonedx-json-1.7 --output (Join-Path $out "bom.cdx.json") --warning-report (Join-Path $out "warnings.json") --summary (Join-Path $out "summary.json")
 Get-ChildItem -LiteralPath $out
 ```
 
@@ -95,15 +96,16 @@ name = "minimal-example-dataset"
 license_declared = "NOASSERTION"
 ```
 
-The current MVP reads explicit config files only. Automatic config discovery,
-artifact discovery defaults, SPDX export, and GitHub Marketplace registration
-are deferred.
+When `--config` is omitted, the CLI reads `aibom.toml` from the target model
+directory if that file exists. It does not search parent directories or alternate
+filenames. Artifact discovery defaults, SPDX export, and GitHub Marketplace
+registration are deferred.
 
 ## CLI
 
 ```text
 ai-bom --version
-ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --output <bom.json> --warning-report <warnings.json> --summary <summary.json> [--manifest <manifest.json>]
+ai-bom generate <model-directory> [--config <path>] --format cyclonedx-json-1.7 --output <bom.json> --warning-report <warnings.json> --summary <summary.json> [--manifest <manifest.json>]
 ```
 
 Missing optional metadata is reported as warnings without pretending the BOM is
@@ -125,7 +127,6 @@ unsafe paths, and invalid generated BOM output fail with non-zero exit codes.
   uses: 0disoft/ai-bom-generator@v0
   with:
     model-directory: .
-    config: aibom.toml
     warnings: allow
 
 - name: Verify AI-BOM outputs
@@ -143,8 +144,9 @@ workflows must make Python 3.12 and `uv` available before this action runs.
 The current `v0` contract intentionally keeps Python and `uv` setup
 caller-managed instead of installing toolchains inside the action.
 When `format` or `warnings` inputs are omitted, the action lets the CLI use the
-explicit config values and CLI defaults. Generated files are written to explicit
-paths when provided, or to a run-unique directory under `RUNNER_TEMP`.
+discovered or explicit config values and CLI defaults. Generated files are
+written to explicit paths when provided, or to a run-unique directory under
+`RUNNER_TEMP`.
 
 Summary-derived action outputs are published only when the generation manifest
 matches the BOM, warning report, and summary files from the current run.

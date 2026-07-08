@@ -26,7 +26,7 @@ later exporter and CI integrations.
 ## Phase 1: Local CLI MVP
 
 - Read one model directory.
-- Parse explicit config and model metadata.
+- Parse discovered or explicit config and model metadata.
 - Compute SHA-256 digests for configured model artifacts.
 - Collect dependency, dataset, prompt, eval, and training-code references.
 - Emit BOM output and missing-metadata warnings.

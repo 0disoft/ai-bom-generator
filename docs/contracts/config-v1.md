@@ -15,8 +15,10 @@ byte-equivalent at the JSON object level.
 ## Filename Candidate
 
 `aibom.toml` is the approved filename for explicit MVP config examples and
-fixtures. The CLI does not perform implicit config discovery yet; callers pass
-the config path with `--config`.
+fixtures. When `--config` is omitted, the CLI discovers only
+`<model-directory>/aibom.toml`. It does not search parent directories, alternate
+filenames, or environment variables. If the target-root `aibom.toml` is absent,
+the CLI uses inline defaults and reports missing optional metadata as warnings.
 
 ## Required Properties
 
@@ -50,10 +52,10 @@ silently dropping user intent.
 
 ## Precedence
 
-Explicit CLI flags override config values. When `--format` is omitted, the
-executable implementation uses `[output].format` from the explicit config file
-and falls back to `cyclonedx-json-1.7` when the config does not declare an output
-format.
+Explicit CLI flags override config values. Explicit `--config` paths override
+automatic discovery. When `--format` is omitted, the executable implementation
+uses `[output].format` from the discovered or explicit config file and falls
+back to `cyclonedx-json-1.7` when the config does not declare an output format.
 When `--warnings` is omitted, `[warning_policy].missing_metadata = "warn"` maps
 to the executable `allow` behavior and `"fail"` maps to the executable `fail`
 behavior. The CLI `--warnings` flag overrides this config value.

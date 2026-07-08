@@ -18,12 +18,14 @@ state, registry publication, or compliance approval.
 ## Action Responsibilities
 
 - Invoke the packaged CLI from the action checkout with `uv run --project`.
-- Pass model directory, config, exporter, output path, and warning policy inputs
-  only when the caller provides those optional overrides.
+- Pass config, exporter, output path, and warning policy inputs only when the
+  caller provides those optional overrides. When `config` is omitted, let the
+  CLI discover `aibom.toml` from the model directory.
 - Expose BOM path, warning count, and completeness status as outputs.
 - Write generated files under explicit paths or under run-unique `RUNNER_TEMP`
   defaults.
-- Preserve CLI config precedence for omitted `format` and `warnings` inputs.
+- Preserve CLI config precedence for omitted `config`, `format`, and `warnings`
+  inputs.
 - Require consuming workflows to provide Python 3.12 and `uv` before invoking
   the action. The current `v0` contract keeps setup caller-managed so the
   action does not install or upgrade toolchains inside consumer jobs.

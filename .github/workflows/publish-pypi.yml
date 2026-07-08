@@ -94,7 +94,6 @@ jobs:
           out_dir="$(mktemp -d)"
           uv run --python 3.12 ai-bom generate \
             tests/fixtures/complete-project \
-            --config tests/fixtures/complete-project/aibom.toml \
             --format cyclonedx-json-1.7 \
             --output "$out_dir/bom.cdx.json" \
             --warning-report "$out_dir/warnings.json" \

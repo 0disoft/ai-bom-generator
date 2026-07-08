@@ -25,8 +25,6 @@ class ExampleTests(unittest.TestCase):
                 [
                     "generate",
                     str(project),
-                    "--config",
-                    str(project / "aibom.toml"),
                     "--format",
                     "cyclonedx-json-1.7",
                     "--output",

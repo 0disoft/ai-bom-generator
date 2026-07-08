@@ -23,7 +23,9 @@ This repository type owns action inputs, outputs, permissions, token handling, a
   redaction mode.
 - GitHub Action config precedence: `format` and `warnings` inputs are optional
   overrides. When omitted, the action must not pass the corresponding CLI flag,
-  so the CLI uses explicit config values and executable defaults.
+  so the CLI uses discovered or explicit config values and executable defaults.
+  When `config` is omitted, the action must not pass `--config`, so CLI
+  target-root config discovery remains in one place.
 - GitHub Action default output paths: when output paths are omitted, the action
   writes BOM, warning report, summary, and generation manifest files under a
   run-unique directory in `RUNNER_TEMP` and exposes those paths as action

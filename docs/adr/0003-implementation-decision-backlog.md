@@ -19,7 +19,8 @@ choices from plausible candidates that still need approval.
 
 | Area | Leading candidate | Status |
 | --- | --- | --- |
-| Config filename | `aibom.toml` | Approved for explicit config files on 2026-07-07 |
+| Config filename | `aibom.toml` | Approved for explicit and target-root discovered config files |
+| Config discovery | `<model-directory>/aibom.toml` only | Approved for MVP polish on 2026-07-08 |
 | Config schema | AI-BOM config schema v1 | Approved for runtime validation on 2026-07-07 |
 | CLI command | `ai-bom generate` | Approved for MVP on 2026-07-07 |
 | First exporter | CycloneDX JSON 1.7 | Approved by implementation kickoff on 2026-07-06 |
@@ -57,6 +58,9 @@ choices from plausible candidates that still need approval.
 - Dependency lockfile support is config-driven path evidence in MVP. Automatic
   discovery, lockfile parsing, and package-manager-specific completeness claims
   remain deferred until a later ADR approves them.
+- Config discovery is limited to the target-root `aibom.toml` filename. Parent
+  directory search, alternate filenames, and environment-variable config remain
+  deferred.
 - The GitHub Action wrapper may invoke the packaged CLI from the action checkout,
   expose summary-derived outputs, and default output files under `RUNNER_TEMP`.
   Artifact upload remains deferred and must not be enabled by default.

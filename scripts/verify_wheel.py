@@ -163,8 +163,6 @@ def _verify_installed_entry_point(wheel: Path) -> int:
                 str(console),
                 "generate",
                 str(ROOT / "tests" / "fixtures" / "complete-project"),
-                "--config",
-                str(ROOT / "tests" / "fixtures" / "complete-project" / "aibom.toml"),
                 "--format",
                 "cyclonedx-json-1.7",
                 "--output",

@@ -29,22 +29,28 @@ collect. It must make explicit references easy and avoid broad hidden discovery.
 
 ## Precedence
 
-Explicit CLI flags should override config values. Environment variables are
-out of MVP and should not be added until secret-redaction behavior and precedence
-are designed.
+Explicit CLI flags override discovered or explicit config values. Explicit
+`--config` paths override automatic config discovery. Environment variables are
+out of MVP and should not be added until secret-redaction behavior and
+precedence are designed.
 
 ## Config v1
 
-`aibom.toml` is the approved MVP filename for explicit config files because it
-is local and keeps configuration separate from model-card prose. Config schema
-v1 covers output format, warning policy, model metadata pointers, artifact
-include and exclude patterns, dependency references, dataset references, prompt
-references, eval references, and training references. The runtime validates the
-config against the packaged schema before output files are written.
+`aibom.toml` is the approved MVP filename because it is local and keeps
+configuration separate from model-card prose. When `--config` is omitted, the
+CLI checks only `<model-directory>/aibom.toml`. It does not search parent
+directories, alternate filenames, or environment variables. If the target-root
+`aibom.toml` does not exist, the CLI uses inline defaults and reports missing
+optional metadata as warnings.
+
+Config schema v1 covers output format, warning policy, model metadata pointers,
+artifact include and exclude patterns, dependency references, dataset
+references, prompt references, eval references, and training references. The
+runtime validates discovered and explicit config files against the packaged
+schema before output files are written.
 
 ## Still UNDECIDED
 
-- Automatic config discovery.
 - Format-specific dependency lockfile parsing.
 
 ## Review Blockers

@@ -8,7 +8,7 @@ This repository owns the AI-BOM Generator CLI, optional GitHub Action wrapper,
 collector contracts, exporter mappings, warning taxonomy, and fixture-based
 validation for AI bill-of-materials generation.
 
-It consumes local model project files, explicit config, model cards, dependency
+It consumes local model project files, discovered or explicit config, model cards, dependency
 lockfiles, dataset references, prompt references, eval references, Git metadata,
 and selected model artifacts for hashing.
 
@@ -18,7 +18,8 @@ review, model registry operations, or model serving.
 ## Runtime Flow
 
 1. User invokes the CLI or GitHub Action with a target model directory.
-2. The tool loads explicit config and discovers supported metadata files.
+2. The tool loads explicit config, or discovers `<model-directory>/aibom.toml`,
+   and discovers supported metadata files.
 3. Collectors produce normalized evidence with source context.
 4. Artifact hashing records deterministic digests for selected model files.
 5. Exporter maps normalized evidence to the selected BOM format.

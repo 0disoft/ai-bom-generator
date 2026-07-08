@@ -13,6 +13,7 @@ from ai_bom_generator.validation import SchemaValidationError, validate_with_sch
 
 CONFIG_SCHEMA_PACKAGE = "ai_bom_generator.config.schema"
 CONFIG_SCHEMA_NAME = "aibom-config-v1.schema.json"
+DISCOVERED_CONFIG_NAME = "aibom.toml"
 
 
 @dataclass(frozen=True)
@@ -37,7 +38,9 @@ class LoadedConfig:
 
 def load_config(config_path: Path | None, policy: PathPolicy) -> LoadedConfig:
     if config_path is None:
-        return LoadedConfig(path=None, data={})
+        config_path = _discover_config_path(policy)
+        if config_path is None:
+            return LoadedConfig(path=None, data={})
 
     raw = config_path if config_path.is_absolute() else Path.cwd() / config_path
     if raw.is_symlink():
@@ -62,6 +65,13 @@ def load_config(config_path: Path | None, policy: PathPolicy) -> LoadedConfig:
     _validate_schema_version(data)
     _validate_config_schema(data)
     return LoadedConfig(path=resolved, data=data)
+
+
+def _discover_config_path(policy: PathPolicy) -> Path | None:
+    candidate = policy.root / DISCOVERED_CONFIG_NAME
+    if not candidate.exists() and not candidate.is_symlink():
+        return None
+    return candidate
 
 
 def _validate_schema_version(data: dict[str, Any]) -> None:

@@ -18,8 +18,8 @@ behavior stay comparable.
 ## Inputs
 
 - `model-directory`: required path to the model project directory.
-- `config`: optional config path. Empty means the CLI runs without an explicit
-  config file.
+- `config`: optional config path. Empty means the action omits `--config`, so
+  the CLI may discover `<model-directory>/aibom.toml`.
 - `format`: selected exporter. The Action wrapper must mirror the CLI's accepted
   values; the current CLI value is `cyclonedx-json-1.7`.
 - `output`: output path for generated BOM. Empty defaults under `RUNNER_TEMP`.

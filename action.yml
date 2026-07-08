@@ -6,7 +6,9 @@ inputs:
     description: Path to the model project directory.
     required: true
   config:
-    description: Optional path to an explicit AI-BOM config file.
+    description: >-
+      Optional path to an explicit AI-BOM config file. Empty lets the CLI
+      discover aibom.toml in the model directory.
     required: false
     default: ""
   format:

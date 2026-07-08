@@ -21,14 +21,16 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 
 - A target model directory.
 - Optional explicit config file path. The approved MVP config filename and
-  schema are `aibom.toml` and config schema v1.
+  schema are `aibom.toml` and config schema v1. When no explicit config path is
+  provided, the CLI discovers only `<model-directory>/aibom.toml`.
 - Model card or model metadata file when present. MVP discovers an in-root
   `MODEL_CARD.md` path as evidence without copying or parsing its contents.
 - Model artifact or checkpoint files selected by explicit patterns.
 - Dependency lockfile references declared in config. MVP records dependency
   file paths and scalar metadata; automatic lockfile discovery and
   package-manager-specific parsing remain deferred.
-- Dataset, prompt template, eval dataset, and training script references from explicit config.
+- Dataset, prompt template, eval dataset, and training script references from
+  discovered or explicit config.
 - Git commit reference when the target project is a Git repository.
 
 ## MVP Output
@@ -62,8 +64,8 @@ implemented exporter and must remain schema-validated.
 - Package metadata: `pyproject.toml` with setuptools build backend is approved.
 - Schema validation dependency: `jsonschema>=4.25,<5` is approved.
 - Project lockfile: `uv.lock` is approved.
-- Config filename and schema: `aibom.toml` plus config schema v1 is approved
-  for explicit config files.
+- Config filename and schema: `aibom.toml` plus config schema v1 is approved.
+  Automatic config discovery is limited to `<model-directory>/aibom.toml`.
 - First exporter: CycloneDX JSON 1.7 is implemented first and must stay schema-validated.
 - Lockfile support set: explicit config-declared dependency file references
   only in MVP; automatic discovery and format-specific parsing remain deferred.

@@ -17,7 +17,8 @@ and a warning report.
 ## Pipeline Stages
 
 1. Resolve the target model directory.
-2. Load explicit AI-BOM config when provided.
+2. Load explicit AI-BOM config when provided, otherwise discover
+   `<model-directory>/aibom.toml` when present.
 3. Discover known metadata files without reading arbitrary generated output as truth.
    MVP discovers the in-root `MODEL_CARD.md` path only; it does not copy or
    parse model-card contents.

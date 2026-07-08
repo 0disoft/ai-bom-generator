@@ -18,7 +18,8 @@ CI without requiring a hosted service.
 ## CLI Responsibilities
 
 - Resolve target model directory.
-- Load explicit config.
+- Load explicit config, or discover `<model-directory>/aibom.toml` when
+  `--config` is omitted.
 - Collect model, dependency, dataset, prompt, eval, and training references.
 - Hash selected artifacts.
 - Export the selected BOM format.
@@ -27,7 +28,7 @@ CI without requiring a hosted service.
 
 ## Still UNDECIDED
 
-- Automatic config discovery.
+- Parent-directory or alternate-filename config discovery.
 - Format-specific dependency lockfile parsing.
 
 ## Approved Baseline

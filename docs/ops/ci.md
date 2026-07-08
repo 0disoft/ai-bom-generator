@@ -72,7 +72,7 @@ existing GitHub-only tag (`0.1.0` or `0.1.1`).
 | check | Build source and wheel distributions with `uv build`. |
 | check | Verify the wheel includes runtime schemas, includes the `ai-bom` console script entry point, installs into an isolated virtual environment without dependency resolution, renders `ai-bom --help` and `ai-bom --version`, and can run an installed-console-script fixture smoke with the locked validation dependencies. |
 | smoke | Verify the composite GitHub Action wrapper with clean, warning-only, fail-on-warning, stale-output, and manifest-gated output fixture cases. |
-| smoke | Generate a CycloneDX JSON 1.7 BOM, warning report, summary, and generation manifest from `tests/fixtures/complete-project` through the `ai-bom` console script. |
+| smoke | Generate a CycloneDX JSON 1.7 BOM, warning report, summary, and generation manifest from `tests/fixtures/complete-project` through the `ai-bom` console script using target-root config discovery. |
 | check | Run `git diff --check` for whitespace and diff hygiene. |
 
 Docs validation is performed by reviewing changed documentation until a
@@ -92,7 +92,7 @@ uv run --python 3.12 python scripts/verify_wheel.py dist
 uv run --python 3.12 python scripts/verify_github_action.py
 $out = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-bom-ci-" + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $out | Out-Null
-uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output $(Join-Path $out "bom.cdx.json") --warning-report $(Join-Path $out "warnings.json") --summary $(Join-Path $out "summary.json")
+uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --format cyclonedx-json-1.7 --output $(Join-Path $out "bom.cdx.json") --warning-report $(Join-Path $out "warnings.json") --summary $(Join-Path $out "summary.json")
 git diff --check
 ```
 

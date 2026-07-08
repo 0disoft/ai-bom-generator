@@ -33,7 +33,7 @@ implementation.
 | check | `uv run --python 3.12 python scripts/verify_wheel.py dist` |
 | smoke | `uv run --python 3.12 python scripts/verify_github_action.py` |
 | smoke | `uv run --python 3.12 python scripts/verify_release.py --version <released-version> --publish-run-id <run-id>` |
-| smoke | `uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output <temp>/bom.cdx.json --warning-report <temp>/warnings.json --summary <temp>/summary.json` |
+| smoke | `uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --format cyclonedx-json-1.7 --output <temp>/bom.cdx.json --warning-report <temp>/warnings.json --summary <temp>/summary.json` |
 | check | `git diff --check` |
 
 Docs validation is review-based until a documentation linter is configured.
@@ -43,8 +43,8 @@ have configured runners yet.
 `scripts/verify_wheel.py` verifies required package data, the `ai-bom` entry
 point metadata, installation of the built wheel into an isolated virtual
 environment, `ai-bom --help`, `ai-bom --version`, and an
-installed-console-script fixture smoke using the locked validation environment
-for dependencies.
+installed-console-script fixture smoke that relies on target-root config
+discovery while using the locked validation environment for dependencies.
 
 `scripts/verify_github_action.py` verifies the local composite `action.yml` and
 runs clean, warning-only, fail-on-warning, stale-output, and manifest-gated
