@@ -12,12 +12,6 @@ pnpm-debug.log*
 .env.*
 !.env.example
 node_modules/
-__pycache__/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.venv/
-*.egg-info/
 dist/
 build/
 coverage/
