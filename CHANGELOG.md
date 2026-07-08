@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Adds `ai-bom --version` for installed CLI version checks.
 - Improves the README and PyPI landing-page quickstart for first-time users.
 - Documents the mutable `v0` GitHub Action tag for compatible patch updates.
 

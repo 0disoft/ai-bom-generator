@@ -42,8 +42,9 @@ have configured runners yet.
 
 `scripts/verify_wheel.py` verifies required package data, the `ai-bom` entry
 point metadata, installation of the built wheel into an isolated virtual
-environment, `ai-bom --help`, and an installed-console-script fixture smoke
-using the locked validation environment for dependencies.
+environment, `ai-bom --help`, `ai-bom --version`, and an
+installed-console-script fixture smoke using the locked validation environment
+for dependencies.
 
 `scripts/verify_github_action.py` verifies the local composite `action.yml` and
 runs clean, warning-only, fail-on-warning, stale-output, and manifest-gated

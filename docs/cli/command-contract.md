@@ -15,7 +15,7 @@ This repository type owns command behavior, arguments, flags, config loading, ex
 
 ## Required Decisions
 
-- Command list and flag ownership: `ai-bom generate` generates an AI-BOM from one model directory.
+- Command list and flag ownership: `ai-bom --version` reports the installed package version, and `ai-bom generate` generates an AI-BOM from one model directory.
 - Exit-code taxonomy: success, success-with-warnings, invalid-input, collector-failure, exporter-failure, and internal-error need stable numeric codes.
 - Machine-readable output contract: JSON summary must include output paths, warning counts, exporter, hash algorithm, and completeness status without embedding full source file contents.
 - Config precedence and default behavior: explicit CLI flags override config; environment-variable config is out of MVP until redaction and precedence are designed.
@@ -25,6 +25,8 @@ This repository type owns command behavior, arguments, flags, config loading, ex
 ## Candidate CLI Shape
 
 ```text
+ai-bom --version
+
 ai-bom generate <model-directory>
   --config <path>
   --format <cyclonedx-json-1.7|spdx-ai>

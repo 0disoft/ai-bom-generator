@@ -11,6 +11,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from ai_bom_generator import __version__
 from ai_bom_generator.cli import main
 from ai_bom_generator.errors import CollectorError, ExitCode, ExporterError, InvalidInputError
 
@@ -749,6 +750,17 @@ class CliTests(unittest.TestCase):
         code = main([])
 
         self.assertEqual(code, ExitCode.INVALID_INPUT)
+
+    def test_version_returns_package_version_without_requiring_command(self) -> None:
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            code = main(["--version"])
+
+        self.assertEqual(code, ExitCode.SUCCESS)
+        self.assertEqual(stdout.getvalue(), f"ai-bom-generator {__version__}\n")
+        self.assertEqual(stderr.getvalue(), "")
 
     def test_missing_required_output_flag_returns_invalid_input(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

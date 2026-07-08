@@ -36,6 +36,9 @@ act without reading prose.
 Argument parsing failures, including missing required flags and invalid choices,
 must use `20` rather than argparse's default process status.
 
+`ai-bom --version` writes the installed `ai-bom-generator` package version to
+stdout, writes nothing to stderr, and exits with `0`.
+
 `success-with-warnings` should be a JSON summary status rather than a distinct
 process code when `--warnings allow` is active.
 

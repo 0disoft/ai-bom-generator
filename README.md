@@ -20,6 +20,7 @@ legal compliance engine, dataset auditor, or AI governance platform.
 
 ```powershell
 py -3.12 -m pip install ai-bom-generator
+ai-bom --version
 ai-bom --help
 ```
 
@@ -27,6 +28,7 @@ With `uv`, you can run the published package without installing it into the
 current environment:
 
 ```powershell
+uv run --python 3.12 --with ai-bom-generator ai-bom --version
 uv run --python 3.12 --with ai-bom-generator ai-bom --help
 ```
 
@@ -87,6 +89,7 @@ are deferred.
 ## CLI
 
 ```text
+ai-bom --version
 ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --output <bom.json> --warning-report <warnings.json> --summary <summary.json> [--manifest <manifest.json>]
 ```
 

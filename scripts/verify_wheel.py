@@ -119,6 +119,43 @@ def _verify_installed_entry_point(wheel: Path) -> int:
             print("installed ai-bom console script did not render help", file=sys.stderr)
             return help_check.returncode or 1
 
+        metadata_check = subprocess.run(
+            [
+                str(python),
+                "-c",
+                "import importlib.metadata; print(importlib.metadata.version('ai-bom-generator'))",
+            ],
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            capture_output=True,
+            env=env,
+        )
+        if metadata_check.returncode != 0:
+            print(metadata_check.stdout, file=sys.stderr)
+            print(metadata_check.stderr, file=sys.stderr)
+            print("installed wheel version metadata could not be read", file=sys.stderr)
+            return metadata_check.returncode
+
+        expected_version_output = f"ai-bom-generator {metadata_check.stdout.strip()}\n"
+        version_check = subprocess.run(
+            [str(console), "--version"],
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            capture_output=True,
+            env=env,
+        )
+        if (
+            version_check.returncode != 0
+            or version_check.stdout != expected_version_output
+            or version_check.stderr
+        ):
+            print(version_check.stdout, file=sys.stderr)
+            print(version_check.stderr, file=sys.stderr)
+            print("installed ai-bom console script did not render package version", file=sys.stderr)
+            return version_check.returncode or 1
+
         out = Path(temp) / "out"
         out.mkdir()
         smoke = subprocess.run(

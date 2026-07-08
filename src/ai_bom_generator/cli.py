@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 import sys
 
+from ai_bom_generator import __version__
 from ai_bom_generator.app import GenerateBomOptions, generate_bom
 from ai_bom_generator.errors import AIBomError, ExitCode, InvalidInputError
 from ai_bom_generator.security import Redactor
@@ -19,6 +20,11 @@ class AIBomArgumentParser(argparse.ArgumentParser):
 
 def build_parser() -> argparse.ArgumentParser:
     parser = AIBomArgumentParser(prog="ai-bom")
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"ai-bom-generator {__version__}",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True, parser_class=AIBomArgumentParser)
     generate = subparsers.add_parser("generate", help="Generate an AI/ML BOM from a model directory.")
     generate.add_argument("model_directory", type=Path)
