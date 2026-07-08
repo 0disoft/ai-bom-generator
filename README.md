@@ -45,6 +45,19 @@ uv run --python 3.12 --with ai-bom-generator ai-bom generate examples/minimal-mo
 Get-ChildItem -LiteralPath $out
 ```
 
+Expected files:
+
+```text
+bom.cdx.json
+summary.json
+summary.json.manifest.json
+warnings.json
+```
+
+For the bundled minimal project, `summary.json` reports
+`"status": "success"`, `"completeness_status": "complete"`,
+`"artifact_count": 1`, and `"warning_count": 0`.
+
 The command writes:
 
 - `bom.cdx.json`: CycloneDX JSON 1.7 BOM.
@@ -127,6 +140,8 @@ unsafe paths, and invalid generated BOM output fail with non-zero exit codes.
 
 The action invokes the packaged CLI with `uv run --project`, so consuming
 workflows must make Python 3.12 and `uv` available before this action runs.
+The current `v0` contract intentionally keeps Python and `uv` setup
+caller-managed instead of installing toolchains inside the action.
 When `format` or `warnings` inputs are omitted, the action lets the CLI use the
 explicit config values and CLI defaults. Generated files are written to explicit
 paths when provided, or to a run-unique directory under `RUNNER_TEMP`.

@@ -33,8 +33,9 @@ This repository type owns action inputs, outputs, permissions, token handling, a
   only when the generation manifest matches the current BOM, warning-report, and
   summary files by path, size, and SHA-256 digest.
 - GitHub Action runtime prerequisites: consuming workflows must provide Python
-  3.12 and `uv` before invoking the action until an action-managed setup policy
-  is approved.
+  3.12 and `uv` before invoking the action. The current `v0` contract is
+  caller-managed setup; action-managed setup is deferred until a future
+  contract decision changes the runner responsibility boundary.
 - GitHub Action validation evidence: workflow fixtures must cover clean output,
   warning output, and failure output.
 - GitHub Action release or rollout policy: immutable version tag `v0.1.0` for

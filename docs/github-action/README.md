@@ -25,7 +25,8 @@ state, registry publication, or compliance approval.
   defaults.
 - Preserve CLI config precedence for omitted `format` and `warnings` inputs.
 - Require consuming workflows to provide Python 3.12 and `uv` before invoking
-  the action until action-managed setup is explicitly approved.
+  the action. The current `v0` contract keeps setup caller-managed so the
+  action does not install or upgrade toolchains inside consumer jobs.
 - Preserve read-only default permissions.
 
 ## Release Policy

@@ -20,32 +20,29 @@ to the latest compatible 0.x action release after external smoke verification.
 GitHub Marketplace registration and generated artifact upload are deferred until
 explicitly approved.
 
-PyPI package metadata may be prepared before publishing by adding classifiers,
-keywords, and project URLs to `pyproject.toml` and validating README rendering
-with a package metadata checker.
+PyPI package metadata is maintained in `pyproject.toml` with classifiers,
+keywords, and project URLs. Package distributions must validate their README
+rendering and wheel contents before upload.
 
 ## PyPI Publishing Policy
 
-The first PyPI publish is approved for `v0.1.2`, and it must not reuse an
-already-published GitHub-only tag. Publish the first package from a new patch
-tag after the package registry setup is complete.
+PyPI publishing is approved for patch releases after the package registry setup
+is complete. Do not reuse a GitHub-only tag for a first package upload.
 
 PyPI uploads must use PyPI Trusted Publishing from a GitHub Actions workflow.
 Do not commit, document, or rely on long-lived PyPI API tokens for normal
-publishing. Before the first upload, the maintainer must:
+publishing. Before an upload, the maintainer must:
 
 - create or claim the PyPI project ownership for `ai-bom-generator`;
 - configure the matching PyPI trusted publisher for this GitHub repository and
   release workflow;
-- recheck package name availability immediately before first publish;
+- recheck package and version availability immediately before publish;
 - run the full `VALIDATION.md` check set, including wheel verification and the
   GitHub Action wrapper smoke;
 - confirm an external repository smoke has passed against the latest immutable
   GitHub Action tag;
 - publish from a new patch tag and mark rollback guidance in the GitHub Release
   notes if the package is broken.
-
-Package registry upload remains blocked until those setup steps are complete.
 
 The prepared publish workflow is `.github/workflows/publish-pypi.yml`. It runs
 on strict `vMAJOR.MINOR.PATCH` tags and manual dispatch for an existing tag,
@@ -55,8 +52,8 @@ re-runs compile, lint, unit/contract tests, wheel verification, GitHub Action
 wrapper smoke, CLI fixture smoke, and diff hygiene before upload.
 
 The workflow intentionally rejects `v0.1.0` and `v0.1.1` because those tags were
-created as GitHub-only releases. The first PyPI upload must use `v0.1.2` or a
-later patch tag after the PyPI project and trusted publisher are configured.
+created as GitHub-only releases. Future PyPI uploads must use a patch tag whose
+version exactly matches `pyproject.toml` and has not already been published.
 
 ## Post-Release Verification
 

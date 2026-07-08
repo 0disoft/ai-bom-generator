@@ -11,3 +11,7 @@ New-Item -ItemType Directory -Path $out | Out-Null
 uv run --python 3.12 ai-bom generate examples/minimal-model-project --config examples/minimal-model-project/aibom.toml --format cyclonedx-json-1.7 --output (Join-Path $out "bom.cdx.json") --warning-report (Join-Path $out "warnings.json") --summary (Join-Path $out "summary.json")
 Get-ChildItem -LiteralPath $out
 ```
+
+The run should create `bom.cdx.json`, `warnings.json`, `summary.json`, and
+`summary.json.manifest.json`. For this fixture, the summary reports a
+`success` status, `complete` evidence, one artifact, and zero warnings.
