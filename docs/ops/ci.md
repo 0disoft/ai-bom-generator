@@ -60,7 +60,7 @@ environment.
 The workflow refuses to publish when the tag is not strict `vMAJOR.MINOR.PATCH`,
 when the tag does not match `pyproject.toml` exactly, or when the version is an
 existing GitHub-only tag (`0.1.0` or `0.1.1`). The first PyPI upload must use a
-new patch tag.
+new patch tag such as `v0.1.2`.
 
 ## CI Validation Steps
 

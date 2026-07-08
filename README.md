@@ -45,9 +45,15 @@ legal compliance engine, dataset auditor, or AI governance platform.
 
 ## Quickstart
 
-The current public patch release is `v0.1.1`. It is distributed as a GitHub
-repository and GitHub Action. PyPI publishing is still deferred until the first
-package-registry release is prepared with trusted publishing.
+The current public patch release is `v0.1.2`. It is distributed as a GitHub
+repository, GitHub Action, and Python package.
+
+Install the released package from PyPI:
+
+```powershell
+python -m pip install ai-bom-generator
+ai-bom --help
+```
 
 Try the bundled minimal project from a checkout:
 
@@ -111,10 +117,10 @@ ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --
   with:
     python-version: "3.12"
 
-- uses: astral-sh/setup-uv@v8.2.0
+- uses: astral-sh/setup-uv@v8.3.1
 
 - id: ai-bom
-  uses: 0disoft/ai-bom-generator@v0.1.1
+  uses: 0disoft/ai-bom-generator@v0.1.2
   with:
     model-directory: .
     config: aibom.toml
@@ -164,8 +170,8 @@ metadata lives in `pyproject.toml`, JSON Schema validation uses `jsonschema`,
 the project lockfile is `uv.lock`, explicit config files use `aibom.toml`, the
 first exporter is CycloneDX JSON 1.7, strict redaction is the default, and the
 repository license is Apache-2.0. The first public MVP release uses immutable
-GitHub tags, with `v0.1.1` as the current smoke-tested patch tag. PyPI
-publishing, mutable major action tags, package manager UX, second exporter
-priority, automatic config discovery, and model artifact discovery defaults
-remain deferred until the repository owner records them in the source-of-truth
-documents.
+GitHub tags, with `v0.1.2` as the current smoke-tested patch tag and first PyPI
+package release. Mutable major action tags, GitHub Marketplace registration,
+second exporter priority, automatic config discovery, and model artifact
+discovery defaults remain deferred until the repository owner records them in
+the source-of-truth documents.

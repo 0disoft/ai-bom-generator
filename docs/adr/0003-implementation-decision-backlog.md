@@ -34,7 +34,7 @@ choices from plausible candidates that still need approval.
 | First public release | GitHub Release `v0.1.0` with no PyPI package | Approved by owner on 2026-07-07 |
 | Action tag policy | Immutable version tags only for MVP; no mutable `v0` tag yet | Approved by owner on 2026-07-07 |
 | PyPI package metadata | Classifiers, keywords, and project URLs in `pyproject.toml` | Approved for pre-publish preparation on 2026-07-07 |
-| PyPI package publishing | `.github/workflows/publish-pypi.yml` prepares first upload from a new patch tag via PyPI Trusted Publishing after registry setup and external action smoke | Approved workflow policy on 2026-07-08 |
+| PyPI package publishing | `.github/workflows/publish-pypi.yml` publishes `v0.1.2` or later patch tags via PyPI Trusted Publishing after registry setup and external action smoke | Approved workflow policy on 2026-07-08 |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
 | Network policy | No network in MVP | Proposed |
 | Telemetry policy | No telemetry in MVP | Proposed |

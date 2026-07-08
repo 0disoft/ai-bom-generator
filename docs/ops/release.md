@@ -14,7 +14,7 @@ exporter validation, README non-goal language, and a rollback path for the
 CLI/action contract.
 
 The first public MVP release is `v0.1.0` as an immutable GitHub Release tag.
-Patch releases such as `v0.1.1` remain immutable GitHub Release tags and may be
+Patch releases such as `v0.1.2` remain immutable GitHub Release tags and may be
 used directly as GitHub Action refs. Mutable major action tags such as `v0`,
 GitHub Marketplace registration, and generated artifact upload are deferred
 until explicitly approved.
@@ -25,9 +25,9 @@ with a package metadata checker.
 
 ## PyPI Publishing Policy
 
-The first PyPI publish is approved as a future release activity, but it must not
-reuse an already-published GitHub-only tag. Publish the first package from a new
-patch tag after the package registry setup is complete.
+The first PyPI publish is approved for `v0.1.2`, and it must not reuse an
+already-published GitHub-only tag. Publish the first package from a new patch
+tag after the package registry setup is complete.
 
 PyPI uploads must use PyPI Trusted Publishing from a GitHub Actions workflow.
 Do not commit, document, or rely on long-lived PyPI API tokens for normal
@@ -54,8 +54,8 @@ re-runs compile, lint, unit/contract tests, wheel verification, GitHub Action
 wrapper smoke, CLI fixture smoke, and diff hygiene before upload.
 
 The workflow intentionally rejects `v0.1.0` and `v0.1.1` because those tags were
-created as GitHub-only releases. The first PyPI upload must use a later patch
-tag after the PyPI project and trusted publisher are configured.
+created as GitHub-only releases. The first PyPI upload must use `v0.1.2` or a
+later patch tag after the PyPI project and trusted publisher are configured.
 
 ## Owners
 
