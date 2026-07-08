@@ -11,7 +11,7 @@ bill of materials from a model project directory.
 The tool records declared model metadata, discovered `MODEL_CARD.md` paths,
 model or checkpoint digests, training-code references, dependency lockfiles,
 dataset references, prompt templates, and eval artifact references, then exports
-them to an existing BOM family such as SPDX AI or CycloneDX ML-BOM.
+them to CycloneDX JSON 1.7.
 
 It is a generator and evidence reporter. It is not a model registry, scanner,
 legal compliance engine, dataset auditor, or AI governance platform.
@@ -45,8 +45,9 @@ legal compliance engine, dataset auditor, or AI governance platform.
 
 ## Quickstart
 
-The first public MVP is distributed as a GitHub repository and GitHub Action.
-PyPI packaging is deferred until package-registry policy is approved.
+The current public patch release is `v0.1.1`. It is distributed as a GitHub
+repository and GitHub Action. PyPI publishing is still deferred until the first
+package-registry release is prepared with trusted publishing.
 
 Try the bundled minimal project from a checkout:
 
@@ -104,14 +105,29 @@ ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --
 ## Current GitHub Action Smoke
 
 ```yaml
+- uses: actions/checkout@v7
+
 - uses: actions/setup-python@v6
   with:
     python-version: "3.12"
-- uses: astral-sh/setup-uv@v8.3.1
-- uses: 0disoft/ai-bom-generator@v0.1.0
+
+- uses: astral-sh/setup-uv@v8.2.0
+
+- id: ai-bom
+  uses: 0disoft/ai-bom-generator@v0.1.1
   with:
     model-directory: .
     config: aibom.toml
+    warnings: allow
+
+- name: Verify AI-BOM outputs
+  shell: bash
+  run: |
+    set -euo pipefail
+    test -s "${{ steps.ai-bom.outputs.bom-path }}"
+    test -s "${{ steps.ai-bom.outputs.warning-report-path }}"
+    test -s "${{ steps.ai-bom.outputs.summary-path }}"
+    test "${{ steps.ai-bom.outputs.status }}" = "success"
 ```
 
 The action invokes the packaged CLI with `uv run --project`, so consuming
@@ -148,7 +164,8 @@ metadata lives in `pyproject.toml`, JSON Schema validation uses `jsonschema`,
 the project lockfile is `uv.lock`, explicit config files use `aibom.toml`, the
 first exporter is CycloneDX JSON 1.7, strict redaction is the default, and the
 repository license is Apache-2.0. The first public MVP release uses immutable
-GitHub tag `v0.1.0`; PyPI packaging, mutable major action tags, package manager
-UX, second exporter priority, automatic config discovery, and model artifact
-discovery defaults remain deferred until the repository owner records them in
-the source-of-truth documents.
+GitHub tags, with `v0.1.1` as the current smoke-tested patch tag. PyPI
+publishing, mutable major action tags, package manager UX, second exporter
+priority, automatic config discovery, and model artifact discovery defaults
+remain deferred until the repository owner records them in the source-of-truth
+documents.
