@@ -25,6 +25,7 @@ intended project boundary by default.
 - Reject generated output paths that are symlinks, including broken symlinks.
 - Reject generated output paths that are existing directories or whose existing
   parent path is not a directory.
+- Apply the same generated-output path checks to the generation manifest path.
 
 ## Failure Behavior
 

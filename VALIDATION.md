@@ -44,7 +44,8 @@ environment, `ai-bom --help`, and an installed-console-script fixture smoke
 using the locked validation environment for dependencies.
 
 `scripts/verify_github_action.py` verifies the local composite `action.yml` and
-runs clean, warning-only, and fail-on-warning action wrapper smoke cases.
+runs clean, warning-only, fail-on-warning, stale-output, and manifest-gated
+action wrapper smoke cases.
 
 ## Required Final Report
 

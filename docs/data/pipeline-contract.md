@@ -25,10 +25,13 @@ and a warning report.
 5. Hash selected model artifacts and checkpoints.
 6. Normalize collected evidence into an internal BOM model.
 7. Export to the selected standards-backed BOM format.
-8. Stage requested JSON outputs in destination-local temporary files, then
-   replace final BOM, warning-report, and summary files after all payloads are
-   renderable.
-9. Emit missing-metadata warnings and machine-readable summary output.
+8. Stage requested JSON outputs in destination-local temporary files.
+9. Build a generation manifest from the staged file bytes, including a
+   run-unique generation id plus role, path, size, and SHA-256 digest for every
+   final output in the set.
+10. Replace final BOM, warning-report, and summary files, then replace the
+   manifest last as the commit marker for the output set.
+11. Emit missing-metadata warnings and machine-readable summary output.
 
 Collectors must not know exporter-specific field names. Exporters must not read
 the filesystem directly. Reporters must not mutate normalized evidence.
@@ -60,10 +63,14 @@ component `bom-ref` values are derived from that identity.
 - Unresolved or unsupported Git metadata: warning without fabricating a commit.
 - Stale generated output from a previous run: removed after output-path
   validation and before collection or export starts, so a failed run does not
-  leave old BOM, warning-report, or summary files at the requested destinations.
+  leave old BOM, warning-report, summary, or manifest files at the requested
+  destinations.
 - Output write failure: temporary files are removed, and any final files already
   replaced by the current output staging attempt are removed before the failure
   is surfaced.
+- Interrupted output replacement: if the process stops after one final output is
+  replaced but before the manifest is replaced, consumers can reject the output
+  set because the current run has no committed manifest with matching digests.
 
 ## Validation Needed Before Merge
 

@@ -48,6 +48,11 @@ final replacement. If generation fails, stale files at the requested generated
 output destinations are removed. If final replacement fails after one output has
 already been replaced, the current run removes that partial final output and any
 remaining staged temporary files before returning an internal error.
+The generation manifest is replaced last. Consumers that need transaction-level
+confidence should treat BOM, warning-report, and summary files as current only
+when the manifest exists with `schema_version` `ai-bom-output-manifest/v1`,
+`status` `committed`, and matching path, size, and SHA-256 entries for the
+expected output files.
 
 - `schema_version`
 - `tool.name`
@@ -63,6 +68,16 @@ remaining staged temporary files before returning an internal error.
 - `warnings`
 - `elapsed_ms`
 - `exit_code`
+
+## Generation Manifest Fields
+
+- `schema_version`
+- `generation_id`
+- `status`
+- `files[].role`
+- `files[].path`
+- `files[].sha256`
+- `files[].size_bytes`
 
 ## Review Blockers
 

@@ -8,7 +8,7 @@ from ai_bom_generator.collectors import collect_evidence
 from ai_bom_generator.config import LoadedConfig, load_config
 from ai_bom_generator.errors import ExitCode, ExporterError, InvalidInputError
 from ai_bom_generator.exporters.cyclonedx_json import SUPPORTED_FORMAT, export_cyclonedx_json
-from ai_bom_generator.reporting import build_summary, build_warning_report, write_json_files_atomically
+from ai_bom_generator.reporting import build_summary, build_warning_report, write_json_output_set
 from ai_bom_generator.reporting.json_writer import write_json_stream
 from ai_bom_generator.security import PathPolicy, Redactor
 
@@ -21,6 +21,7 @@ class GenerateBomOptions:
     output: Path
     warning_report: Path
     summary: Path | None
+    manifest: Path
     summary_stdout: bool
     warnings: str | None
     redaction: str
@@ -54,12 +55,12 @@ def generate_bom(options: GenerateBomOptions) -> int:
     )
 
     output_items = [
-        (options.output, bom),
-        (options.warning_report, warning_report),
+        ("bom", options.output, bom),
+        ("warning_report", options.warning_report, warning_report),
     ]
     if options.summary:
-        output_items.append((options.summary, summary))
-    write_json_files_atomically(output_items)
+        output_items.append(("summary", options.summary, summary))
+    write_json_output_set(output_items, options.manifest)
 
     if options.summary_stdout:
         import sys
@@ -99,6 +100,7 @@ def _validate_output_destinations(options: GenerateBomOptions, policy: PathPolic
     destinations = {
         "bom": policy.validate_output_file(options.output, "BOM"),
         "warning_report": policy.validate_output_file(options.warning_report, "Warning report"),
+        "manifest": policy.validate_output_file(options.manifest, "Generation manifest"),
     }
     if options.summary is not None:
         destinations["summary"] = policy.validate_output_file(options.summary, "Summary")

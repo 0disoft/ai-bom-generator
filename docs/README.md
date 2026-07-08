@@ -13,6 +13,7 @@ Status: Draft
 - Repository hygiene source: .editorconfig, .gitattributes, .gitignore
 - CLI command contract source: docs/cli/command-contract.md
 - CLI output and exit-code source: docs/cli/output-and-exit-codes.md
+- Output manifest contract: docs/contracts/output-manifest-v1.md
 - CLI config source: docs/cli/configuration.md
 - GitHub Action source: docs/github-action/README.md
 - Exporter mapping notes: docs/exporters/*.md

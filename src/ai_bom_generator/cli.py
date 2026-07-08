@@ -27,6 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--output", type=Path, required=True)
     generate.add_argument("--warning-report", type=Path, required=True)
     generate.add_argument("--summary", default="-")
+    generate.add_argument("--manifest", type=Path, default=None)
     generate.add_argument("--warnings", choices=["allow", "fail"], default=None)
     generate.add_argument("--redaction", choices=["strict", "off"], default="strict")
     return parser
@@ -41,6 +42,9 @@ def main(argv: list[str] | None = None) -> int:
 
         summary_stdout = args.summary == "-"
         summary_path = None if summary_stdout else Path(args.summary)
+        manifest_path = args.manifest
+        if manifest_path is None:
+            manifest_path = _default_manifest_path(args.output, summary_path)
         options = GenerateBomOptions(
             model_directory=args.model_directory,
             config=args.config,
@@ -48,6 +52,7 @@ def main(argv: list[str] | None = None) -> int:
             output=args.output,
             warning_report=args.warning_report,
             summary=summary_path,
+            manifest=manifest_path,
             summary_stdout=summary_stdout,
             warnings=args.warnings,
             redaction=args.redaction,
@@ -63,3 +68,8 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:
         print(f"ai-bom: internal-error: {_TERMINAL_REDACTOR.redact_text(str(exc))}", file=sys.stderr)
         return ExitCode.INTERNAL_ERROR
+
+
+def _default_manifest_path(output: Path, summary: Path | None) -> Path:
+    base = summary if summary is not None else output
+    return base.with_name(f"{base.name}.manifest.json")

@@ -31,6 +31,7 @@ ai-bom generate <model-directory>
   --output <path>
   --warning-report <path>
   --summary <path|->
+  --manifest <path>
   --warnings <allow|fail>
   --redaction <strict|off>
 ```
@@ -41,6 +42,11 @@ silently writing into the target model directory. Generated output paths must
 resolve outside the target model directory and must not overlap each other.
 Overlapping output paths include identical resolved paths and parent-child
 resolved paths.
+The CLI writes a generation manifest for each successful output set. When
+`--manifest` is omitted, the manifest defaults to `<summary>.manifest.json` for
+file summaries and `<output>.manifest.json` when `--summary -` writes the summary
+to stdout. The manifest records a run-unique generation id plus role, path,
+size, and SHA-256 digest entries for every final JSON output in the set.
 When `--format` is omitted, the explicit config file's `[output].format` value is
 used. If neither CLI nor config declares a format, `cyclonedx-json-1.7` is used
 as the current executable default.

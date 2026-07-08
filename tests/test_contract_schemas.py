@@ -37,13 +37,14 @@ class ContractSchemaTests(unittest.TestCase):
                 json.loads((SCHEMAS / "aibom-config-v1.schema.json").read_text(encoding="utf-8")),
             )
 
-    def test_generated_summary_and_warning_report_validate_against_schemas(self) -> None:
+    def test_generated_summary_warning_report_and_manifest_validate_against_schemas(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
             project = work / "project"
             shutil.copytree(FIXTURES / "sparse-project", project)
             summary = work / "summary.json"
             warnings = work / "warnings.json"
+            manifest = work / "manifest.json"
 
             code = main(
                 [
@@ -57,6 +58,8 @@ class ContractSchemaTests(unittest.TestCase):
                     str(warnings),
                     "--summary",
                     str(summary),
+                    "--manifest",
+                    str(manifest),
                 ]
             )
 
@@ -66,6 +69,11 @@ class ContractSchemaTests(unittest.TestCase):
                 _read_json(warnings),
                 SCHEMAS / "aibom-warning-report-v1.schema.json",
                 "AI-BOM warning report v1",
+            )
+            validate_with_schema(
+                _read_json(manifest),
+                SCHEMAS / "aibom-output-manifest-v1.schema.json",
+                "AI-BOM output manifest v1",
             )
 
 

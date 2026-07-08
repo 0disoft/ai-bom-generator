@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://0disoft.example/schemas/aibom-output-manifest-v1.schema.json",
+  "title": "AI-BOM Generator Output Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generation_id",
+    "status",
+    "files"
+  ],
+  "properties": {
+    "schema_version": { "const": "ai-bom-output-manifest/v1" },
+    "generation_id": { "type": "string", "pattern": "^[0-9a-f]{32}$" },
+    "status": { "const": "committed" },
+    "files": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/file" }
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "path", "sha256", "size_bytes"],
+      "properties": {
+        "role": { "enum": ["bom", "warning_report", "summary"] },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size_bytes": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

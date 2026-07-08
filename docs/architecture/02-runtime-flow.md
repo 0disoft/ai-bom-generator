@@ -20,8 +20,10 @@ model serving.
 6. Normalize evidence and absence information.
 7. Run exporter mapping for the selected BOM family.
 8. Validate exporter output when the selected format has an available schema or conformance check.
-9. Write BOM, warning report, and JSON summary.
-10. Return success, success-with-warnings, or failure according to the exit-code contract.
+9. Write BOM, warning report, JSON summary, and generation manifest.
+10. Treat the manifest as the commit marker for consumers that need to verify
+    all generated JSON files belong to the same run.
+11. Return success, success-with-warnings, or failure according to the exit-code contract.
 
 ## Quality Attributes
 

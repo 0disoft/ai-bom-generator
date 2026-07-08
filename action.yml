@@ -25,6 +25,10 @@ inputs:
     description: Output path for the JSON summary. Defaults under RUNNER_TEMP.
     required: false
     default: ""
+  manifest:
+    description: Output path for the generation manifest. Defaults under RUNNER_TEMP.
+    required: false
+    default: ""
   warnings:
     description: Optional warning policy override passed to ai-bom. Leave empty to use config or CLI defaults.
     required: false
@@ -44,6 +48,9 @@ outputs:
   summary-path:
     description: Path to the generated JSON summary.
     value: ${{ steps.generate.outputs['summary-path'] }}
+  manifest-path:
+    description: Path to the generated output manifest.
+    value: ${{ steps.generate.outputs['manifest-path'] }}
   warning-count:
     description: Warning count reported by the JSON summary when available.
     value: ${{ steps.generate.outputs['warning-count'] }}
@@ -73,6 +80,7 @@ runs:
         INPUT_OUTPUT: ${{ inputs.output }}
         INPUT_WARNING_REPORT: ${{ inputs.warning-report }}
         INPUT_SUMMARY: ${{ inputs.summary }}
+        INPUT_MANIFEST: ${{ inputs.manifest }}
         INPUT_WARNINGS: ${{ inputs.warnings }}
         INPUT_REDACTION: ${{ inputs.redaction }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}

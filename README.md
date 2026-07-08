@@ -87,7 +87,9 @@ name = "example-dataset"
 license_declared = "NOASSERTION"
 ```
 
-The CLI writes a BOM, a warning report, and a JSON summary. Missing optional
+The CLI writes a BOM, a warning report, a JSON summary, and a generation
+manifest. The manifest is the commit marker for the output set and records path,
+size, and SHA-256 entries for the generated JSON files. Missing optional
 metadata is reported as machine-readable warnings. Unreadable required files,
 invalid config, unsupported exporters, unsafe paths, and invalid generated BOM
 output fail with non-zero exit codes. Generated output paths must resolve
@@ -96,7 +98,7 @@ outside the target model project directory.
 ## Current CLI Smoke
 
 ```text
-ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --output <bom.json> --warning-report <warnings.json> --summary <summary.json>
+ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --output <bom.json> --warning-report <warnings.json> --summary <summary.json> [--manifest <manifest.json>]
 ```
 
 ## Current GitHub Action Smoke
@@ -117,6 +119,8 @@ workflows must make Python 3.12 and `uv` available before this action runs. When
 `format` or `warnings` inputs are omitted, the action lets the CLI use the
 explicit config values and CLI defaults. Generated files are written to explicit
 paths when provided, or to a run-unique directory under `RUNNER_TEMP`.
+Summary-derived action outputs are published only when the generation manifest
+matches the BOM, warning report, and summary files from the current run.
 
 The current implementation validates explicit `aibom.toml` config files against
 AI-BOM config schema v1, validates generated CycloneDX JSON 1.7 output against

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -18,9 +19,12 @@ def main() -> int:
     output = _input_path("INPUT_OUTPUT", default_output_dir / "bom.cdx.json")
     warning_report = _input_path("INPUT_WARNING_REPORT", default_output_dir / "warnings.json")
     summary = _input_path("INPUT_SUMMARY", default_output_dir / "summary.json")
+    manifest = _input_path("INPUT_MANIFEST", default_output_dir / "output-manifest.json")
     output.parent.mkdir(parents=True, exist_ok=True)
     warning_report.parent.mkdir(parents=True, exist_ok=True)
     summary.parent.mkdir(parents=True, exist_ok=True)
+    manifest.parent.mkdir(parents=True, exist_ok=True)
+    _remove_stale_action_outputs((output, warning_report, summary, manifest))
 
     args = [
         "uv",
@@ -39,7 +43,18 @@ def main() -> int:
     output_format = os.environ.get("INPUT_FORMAT", "").strip()
     if output_format:
         args.extend(["--format", output_format])
-    args.extend(["--output", str(output), "--warning-report", str(warning_report), "--summary", str(summary)])
+    args.extend(
+        [
+            "--output",
+            str(output),
+            "--warning-report",
+            str(warning_report),
+            "--summary",
+            str(summary),
+            "--manifest",
+            str(manifest),
+        ]
+    )
     warnings = os.environ.get("INPUT_WARNINGS", "").strip()
     if warnings:
         args.extend(["--warnings", warnings])
@@ -48,7 +63,7 @@ def main() -> int:
     env = os.environ.copy()
     env.setdefault("UV_PROJECT_ENVIRONMENT", str(runner_temp / "ai-bom-generator-venv"))
     result = subprocess.run(args, cwd=workspace, env=env)
-    _write_outputs(output, warning_report, summary, result.returncode)
+    _write_outputs(output, warning_report, summary, manifest, result.returncode)
     return result.returncode
 
 
@@ -75,18 +90,25 @@ def _path_env(name: str, default: Path) -> Path:
     return Path(value) if value else default
 
 
-def _write_outputs(output: Path, warning_report: Path, summary: Path, exit_code: int) -> None:
+def _remove_stale_action_outputs(paths: tuple[Path, ...]) -> None:
+    for path in paths:
+        try:
+            if path.exists():
+                path.unlink()
+        except OSError:
+            pass
+
+
+def _write_outputs(output: Path, warning_report: Path, summary: Path, manifest: Path, exit_code: int) -> None:
     pairs = {
         "bom-path": output.as_posix(),
         "warning-report-path": warning_report.as_posix(),
         "summary-path": summary.as_posix(),
+        "manifest-path": manifest.as_posix(),
         "exit-code": str(exit_code),
     }
-    if summary.is_file():
-        try:
-            payload = json.loads(summary.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            payload = {}
+    payload = _read_verified_summary(output, warning_report, summary, manifest)
+    if payload:
         pairs.update(
             {
                 "warning-count": str(payload.get("warning_count", "")),
@@ -96,6 +118,60 @@ def _write_outputs(output: Path, warning_report: Path, summary: Path, exit_code:
             }
         )
     _append_github_outputs(pairs)
+
+
+def _read_verified_summary(
+    output: Path,
+    warning_report: Path,
+    summary: Path,
+    manifest: Path,
+) -> dict[str, object]:
+    try:
+        manifest_payload = json.loads(manifest.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if manifest_payload.get("schema_version") != "ai-bom-output-manifest/v1":
+        return {}
+    if manifest_payload.get("status") != "committed":
+        return {}
+    files = manifest_payload.get("files")
+    if not isinstance(files, list):
+        return {}
+    expected = {
+        "bom": output,
+        "warning_report": warning_report,
+        "summary": summary,
+    }
+    by_role = {
+        str(item.get("role")): item
+        for item in files
+        if isinstance(item, dict)
+    }
+    for role, path in expected.items():
+        item = by_role.get(role)
+        if item is None:
+            return {}
+        if item.get("path") != path.as_posix():
+            return {}
+        if not path.is_file():
+            return {}
+        if item.get("size_bytes") != path.stat().st_size:
+            return {}
+        if item.get("sha256") != _sha256_file(path):
+            return {}
+    try:
+        payload = json.loads(summary.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _write_basic_outputs(exit_code: int) -> None:

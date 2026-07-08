@@ -24,8 +24,8 @@ default.
 - No secrets required for MVP generation.
 - Do not rely on implicit access to `github.token` for generation behavior.
 - Do not log token, environment, or secret-shaped values from the runner.
-- The MVP wrapper writes BOM, warning, and summary files only to explicit paths
-  or `RUNNER_TEMP` defaults.
+- The MVP wrapper writes BOM, warning, summary, and generation manifest files
+  only to explicit paths or `RUNNER_TEMP` defaults.
 
 ## Review Requirements
 

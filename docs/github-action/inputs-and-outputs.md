@@ -26,6 +26,8 @@ behavior stay comparable.
 - `warning-report`: output path for warning report. Empty defaults under
   `RUNNER_TEMP`.
 - `summary`: output path for JSON summary. Empty defaults under `RUNNER_TEMP`.
+- `manifest`: output path for the generation manifest. Empty defaults under
+  `RUNNER_TEMP`.
 - `warnings`: warning policy. The Action wrapper must mirror the CLI's accepted
   values: `allow` and `fail`.
 - `redaction`: redaction mode. The Action wrapper must mirror the CLI's accepted
@@ -39,6 +41,7 @@ that diverge from the CLI contract.
 - `bom-path`
 - `warning-report-path`
 - `summary-path`
+- `manifest-path`
 - `warning-count`
 - `status`: JSON summary run status, such as `success`, `success-with-warnings`,
   or `failed`.
@@ -49,6 +52,9 @@ that diverge from the CLI contract.
 
 The wrapper writes GitHub outputs with the multiline `GITHUB_OUTPUT` form so
 path-like values remain output data even when they contain line breaks.
+The wrapper publishes summary-derived outputs only after the generation manifest
+exists and its path, size, and SHA-256 entries match the BOM, warning-report,
+and summary files from the same run.
 
 ## Review Blockers
 

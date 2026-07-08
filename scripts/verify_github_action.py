@@ -115,8 +115,10 @@ def _verify_action_metadata() -> None:
     required_snippets = [
         "using: composite",
         "INPUT_MODEL_DIRECTORY",
+        "INPUT_MANIFEST",
         "scripts/github_action_entrypoint.py",
         "steps.generate.outputs['bom-path']",
+        "steps.generate.outputs['manifest-path']",
         "steps.generate.outputs['warning-count']",
         "steps.generate.outputs.status",
         "steps.generate.outputs['completeness-status']",
@@ -135,10 +137,12 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
         output = case_root / "bom.cdx.json"
         warning_report = case_root / "warnings.json"
         summary = case_root / "summary.json"
+        manifest = case_root / "output-manifest.json"
     else:
         output = None
         warning_report = None
         summary = None
+        manifest = None
     model_directory = case.model_directory
     config = case.config
     if case.config_text is not None:
@@ -161,6 +165,7 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
             "INPUT_OUTPUT": str(output) if output else "",
             "INPUT_WARNING_REPORT": str(warning_report) if warning_report else "",
             "INPUT_SUMMARY": str(summary) if summary else "",
+            "INPUT_MANIFEST": str(manifest) if manifest else "",
             "INPUT_WARNINGS": case.warnings or "",
             "INPUT_REDACTION": "strict",
         }
@@ -185,7 +190,9 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
         output = Path(outputs.get("bom-path", ""))
         warning_report = Path(outputs.get("warning-report-path", ""))
         summary = Path(outputs.get("summary-path", ""))
-    for path in (output, warning_report, summary, github_output):
+        manifest = Path(outputs.get("manifest-path", ""))
+    assert manifest is not None
+    for path in (output, warning_report, summary, manifest, github_output):
         if not path.is_file() or path.stat().st_size == 0:
             raise AssertionError(f"{case.name} did not create non-empty file: {path}")
     if outputs.get("exit-code") != str(case.expected_exit):
@@ -202,6 +209,8 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
         raise AssertionError(f"{case.name} output warning-report-path mismatch: {outputs.get('warning-report-path')}")
     if outputs.get("summary-path") != summary.as_posix():
         raise AssertionError(f"{case.name} output summary-path mismatch: {outputs.get('summary-path')}")
+    if outputs.get("manifest-path") != manifest.as_posix():
+        raise AssertionError(f"{case.name} output manifest-path mismatch: {outputs.get('manifest-path')}")
     if not case.explicit_output_paths and output.parent == runner_temp / "ai-bom-generator":
         raise AssertionError(f"{case.name} default output path did not include a run-unique directory")
 
@@ -226,6 +235,7 @@ def _run_missing_required_input_case(case_root: Path) -> None:
             "INPUT_OUTPUT": "",
             "INPUT_WARNING_REPORT": "",
             "INPUT_SUMMARY": "",
+            "INPUT_MANIFEST": "",
             "INPUT_WARNINGS": "allow",
             "INPUT_REDACTION": "strict",
         }
@@ -254,7 +264,8 @@ def _run_stale_summary_failure_case(case_root: Path) -> None:
     output = case_root / "bom.cdx.json"
     warning_report = case_root / "warnings.json"
     summary = case_root / "summary.json"
-    for path in (output, warning_report, summary):
+    manifest = case_root / "output-manifest.json"
+    for path in (output, warning_report, summary, manifest):
         path.write_text('{"status":"stale","warning_count":999}\n', encoding="utf-8", newline="\n")
     env = os.environ.copy()
     env.update(
@@ -269,6 +280,7 @@ def _run_stale_summary_failure_case(case_root: Path) -> None:
             "INPUT_OUTPUT": str(output),
             "INPUT_WARNING_REPORT": str(warning_report),
             "INPUT_SUMMARY": str(summary),
+            "INPUT_MANIFEST": str(manifest),
             "INPUT_WARNINGS": "allow",
             "INPUT_REDACTION": "strict",
         }
@@ -292,7 +304,7 @@ def _run_stale_summary_failure_case(case_root: Path) -> None:
     for key in ("warning-count", "status", "completeness-status", "format"):
         if key in outputs:
             raise AssertionError(f"stale-summary-failure published stale summary output key: {key}")
-    for path in (output, warning_report, summary):
+    for path in (output, warning_report, summary, manifest):
         if path.exists():
             raise AssertionError(f"stale-summary-failure left stale file: {path}")
 

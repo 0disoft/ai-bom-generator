@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import redirect_stderr, redirect_stdout
+import hashlib
 import io
 import json
 import os
@@ -46,6 +47,14 @@ class CliTests(unittest.TestCase):
             summary_payload = _read_json(summary)
             warning_payload = _read_json(warnings)
             bom_payload = _read_json(bom)
+            _assert_manifest_matches_outputs(
+                summary.with_name(f"{summary.name}.manifest.json"),
+                {
+                    "bom": bom,
+                    "warning_report": warnings,
+                    "summary": summary,
+                },
+            )
             self.assertEqual(summary_payload["status"], "success")
             self.assertEqual(summary_payload["warning_count"], 0)
             self.assertEqual(warning_payload["warning_count"], 0)
@@ -595,6 +604,13 @@ class CliTests(unittest.TestCase):
             self.assertEqual(summary_payload["warning_report_path"], warnings.as_posix())
             self.assertTrue(bom.exists())
             self.assertTrue(warnings.exists())
+            _assert_manifest_matches_outputs(
+                bom.with_name(f"{bom.name}.manifest.json"),
+                {
+                    "bom": bom,
+                    "warning_report": warnings,
+                },
+            )
 
     def test_declared_missing_model_card_fails_as_invalid_input(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -1415,7 +1431,8 @@ class CliTests(unittest.TestCase):
             bom = work / "bom.json"
             warnings = work / "warnings.json"
             summary = work / "summary.json"
-            for path in (bom, warnings, summary):
+            manifest = summary.with_name(f"{summary.name}.manifest.json")
+            for path in (bom, warnings, summary, manifest):
                 path.write_text('{"stale":true}\n', encoding="utf-8", newline="\n")
 
             code = main(
@@ -1439,6 +1456,7 @@ class CliTests(unittest.TestCase):
             self.assertFalse(bom.exists())
             self.assertFalse(warnings.exists())
             self.assertFalse(summary.exists())
+            self.assertFalse(manifest.exists())
 
     def test_output_replace_failure_removes_partial_outputs_and_temp_files(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -1448,6 +1466,7 @@ class CliTests(unittest.TestCase):
             bom = work / "bom.json"
             warnings = work / "warnings.json"
             summary = work / "summary.json"
+            manifest = summary.with_name(f"{summary.name}.manifest.json")
             stderr = io.StringIO()
             real_replace = os.replace
             replace_count = 0
@@ -1483,6 +1502,7 @@ class CliTests(unittest.TestCase):
             self.assertFalse(bom.exists())
             self.assertFalse(warnings.exists())
             self.assertFalse(summary.exists())
+            self.assertFalse(manifest.exists())
             self.assertEqual([], list(work.glob(".*.tmp")))
 
     def test_output_path_inside_target_root_is_rejected_before_writing(self) -> None:
@@ -1911,6 +1931,43 @@ class CliTests(unittest.TestCase):
 
 def _read_json(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _assert_manifest_matches_outputs(manifest_path: Path, expected: dict[str, Path]) -> None:
+    manifest = _read_json(manifest_path)
+    if manifest.get("schema_version") != "ai-bom-output-manifest/v1":
+        raise AssertionError(f"unexpected manifest schema: {manifest.get('schema_version')}")
+    if manifest.get("status") != "committed":
+        raise AssertionError(f"unexpected manifest status: {manifest.get('status')}")
+    generation_id = manifest.get("generation_id")
+    if not isinstance(generation_id, str) or not generation_id:
+        raise AssertionError(f"unexpected manifest generation_id: {generation_id}")
+    files = manifest.get("files")
+    if not isinstance(files, list):
+        raise AssertionError("manifest files must be a list")
+    by_role = {
+        str(item.get("role")): item
+        for item in files
+        if isinstance(item, dict)
+    }
+    if set(by_role) != set(expected):
+        raise AssertionError(f"manifest roles mismatch: {set(by_role)} != {set(expected)}")
+    for role, path in expected.items():
+        item = by_role[role]
+        if item.get("path") != path.as_posix():
+            raise AssertionError(f"manifest path mismatch for {role}: {item.get('path')}")
+        if item.get("size_bytes") != path.stat().st_size:
+            raise AssertionError(f"manifest size mismatch for {role}: {item.get('size_bytes')}")
+        if item.get("sha256") != _sha256_file(path):
+            raise AssertionError(f"manifest digest mismatch for {role}")
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _warning_codes(summary_path: Path) -> set[str]:

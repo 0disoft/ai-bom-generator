@@ -41,7 +41,7 @@ choices from plausible candidates that still need approval.
 | Redaction default | strict | Approved for CLI and terminal output on 2026-07-07 |
 | Action-managed runtime setup | Composite action installs or prepares Python and `uv` itself | Deferred |
 | Staged output writes | Destination-local temp-file writes, stale-output cleanup, and partial-output cleanup | Approved for MVP hardening on 2026-07-08 |
-| Generation manifest | Manifest-backed run identity and full multi-file transaction audit trail | Deferred |
+| Generation manifest | Manifest-backed run identity and full multi-file transaction audit trail | Approved for MVP hardening on 2026-07-08 |
 | Artifact snapshot consistency | Single-descriptor stat/hash validation or immutable staging | Deferred |
 | Artifact glob budgets | Match-count and byte budgets for broad artifact patterns | Deferred |
 | Provider-aware redaction matrix | Key-aware and provider-token redaction beyond current strict patterns | Proposed |
@@ -66,10 +66,10 @@ choices from plausible candidates that still need approval.
   a package-registry release policy is approved.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
-- Do not claim action-managed runtime setup, manifest-backed full multi-file
-  output transactions, artifact snapshot consistency guarantees, broad-glob
-  budgets, or expanded provider-token coverage until the corresponding
-  deferred/proposed decision is approved and implemented with fixtures.
+- Do not claim action-managed runtime setup, artifact snapshot consistency
+  guarantees, broad-glob budgets, or expanded provider-token coverage until the
+  corresponding deferred/proposed decision is approved and implemented with
+  fixtures.
 
 ## Review Blockers
 
