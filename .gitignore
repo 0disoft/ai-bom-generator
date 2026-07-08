@@ -20,3 +20,11 @@ coverage/
 tmp/
 *.tsbuildinfo
 # <<< ssealed ignore patterns <<<
+
+# Project-owned Python artifacts
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+*.egg-info/
