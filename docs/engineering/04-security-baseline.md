@@ -18,6 +18,8 @@ boundaries, and avoidance of implicit network access.
 ## Review Blockers
 
 - A change logs credentials, private dataset contents, model weights, or full source files.
+- A change lets sensitive key names such as token, secret, password,
+  credential, authorization, or api_key reach generated output unredacted.
 - A change enables network access, registry publication, PR comments, or artifact upload without an explicit contract.
 - A change treats user-provided paths or config as trusted.
 - A change follows symlinks or reads outside the target root without an explicit policy.

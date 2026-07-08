@@ -21,6 +21,8 @@ Action token scope, generated artifact disclosure, and misleading BOM claims.
 - A change follows symlinks, expands globs, or reads hidden paths without an explicit policy.
 - A change makes compliance, license, safety, or vulnerability claims from incomplete evidence.
 - A change copies prompt, dataset, eval, model-card, or model-weight contents into summaries by default.
-- A change allows token-bearing URLs or credentialed Git remotes to pass into generated outputs unredacted.
+- A change allows token-bearing URLs, credentialed Git remotes, provider token
+  shapes, or sensitive key/value fields to pass into generated outputs
+  unredacted.
 - A change weakens validation or hides skipped checks.
 - A change lacks failure, recovery, security, performance, or test evidence where relevant.

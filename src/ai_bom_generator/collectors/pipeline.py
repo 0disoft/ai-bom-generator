@@ -613,7 +613,7 @@ def _string_pairs(
         if key in skip:
             continue
         if _is_scalar(value):
-            pairs.append((str(key), redactor.redact_text(str(value))))
+            pairs.append((str(key), str(redactor.redact_key_value(str(key), str(value)))))
         else:
             warnings.append(
                 Warning(

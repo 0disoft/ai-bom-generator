@@ -31,7 +31,8 @@ The executable schema lives at `schemas/aibom-summary-v1.schema.json`.
 ## Privacy Rules
 
 - Do not embed full model-card, prompt, eval, dataset, dependency, or model file contents.
-- Do not emit unredacted token-bearing URLs, private key blocks, or credentialed Git remotes.
+- Do not emit unredacted token-bearing URLs, private key blocks, credentialed
+  Git remotes, provider token shapes, or values attached to sensitive key names.
 - Prefer relative paths when they preserve enough source context.
 
 ## Status Values

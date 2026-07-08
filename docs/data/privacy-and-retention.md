@@ -20,7 +20,8 @@ metadata rather than copying source file contents into telemetry or JSON summari
 - Input model project files remain local to the caller.
 - Generated BOM output may include paths, hashes, declared names, declared licenses, URLs, and references.
 - JSON summary must not include full model card, prompt, eval, or dataset file contents.
-- Known secret-shaped values should be redacted or rejected before they enter generated reports.
+- Known secret-shaped values and values attached to sensitive key names should
+  be redacted or rejected before they enter generated reports.
 - Network access is out of scope unless explicitly designed later.
 - Prompt contents, private dataset rows, model weights, and full eval output contents are not collected by default.
 - BOM output is also a privacy surface and must follow redaction rules, not only the JSON summary.
@@ -33,7 +34,8 @@ metadata rather than copying source file contents into telemetry or JSON summari
 
 ## Validation Needed Before Merge
 
-- Redaction fixtures for obvious token and URL-like secrets.
+- Redaction fixtures for obvious token, provider-token, URL-like, and
+  key-aware secrets.
 - Symlink and target-root escape fixtures.
 - Negative fixtures proving source file contents are not embedded in JSON summary.
 

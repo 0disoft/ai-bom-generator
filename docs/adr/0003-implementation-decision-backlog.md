@@ -48,8 +48,9 @@ choices from plausible candidates that still need approval.
 | Artifact immutable staging | Tool-managed immutable artifact copy before hashing | Deferred |
 | Artifact glob budgets | Fixed MVP match-count, single-file byte, and total-byte budgets with warning skips | Approved for MVP hardening on 2026-07-09 |
 | Configurable artifact budgets | Config or CLI overrides for artifact match-count and byte budgets | Deferred |
-| Common provider-token redaction | AWS, Slack, GitLab, Google API key, Bearer, and JWT-shaped values in strict mode | Approved for MVP hardening on 2026-07-08 |
-| Key-aware redaction matrix | Schema-aware secret-key warnings and provider-specific validators beyond obvious token shapes | Proposed |
+| Common provider-token redaction | AWS, Slack, GitLab, Google API key, Hugging Face, GCP OAuth, Bearer, and JWT-shaped values in strict mode | Approved for MVP hardening on 2026-07-09 |
+| Key-aware redaction matrix | Sensitive key names such as token, secret, password, credential, authorization, api_key, access_key, private_key, client_secret, refresh_token, and id_token redact values in strict mode | Approved for MVP hardening on 2026-07-09 |
+| Schema-aware secret-key warnings | Warnings for sensitive keys detected in config beyond redaction | Proposed |
 
 ## Guardrails
 
@@ -77,7 +78,7 @@ choices from plausible candidates that still need approval.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
 - Do not claim action-managed runtime setup, immutable artifact staging,
-  configurable artifact budgets, or schema-aware redaction coverage until the
+  configurable artifact budgets, or schema-aware secret-key warnings until the
   corresponding deferred/proposed decision is approved and implemented with
   fixtures.
 

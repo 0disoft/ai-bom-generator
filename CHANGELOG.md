@@ -10,6 +10,8 @@
   describe the same stable file snapshot.
 - Adds fixed artifact match-count and byte budgets with machine-readable
   warnings for skipped over-budget artifact patterns and files.
+- Expands strict redaction with Hugging Face and GCP token shapes plus
+  key-aware masking for sensitive config and JSON fields.
 
 ## v0.1.2
 

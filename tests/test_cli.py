@@ -2222,16 +2222,20 @@ class CliTests(unittest.TestCase):
             shutil.copytree(FIXTURES / "secret-redaction", project)
             config = project / "aibom.toml"
             aws_key = "AKIA1234567890ABCDEF"
+            hf_token = "hf_abcdefghijklmnopqrstuvwxyz123456"
             slack_token = "xoxb-1234567890abcdefghijkl"
             gitlab_token = "glpat-1234567890abcdef"
             google_key = f"AIza{'A' * 35}"
+            gcp_token = "ya29.abcdefghijklmnopqrstuvwxyz123456"
             bearer_token = "Bearer abcdefghijklmnop123456"
             jwt_token = "eyJabcdefghijklmno.eyJabcdefghijklmnop.signature1234567890"
             config_text = config.read_text(encoding="utf-8").replace(
                 'name = "redaction-model"',
                 'name = "redaction-model"\n'
                 + f'aws_access_key = "{aws_key}"\n'
+                + f'huggingface_token = "{hf_token}"\n'
                 + f'google_api_key = "{google_key}"\n'
+                + f'gcp_access_token = "{gcp_token}"\n'
                 + f'authorization = "{bearer_token}"\n'
                 + f'identity_token = "{jwt_token}"',
             )
@@ -2270,12 +2274,97 @@ class CliTests(unittest.TestCase):
             for output in (bom, warnings, summary):
                 text = output.read_text(encoding="utf-8")
                 self.assertNotIn(aws_key, text)
+                self.assertNotIn(hf_token, text)
                 self.assertNotIn(slack_token, text)
                 self.assertNotIn(gitlab_token, text)
                 self.assertNotIn(google_key, text)
+                self.assertNotIn(gcp_token, text)
                 self.assertNotIn("abcdefghijklmnop123456", text)
                 self.assertNotIn(jwt_token, text)
             self.assertIn("REDACTED", bom.read_text(encoding="utf-8"))
+
+    def test_key_aware_secret_fields_are_redacted_from_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "secret-redaction", project)
+            config = project / "aibom.toml"
+            plain_password = "ordinary-looking-password"
+            plain_api_key = "ordinary-looking-api-key"
+            plain_credential = "ordinary-looking-credential"
+            plain_private_key = "ordinary-looking-private-key"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'name = "redaction-model"',
+                    'name = "redaction-model"\n'
+                    + f'password = "{plain_password}"\n'
+                    + f'service_api_key = "{plain_api_key}"\n'
+                    + f'credential = "{plain_credential}"\n'
+                    + f'private_key = "{plain_private_key}"',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            for output in (bom, warnings, summary):
+                text = output.read_text(encoding="utf-8")
+                self.assertNotIn(plain_password, text)
+                self.assertNotIn(plain_api_key, text)
+                self.assertNotIn(plain_credential, text)
+                self.assertNotIn(plain_private_key, text)
+            model_properties = _model_properties(_read_json(bom))
+            self.assertEqual(model_properties["ai-bom:model:password"], "REDACTED")
+            self.assertEqual(model_properties["ai-bom:model:service_api_key"], "REDACTED")
+            self.assertEqual(model_properties["ai-bom:model:credential"], "REDACTED")
+            self.assertEqual(model_properties["ai-bom:model:private_key"], "REDACTED")
+
+    def test_terminal_error_output_redacts_sensitive_query_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            stderr = io.StringIO()
+
+            with redirect_stderr(stderr):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(project / "aibom.toml"),
+                        "--output",
+                        str(work / "bom.json"),
+                        "--warning-report",
+                        str(work / "warnings.json"),
+                        "--summary",
+                        str(work / "summary.json"),
+                        "--format",
+                        "spdx-ai?password=ordinary-looking-password",
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.EXPORTER_FAILURE)
+            self.assertNotIn("ordinary-looking-password", stderr.getvalue())
+            self.assertIn("password=REDACTED", stderr.getvalue())
 
     def test_redaction_off_preserves_secret_shaped_values_with_warning(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

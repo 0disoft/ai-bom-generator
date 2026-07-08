@@ -26,8 +26,12 @@ The redaction layer should detect obvious credential forms before output:
 - Credentialed Git remotes.
 - Common API-token-shaped strings, including GitHub/OpenAI-style API keys.
 - Common provider and DevOps token shapes, including AWS access keys, Slack
-  tokens, GitLab personal access tokens, Google API keys, Bearer credentials,
-  and JWT-shaped values.
+  tokens, GitLab personal access tokens, Google API keys, Hugging Face tokens,
+  GCP OAuth access tokens, Bearer credentials, and JWT-shaped values.
+- Values assigned to sensitive config or JSON keys such as `token`, `secret`,
+  `password`, `credential`, `authorization`, `api_key`, `access_key`,
+  `private_key`, `client_secret`, `refresh_token`, and `id_token`, even when
+  the value itself does not match a provider-specific token shape.
 - Disabled redaction must be reported as a warning instead of silently producing
   unredacted output.
 
@@ -45,4 +49,5 @@ The redaction layer should detect obvious credential forms before output:
 
 - A new output surface bypasses redaction.
 - Redaction only covers JSON summary but not BOM output.
+- Redaction only covers provider-shaped values and misses sensitive key names.
 - A fixture includes real credentials, real private prompts, real private datasets, or real model weights.
