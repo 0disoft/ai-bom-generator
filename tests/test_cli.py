@@ -194,7 +194,8 @@ class CliTests(unittest.TestCase):
                 ]
             )
 
-            self.assertEqual(code, ExitCode.EXPORTER_FAILURE)
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertEqual(_read_json(work / "summary.json")["format"], "spdx-ai")
 
     def test_invalid_discovered_config_returns_invalid_input_before_writing(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -351,10 +352,93 @@ class CliTests(unittest.TestCase):
                 ]
             )
 
-            self.assertEqual(code, ExitCode.EXPORTER_FAILURE)
-            self.assertFalse(bom.exists())
-            self.assertFalse(warnings.exists())
-            self.assertFalse(summary.exists())
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertTrue(bom.exists())
+            self.assertEqual(_read_json(summary)["format"], "spdx-ai")
+            self.assertEqual(_read_json(bom)["aiBom:format"], "spdx-ai")
+
+    def test_complete_project_generates_spdx_ai_preview(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "bom.spdx.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--format",
+                    "spdx-ai",
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            bom_payload = _read_json(bom)
+            summary_payload = _read_json(summary)
+            graph_by_type = _spdx_graph_by_type(bom_payload)
+            model = graph_by_type["ai_AIPackage"][0]
+            self.assertEqual(summary_payload["format"], "spdx-ai")
+            self.assertEqual(bom_payload["@context"], "https://spdx.org/rdf/3.0.1/spdx-context.jsonld")
+            self.assertEqual(bom_payload["aiBom:spdxTarget"], "SPDX 3.0.1 AI Profile preview")
+            self.assertEqual(bom_payload["aiBom:conformance"], "partial")
+            self.assertEqual(model["name"], "example-model")
+            self.assertEqual(model["packageVersion"], "0.1.0")
+            self.assertEqual(model["aiBom:modelCard"], "MODEL_CARD.md")
+            self.assertIn("releaseTime", model["aiBom:unavailableSpdxAiFields"])
+            file_element = graph_by_type["software_File"][0]
+            self.assertEqual(file_element["aiBom:path"], "models/model.safetensors")
+            self.assertEqual(file_element["verifiedUsing"][0]["algorithm"], "SHA256")
+            self.assertRegex(file_element["verifiedUsing"][0]["hashValue"], r"^[0-9a-f]{64}$")
+            relationship = graph_by_type["Relationship"][0]
+            self.assertEqual(relationship["relationshipType"], "contains")
+            self.assertIn(file_element["spdxId"], relationship["to"])
+
+    def test_sparse_project_generates_spdx_ai_preview_with_explicit_gaps(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "sparse-project", project)
+            bom = work / "bom.spdx.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--format",
+                    "spdx-ai",
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertEqual(_read_json(summary)["status"], "success-with-warnings")
+            model = _spdx_graph_by_type(_read_json(bom))["ai_AIPackage"][0]
+            self.assertEqual(model["name"], "sparse-model")
+            self.assertEqual(model["packageVersion"], "NOASSERTION")
+            self.assertEqual(
+                model["aiBom:unavailableSpdxAiFields"],
+                ["suppliedBy", "downloadLocation", "releaseTime"],
+            )
+            self.assertIn("MISSING_ARTIFACT_SELECTION", _warning_codes(summary))
 
     def test_cli_output_format_overrides_config_output_format(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -1992,7 +2076,7 @@ class CliTests(unittest.TestCase):
                     "--config",
                     str(project / "aibom.toml"),
                     "--format",
-                    "spdx-ai",
+                    "unsupported-format",
                     "--output",
                     str(bom),
                     "--warning-report",
@@ -2064,7 +2148,7 @@ class CliTests(unittest.TestCase):
                     "--config",
                     str(project / "aibom.toml"),
                     "--format",
-                    "spdx-ai",
+                    "unsupported-format",
                     "--output",
                     str(bom),
                     "--warning-report",
@@ -2784,6 +2868,16 @@ def _component_refs(bom_payload: dict[str, object]) -> set[str]:
         for component in components
         if isinstance(component, dict)
     }
+
+
+def _spdx_graph_by_type(bom_payload: dict[str, object]) -> dict[str, list[dict[str, object]]]:
+    graph = bom_payload["@graph"]
+    assert isinstance(graph, list)
+    by_type: dict[str, list[dict[str, object]]] = {}
+    for element in graph:
+        assert isinstance(element, dict)
+        by_type.setdefault(str(element["type"]), []).append(element)
+    return by_type
 
 
 def _generate_fixture_outputs(work: Path, name: str, fixture: str) -> Path:

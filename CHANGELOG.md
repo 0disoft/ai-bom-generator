@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## v0.1.4
+
+- Adds the `spdx-ai` exporter as a partial SPDX 3.0.1 AI Profile preview with
+  local contract validation and explicit unavailable-field notes.
+
 ## v0.1.3
 
 - Adds `ai-bom --version` for installed CLI version checks.

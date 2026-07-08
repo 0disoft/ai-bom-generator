@@ -54,6 +54,16 @@ def main(argv: list[str] | None = None) -> int:
                 format=None,
             ),
             ActionCase(
+                "spdx-ai-format",
+                "tests/fixtures/complete-project",
+                "tests/fixtures/complete-project/aibom.toml",
+                "allow",
+                0,
+                "success",
+                "complete",
+                format="spdx-ai",
+            ),
+            ActionCase(
                 "config-warning-policy",
                 "tests/fixtures/sparse-project",
                 None,
@@ -211,7 +221,8 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
         raise AssertionError(f"{case.name} output status mismatch: {outputs.get('status')}")
     if outputs.get("completeness-status") != case.expected_completeness_status:
         raise AssertionError(f"{case.name} output completeness-status mismatch: {outputs.get('completeness-status')}")
-    if outputs.get("format") != "cyclonedx-json-1.7":
+    expected_format = case.format or "cyclonedx-json-1.7"
+    if outputs.get("format") != expected_format:
         raise AssertionError(f"{case.name} output format mismatch: {outputs.get('format')}")
     if outputs.get("bom-path") != output.as_posix():
         raise AssertionError(f"{case.name} output bom-path mismatch: {outputs.get('bom-path')}")
@@ -286,7 +297,7 @@ def _run_stale_summary_failure_case(case_root: Path) -> None:
             "RUNNER_TEMP": str(case_root / "runner-temp"),
             "INPUT_MODEL_DIRECTORY": "tests/fixtures/complete-project",
             "INPUT_CONFIG": "tests/fixtures/complete-project/aibom.toml",
-            "INPUT_FORMAT": "spdx-ai",
+            "INPUT_FORMAT": "unsupported-format",
             "INPUT_OUTPUT": str(output),
             "INPUT_WARNING_REPORT": str(warning_report),
             "INPUT_SUMMARY": str(summary),

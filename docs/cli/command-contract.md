@@ -41,7 +41,9 @@ ai-bom generate <model-directory>
 ```
 
 The exact binary name, flag names, accepted formats, and output filename defaults
-are implemented for the current MVP CLI. MVP prefers explicit output paths over
+are implemented for the current MVP CLI. `cyclonedx-json-1.7` is the default
+format. `spdx-ai` emits an SPDX 3.0.1 AI Profile preview with partial
+conformance and local preview-schema validation. MVP prefers explicit output paths over
 silently writing into the target model directory. Generated output paths must
 resolve outside the target model directory and must not overlap each other.
 Overlapping output paths include identical resolved paths and parent-child

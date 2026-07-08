@@ -6,8 +6,12 @@ import time
 
 from ai_bom_generator.collectors import collect_evidence
 from ai_bom_generator.config import LoadedConfig, load_config
+from ai_bom_generator.domain.evidence import NormalizedEvidence
 from ai_bom_generator.errors import ExitCode, ExporterError, InvalidInputError
-from ai_bom_generator.exporters.cyclonedx_json import SUPPORTED_FORMAT, export_cyclonedx_json
+from ai_bom_generator.exporters.cyclonedx_json import SUPPORTED_FORMAT as CYCLONEDX_JSON_FORMAT
+from ai_bom_generator.exporters.cyclonedx_json import export_cyclonedx_json
+from ai_bom_generator.exporters.spdx_ai import SUPPORTED_FORMAT as SPDX_AI_FORMAT
+from ai_bom_generator.exporters.spdx_ai import export_spdx_ai
 from ai_bom_generator.reporting import build_summary, build_warning_report, write_json_output_set
 from ai_bom_generator.reporting.json_writer import write_json_stream
 from ai_bom_generator.security import PathPolicy, Redactor
@@ -35,12 +39,12 @@ def generate_bom(options: GenerateBomOptions) -> int:
     redactor = Redactor(options.redaction)
     config = load_config(options.config, policy)
     output_format = _resolve_output_format(options, config)
-    if output_format != SUPPORTED_FORMAT:
+    if output_format not in _SUPPORTED_EXPORT_FORMATS:
         raise ExporterError(f"Unsupported output format: {output_format}", "exporter")
     warning_policy = _resolve_warning_policy(options, config)
     evidence = collect_evidence(config, policy, redactor)
 
-    bom = export_cyclonedx_json(evidence, redactor)
+    bom = _export_bom(output_format, evidence, redactor)
     warning_report = build_warning_report(evidence, redactor)
     warning_policy_failed = warning_policy == "fail" and evidence.warning_count > 0
     elapsed_ms = int((time.perf_counter() - start) * 1000)
@@ -75,10 +79,21 @@ def _resolve_output_format(options: GenerateBomOptions, config: LoadedConfig) ->
         return options.output_format
 
     output = config.get_table("output")
-    configured = output.get("format", SUPPORTED_FORMAT)
+    configured = output.get("format", CYCLONEDX_JSON_FORMAT)
     if not isinstance(configured, str):
         raise InvalidInputError("[output].format must be a string.", "config")
     return configured
+
+
+_SUPPORTED_EXPORT_FORMATS = {CYCLONEDX_JSON_FORMAT, SPDX_AI_FORMAT}
+
+
+def _export_bom(output_format: str, evidence: NormalizedEvidence, redactor: Redactor) -> dict[str, object]:
+    if output_format == CYCLONEDX_JSON_FORMAT:
+        return export_cyclonedx_json(evidence, redactor)
+    if output_format == SPDX_AI_FORMAT:
+        return export_spdx_ai(evidence, redactor)
+    raise ExporterError(f"Unsupported output format: {output_format}", "exporter")
 
 
 def _resolve_warning_policy(options: GenerateBomOptions, config: LoadedConfig) -> str:

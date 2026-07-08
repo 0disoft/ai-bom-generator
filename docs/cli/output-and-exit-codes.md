@@ -72,6 +72,10 @@ expected output files.
 - `elapsed_ms`
 - `exit_code`
 
+Supported BOM formats are `cyclonedx-json-1.7` and `spdx-ai`. The SPDX output
+is JSON-LD-shaped and validates against the local
+`aibom-spdx-ai-preview.schema.json` contract before files are committed.
+
 ## Generation Manifest Fields
 
 - `schema_version`

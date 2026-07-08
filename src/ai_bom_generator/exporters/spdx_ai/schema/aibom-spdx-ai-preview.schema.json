@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://0disoft.example/schemas/aibom-spdx-ai-preview.schema.json",
+  "title": "AI-BOM SPDX AI Preview Output",
+  "type": "object",
+  "required": ["@context", "@graph", "aiBom:format", "aiBom:spdxTarget", "aiBom:conformance", "aiBom:contract"],
+  "additionalProperties": false,
+  "properties": {
+    "@context": { "const": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld" },
+    "aiBom:format": { "const": "spdx-ai" },
+    "aiBom:spdxTarget": { "const": "SPDX 3.0.1 AI Profile preview" },
+    "aiBom:conformance": { "const": "partial" },
+    "aiBom:contract": { "const": "docs/contracts/spdx-ai.md" },
+    "@graph": {
+      "type": "array",
+      "minItems": 4,
+      "items": { "$ref": "#/$defs/element" },
+      "contains": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "const": "ai_AIPackage" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "element": {
+      "type": "object",
+      "required": ["type", "spdxId"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1 },
+        "spdxId": { "type": "string", "pattern": "^urn:ai-bom-generator:spdx-ai:" },
+        "name": { "type": "string" },
+        "specVersion": { "const": "3.0.1" },
+        "profileConformance": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "creationInfo": { "type": "string", "pattern": "^urn:ai-bom-generator:spdx-ai:" },
+        "rootElement": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^urn:ai-bom-generator:spdx-ai:" }
+        },
+        "created": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$" },
+        "createdBy": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^urn:ai-bom-generator:spdx-ai:" }
+        },
+        "createdUsing": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^urn:ai-bom-generator:spdx-ai:" }
+        },
+        "packageVersion": { "type": "string" },
+        "primaryPurpose": { "type": "string" },
+        "summary": { "type": "string" },
+        "verifiedUsing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["algorithm", "hashValue"],
+            "additionalProperties": false,
+            "properties": {
+              "algorithm": { "const": "SHA256" },
+              "hashValue": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+            }
+          }
+        },
+        "from": { "type": "string", "pattern": "^urn:ai-bom-generator:spdx-ai:" },
+        "relationshipType": { "type": "string" },
+        "to": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^urn:ai-bom-generator:spdx-ai:" }
+        },
+        "aiBom:completenessStatus": { "type": "string" },
+        "aiBom:warningCount": { "type": "integer", "minimum": 0 },
+        "aiBom:unavailableSpdxAiFields": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "aiBom:unsupportedSpdxAiFields": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": {
+        "anyOf": [
+          { "type": "string" },
+          { "type": "integer" },
+          {
+            "type": "array",
+            "items": { "type": ["string", "integer", "object"] }
+          },
+          { "type": "object" }
+        ]
+      }
+    }
+  }
+}

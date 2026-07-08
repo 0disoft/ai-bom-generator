@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-bom-generator"
-version = "0.1.3"
+version = "0.1.4"
 description = "Local AI/ML bill-of-materials generator"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -54,7 +54,8 @@ where = ["src"]
 ai_bom_generator = [
   "config/schema/*.json",
   "exporters/cyclonedx_json/schema/*.json",
-  "exporters/cyclonedx_json/schema/LICENSE"
+  "exporters/cyclonedx_json/schema/LICENSE",
+  "exporters/spdx_ai/schema/*.json"
 ]
 
 [tool.ruff]

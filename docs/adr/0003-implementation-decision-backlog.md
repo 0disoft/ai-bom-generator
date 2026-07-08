@@ -24,7 +24,7 @@ choices from plausible candidates that still need approval.
 | Config schema | AI-BOM config schema v1 | Approved for runtime validation on 2026-07-07 |
 | CLI command | `ai-bom generate` | Approved for MVP on 2026-07-07 |
 | First exporter | CycloneDX JSON 1.7 | Approved by implementation kickoff on 2026-07-06 |
-| Second exporter | SPDX AI profile | Deferred |
+| Second exporter | `spdx-ai` SPDX 3.0.1 AI Profile preview with partial conformance contract | Approved for MVP polish on 2026-07-09 |
 | Runtime | Python 3.12 | Approved by owner on 2026-07-06 |
 | CLI adapter | `argparse` | Approved by owner on 2026-07-06 |
 | Package metadata | `pyproject.toml` with setuptools build backend | Approved by implementation kickoff on 2026-07-06 |
@@ -60,6 +60,9 @@ choices from plausible candidates that still need approval.
 - Proposed and deferred decisions must not be implemented as final choices until
   the matching ADR or source-of-truth doc moves them out of proposed status.
 - Do not let exporter-specific fields leak into the normalized evidence model.
+- SPDX AI export is a preview mapping to SPDX 3.0.1 AI Profile terms. It must
+  mark conformance as partial, validate the local preview schema, and list
+  unavailable or unsupported AI fields instead of fabricating evidence.
 - Dependency lockfile support is config-driven path evidence in MVP. Automatic
   discovery, lockfile parsing, and package-manager-specific completeness claims
   remain deferred until a later ADR approves them.
@@ -84,8 +87,9 @@ choices from plausible candidates that still need approval.
   behavior while these decisions remain proposed.
 - Do not claim action-managed runtime setup, immutable artifact staging,
   artifact discovery CLI overrides, configurable artifact budgets, or
-  schema-aware secret-key warnings until the corresponding deferred/proposed
-  decision is approved and implemented with fixtures.
+  full SPDX AI conformance, or schema-aware secret-key warnings until the
+  corresponding deferred/proposed decision is approved and implemented with
+  fixtures.
 
 ## Review Blockers
 

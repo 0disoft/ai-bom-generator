@@ -49,6 +49,11 @@ references, dataset references, prompt references, eval references, and training
 references. The runtime validates discovered and explicit config files against
 the packaged schema before output files are written.
 
+`[output].format` may be `cyclonedx-json-1.7` or `spdx-ai`. The SPDX option is a
+preview mapping to SPDX 3.0.1 AI Profile terms and marks conformance as
+partial. It records unavailable or unsupported SPDX AI fields in the generated
+BOM instead of inventing source evidence.
+
 Artifact discovery is disabled unless `[artifacts].discovery = true` appears in
 the config. It is config-only in MVP; there is no CLI flag. Discovery adds
 bounded defaults for common model artifact extensions: `.safetensors`, `.gguf`,

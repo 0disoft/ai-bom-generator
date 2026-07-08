@@ -28,6 +28,7 @@ the CLI uses inline defaults and reports missing optional metadata as warnings.
 ## Candidate Sections
 
 - `warning_policy`: missing metadata and unsupported field behavior.
+- `output.format`: `cyclonedx-json-1.7` or `spdx-ai`.
 - `model`: declared model metadata and model-card path.
 - `artifacts`: include and exclude patterns for model artifacts and checkpoints,
   plus explicit opt-in artifact discovery.

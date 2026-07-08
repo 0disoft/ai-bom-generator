@@ -52,9 +52,11 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 
 SPDX AI and CycloneDX ML-BOM are the candidate output families because they already
 model AI artifacts, datasets, configurations, and provenance-oriented metadata.
-CycloneDX JSON 1.7 is the leading first-exporter candidate because its JSON schema
-can support contract validation early. CycloneDX JSON 1.7 is the approved first
-implemented exporter and must remain schema-validated.
+CycloneDX JSON 1.7 is the approved first implemented exporter and must remain
+schema-validated. The `spdx-ai` exporter is an approved preview mapping to SPDX
+3.0.1 AI Profile terms with partial conformance only; it must not fabricate
+unavailable supplier, download, release-time, safety, metric, or sensitive-data
+metadata.
 
 ## Required Decisions Before Implementation
 
@@ -67,9 +69,11 @@ implemented exporter and must remain schema-validated.
 - Config filename and schema: `aibom.toml` plus config schema v1 is approved.
   Automatic config discovery is limited to `<model-directory>/aibom.toml`.
 - First exporter: CycloneDX JSON 1.7 is implemented first and must stay schema-validated.
+- Second exporter: `spdx-ai` emits an SPDX 3.0.1 AI Profile preview with local
+  preview contract validation and explicit unsupported-field notes.
 - Lockfile support set: explicit config-declared dependency file references
   only in MVP; automatic discovery and format-specific parsing remain deferred.
-- Model artifact discovery defaults: UNDECIDED.
+- Model artifact discovery defaults: config opt-in discovery is approved.
 - Redaction default: strict redaction is approved for CLI and terminal output.
 - Validation needed before merge: VALIDATION.md.
 

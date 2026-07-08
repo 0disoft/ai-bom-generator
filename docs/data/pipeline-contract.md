@@ -105,6 +105,8 @@ component `bom-ref` values are derived from that identity.
 - Security fixture coverage for secret-redaction and symlink-escape projects.
 - Deterministic output check for stable input.
 - Exporter schema or conformance check for every implemented exporter.
+  `spdx-ai` uses local preview-contract validation until full upstream SPDX
+  conformance validation is adopted.
 
 ## Review Blockers
 

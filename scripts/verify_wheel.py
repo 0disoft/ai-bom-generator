@@ -17,6 +17,8 @@ REQUIRED_WHEEL_FILES = {
     "ai_bom_generator/exporters/cyclonedx_json/schema/bom-1.7.schema.json",
     "ai_bom_generator/exporters/cyclonedx_json/schema/LICENSE",
     "ai_bom_generator/exporters/cyclonedx_json/schema/__init__.py",
+    "ai_bom_generator/exporters/spdx_ai/schema/aibom-spdx-ai-preview.schema.json",
+    "ai_bom_generator/exporters/spdx_ai/schema/__init__.py",
 }
 
 ENTRY_POINT_GROUP = "console_scripts"

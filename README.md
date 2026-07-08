@@ -11,7 +11,7 @@ AI/ML bill of materials from a local model project directory.
 It records declared model metadata, in-root `MODEL_CARD.md` paths, model or
 checkpoint digests, training-code references, dependency lockfiles, dataset
 references, prompt templates, and eval artifact references, then exports
-CycloneDX JSON 1.7.
+CycloneDX JSON 1.7 or an SPDX 3.0.1 AI Profile preview.
 
 It is an evidence reporter. It is not a model registry, vulnerability scanner,
 legal compliance engine, dataset auditor, or AI governance platform.
@@ -98,14 +98,17 @@ license_declared = "NOASSERTION"
 
 When `--config` is omitted, the CLI reads `aibom.toml` from the target model
 directory if that file exists. It does not search parent directories or alternate
-filenames. Artifact discovery defaults, SPDX export, and GitHub Marketplace
-registration are deferred.
+filenames. Artifact discovery defaults are opt-in with
+`[artifacts].discovery = true`. The `spdx-ai` export format is available as a
+partial SPDX 3.0.1 AI Profile preview; it explicitly marks unavailable SPDX AI
+fields instead of inventing missing metadata. GitHub Marketplace registration is
+deferred.
 
 ## CLI
 
 ```text
 ai-bom --version
-ai-bom generate <model-directory> [--config <path>] --format cyclonedx-json-1.7 --output <bom.json> --warning-report <warnings.json> --summary <summary.json> [--manifest <manifest.json>]
+ai-bom generate <model-directory> [--config <path>] --format <cyclonedx-json-1.7|spdx-ai> --output <bom.json> --warning-report <warnings.json> --summary <summary.json> [--manifest <manifest.json>]
 ```
 
 Missing optional metadata is reported as warnings without pretending the BOM is

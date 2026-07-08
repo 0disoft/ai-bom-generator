@@ -37,6 +37,16 @@ class ContractSchemaTests(unittest.TestCase):
                 json.loads((SCHEMAS / "aibom-config-v1.schema.json").read_text(encoding="utf-8")),
             )
 
+    def test_packaged_spdx_ai_preview_schema_matches_contract_schema(self) -> None:
+        packaged = resources.files("ai_bom_generator.exporters.spdx_ai.schema").joinpath(
+            "aibom-spdx-ai-preview.schema.json"
+        )
+        with resources.as_file(packaged) as packaged_path:
+            self.assertEqual(
+                json.loads(packaged_path.read_text(encoding="utf-8")),
+                json.loads((SCHEMAS / "aibom-spdx-ai-preview.schema.json").read_text(encoding="utf-8")),
+            )
+
     def test_generated_summary_warning_report_and_manifest_validate_against_schemas(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
