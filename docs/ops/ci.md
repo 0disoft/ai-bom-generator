@@ -29,12 +29,38 @@ The repository CI workflow lives at `.github/workflows/ci.yml`.
 - Runtime: Python 3.12.
 - Environment manager: `uv`, locked by `uv.lock`.
 - Action pins: `actions/checkout@v7.0.0`, `actions/setup-python@v6.3.0`,
-  and `astral-sh/setup-uv@v8.2.0`.
+  and `astral-sh/setup-uv@v8.3.1`.
 - Permissions: `contents: read`.
 
 The workflow intentionally does not upload artifacts, write pull request
-comments, attach releases, publish packages, or request secrets. Those behaviors
-belong to future GitHub Action wrapper decisions and must stay opt-in.
+comments, attach releases, publish packages, or request secrets. Release
+publishing is isolated in `.github/workflows/publish-pypi.yml`.
+
+## PyPI Publish Workflow
+
+The PyPI publish workflow lives at `.github/workflows/publish-pypi.yml`.
+
+- Trigger: strict semver-like tags matching `vMAJOR.MINOR.PATCH`, plus manual
+  dispatch for an existing release tag.
+- Runner: `ubuntu-latest`.
+- Runtime: Python 3.12.
+- Environment manager: `uv`, locked by `uv.lock`.
+- Action pins: `actions/checkout@v7.0.0`, `actions/setup-python@v6.3.0`,
+  `astral-sh/setup-uv@v8.3.1`, and
+  `pypa/gh-action-pypi-publish@v1.14.0`.
+- Permissions: `contents: read` and job-scoped `id-token: write`.
+- GitHub environment: `pypi`.
+
+The publish workflow rebuilds and re-runs the same local validation contract as
+CI before uploading distributions from `dist/`. It does not use PyPI API token
+secrets. Uploads require the PyPI project to have a trusted publisher configured
+for this repository, the `publish-pypi.yml` workflow, and the `pypi`
+environment.
+
+The workflow refuses to publish when the tag is not strict `vMAJOR.MINOR.PATCH`,
+when the tag does not match `pyproject.toml` exactly, or when the version is an
+existing GitHub-only tag (`0.1.0` or `0.1.1`). The first PyPI upload must use a
+new patch tag.
 
 ## CI Validation Steps
 

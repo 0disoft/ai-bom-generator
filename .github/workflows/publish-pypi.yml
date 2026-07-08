@@ -1,0 +1,110 @@
+name: Publish PyPI
+
+on:
+  push:
+    tags:
+      - "v[0-9]*.[0-9]*.[0-9]*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing version tag to publish, for example v0.1.2"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-pypi-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build, verify, and publish to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/ai-bom-generator
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v7.0.0
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.3.1
+
+      - name: Validate release tag
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          import sys
+          import tomllib
+          from pathlib import Path
+
+          tag = os.environ["RELEASE_TAG"]
+          if not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", tag):
+              sys.exit(f"PyPI publishing requires a strict vMAJOR.MINOR.PATCH tag, got {tag!r}.")
+
+          version = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+          expected_tag = f"v{version}"
+          if tag != expected_tag:
+              sys.exit(f"Release tag {tag!r} does not match pyproject.toml version {version!r}.")
+
+          if version in {"0.1.0", "0.1.1"}:
+              sys.exit("The first PyPI publish must use a new patch tag, not an existing GitHub-only tag.")
+          PY
+
+      - name: Install locked environment
+        run: uv sync --locked
+
+      - name: Compile sources
+        run: uv run --python 3.12 python -m compileall -q src tests scripts
+
+      - name: Lint sources
+        run: uv run --python 3.12 ruff check src tests scripts
+
+      - name: Run unit and contract tests
+        run: uv run --python 3.12 python -m unittest discover -s tests -v
+
+      - name: Build distributions
+        run: uv build
+
+      - name: Verify wheel contents
+        run: uv run --python 3.12 python scripts/verify_wheel.py dist
+
+      - name: Verify GitHub Action wrapper
+        run: uv run --python 3.12 python scripts/verify_github_action.py
+
+      - name: Smoke CLI fixture
+        run: |
+          set -euo pipefail
+          out_dir="$(mktemp -d)"
+          uv run --python 3.12 ai-bom generate \
+            tests/fixtures/complete-project \
+            --config tests/fixtures/complete-project/aibom.toml \
+            --format cyclonedx-json-1.7 \
+            --output "$out_dir/bom.cdx.json" \
+            --warning-report "$out_dir/warnings.json" \
+            --summary "$out_dir/summary.json"
+          test -s "$out_dir/bom.cdx.json"
+          test -s "$out_dir/warnings.json"
+          test -s "$out_dir/summary.json"
+
+      - name: Check repository diff hygiene
+        run: git diff --check
+
+      - name: Publish distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.14.0

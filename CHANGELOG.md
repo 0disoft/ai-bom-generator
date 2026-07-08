@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Adds a PyPI Trusted Publishing workflow for future package releases.
+- Updates GitHub Actions `uv` setup pins to `astral-sh/setup-uv@v8.3.1`.
+
 ## v0.1.1
 
 GitHub Release patch with PyPI publishing still deferred.

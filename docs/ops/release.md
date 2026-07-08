@@ -46,6 +46,17 @@ publishing. Before the first upload, the maintainer must:
 
 Package registry upload remains blocked until those setup steps are complete.
 
+The prepared publish workflow is `.github/workflows/publish-pypi.yml`. It runs
+on strict `vMAJOR.MINOR.PATCH` tags and manual dispatch for an existing tag,
+uses the GitHub `pypi` environment, requests job-scoped `id-token: write`, and
+publishes with PyPI Trusted Publishing. The workflow rebuilds distributions and
+re-runs compile, lint, unit/contract tests, wheel verification, GitHub Action
+wrapper smoke, CLI fixture smoke, and diff hygiene before upload.
+
+The workflow intentionally rejects `v0.1.0` and `v0.1.1` because those tags were
+created as GitHub-only releases. The first PyPI upload must use a later patch
+tag after the PyPI project and trusted publisher are configured.
+
 ## Owners
 
 - Primary owner: UNASSIGNED

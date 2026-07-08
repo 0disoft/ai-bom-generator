@@ -34,7 +34,7 @@ choices from plausible candidates that still need approval.
 | First public release | GitHub Release `v0.1.0` with no PyPI package | Approved by owner on 2026-07-07 |
 | Action tag policy | Immutable version tags only for MVP; no mutable `v0` tag yet | Approved by owner on 2026-07-07 |
 | PyPI package metadata | Classifiers, keywords, and project URLs in `pyproject.toml` | Approved for pre-publish preparation on 2026-07-07 |
-| PyPI package publishing | First upload from a new patch tag via PyPI Trusted Publishing after registry setup and external action smoke | Approved as future release policy on 2026-07-08 |
+| PyPI package publishing | `.github/workflows/publish-pypi.yml` prepares first upload from a new patch tag via PyPI Trusted Publishing after registry setup and external action smoke | Approved workflow policy on 2026-07-08 |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
 | Network policy | No network in MVP | Proposed |
 | Telemetry policy | No telemetry in MVP | Proposed |
@@ -64,8 +64,9 @@ choices from plausible candidates that still need approval.
   publish to PyPI, create a mutable `v0` action tag, or register the Action in a
   marketplace until those policies are explicitly approved.
 - PyPI metadata may be prepared and validated locally. Package upload requires
-  PyPI Trusted Publishing, registry ownership confirmation, package-name
-  recheck at release time, full validation, and a new patch tag.
+  PyPI Trusted Publishing through `.github/workflows/publish-pypi.yml`,
+  registry ownership confirmation, package-name recheck at release time, full
+  validation, and a new patch tag.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
 - Do not claim action-managed runtime setup, artifact snapshot consistency
