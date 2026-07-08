@@ -37,6 +37,8 @@ intended project boundary by default.
   the rejected path as collected BOM evidence.
 - Symlink skipped: machine-readable warning.
 - Required artifact inaccessible: collector failure.
+- Required artifact changes while hashing: collector failure without emitting
+  BOM evidence for a mixed size and digest snapshot.
 - Unsafe artifact include or exclude glob: invalid-input failure before
   collecting or writing artifacts.
 - Generated output path inside the target root: invalid-input failure before

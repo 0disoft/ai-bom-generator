@@ -12,7 +12,7 @@ from ai_bom_generator.domain.reference import DeclaredReference
 from ai_bom_generator.domain.source_location import SourceLocation
 from ai_bom_generator.domain.warning import Warning
 from ai_bom_generator.errors import CollectorError, InvalidInputError
-from ai_bom_generator.hashing import sha256_file
+from ai_bom_generator.hashing import sha256_file_snapshot
 from ai_bom_generator.security import PathPolicy, Redactor
 
 
@@ -240,12 +240,13 @@ def _collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[
                 if relative_path in selected_paths:
                     continue
                 selected_paths.add(relative_path)
+                snapshot = sha256_file_snapshot(resolved)
                 selected.append(
                     ModelArtifact(
                         path=relative_path,
-                        size=resolved.stat().st_size,
-                        digest=sha256_file(resolved),
-                        digest_algorithm="sha256",
+                        size=snapshot.size,
+                        digest=snapshot.digest,
+                        digest_algorithm=snapshot.digest_algorithm,
                         selected_by=pattern,
                         source=_source(config, "artifacts.include"),
                     )

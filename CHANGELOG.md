@@ -6,6 +6,8 @@
 - Discovers `<model-directory>/aibom.toml` when `--config` is omitted.
 - Improves the README and PyPI landing-page quickstart for first-time users.
 - Documents the mutable `v0` GitHub Action tag for compatible patch updates.
+- Rejects artifacts that change while hashing so artifact size and digest
+  describe the same stable file snapshot.
 
 ## v0.1.2
 

@@ -16,7 +16,8 @@ model serving.
 4. Collect declared model metadata, dependency file references, prompt, dataset,
    eval, and training-code references from discovered or explicit config. Select model
    artifacts from explicit include/exclude patterns.
-5. Hash selected model artifacts.
+5. Hash selected model artifacts through one open file descriptor and reject
+   artifacts that change before hashing completes.
 6. Normalize evidence and absence information.
 7. Run exporter mapping for the selected BOM family.
 8. Validate exporter output when the selected format has an available schema or conformance check.

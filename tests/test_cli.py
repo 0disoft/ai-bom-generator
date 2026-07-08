@@ -1059,7 +1059,7 @@ class CliTests(unittest.TestCase):
 
             with (
                 patch(
-                    "ai_bom_generator.collectors.pipeline.sha256_file",
+                    "ai_bom_generator.collectors.pipeline.sha256_file_snapshot",
                     side_effect=CollectorError("blocked hash read", "hash"),
                 ),
                 redirect_stderr(stderr),
@@ -1081,6 +1081,43 @@ class CliTests(unittest.TestCase):
 
             self.assertEqual(code, ExitCode.COLLECTOR_FAILURE)
             self.assertIn("ai-bom: hash: blocked hash read", stderr.getvalue())
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
+    def test_artifact_change_during_hashing_returns_collector_failure_without_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+            stderr = io.StringIO()
+            before = _FakeStat(size=11, modified_ns=100, changed_ns=100)
+            after = _FakeStat(size=12, modified_ns=200, changed_ns=200)
+
+            with (
+                patch("ai_bom_generator.hashing.sha256.os.fstat", side_effect=[before, after]),
+                redirect_stderr(stderr),
+            ):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(project / "aibom.toml"),
+                        "--output",
+                        str(bom),
+                        "--warning-report",
+                        str(warnings),
+                        "--summary",
+                        str(summary),
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.COLLECTOR_FAILURE)
+            self.assertIn("ai-bom: hash: Artifact changed while hashing", stderr.getvalue())
             self.assertFalse(bom.exists())
             self.assertFalse(warnings.exists())
             self.assertFalse(summary.exists())
@@ -2358,6 +2395,15 @@ def _generate_fixture_outputs(work: Path, name: str, fixture: str) -> Path:
     if code != ExitCode.SUCCESS:
         raise AssertionError(f"fixture generation failed with exit code {code}")
     return out
+
+
+class _FakeStat:
+    def __init__(self, size: int, modified_ns: int, changed_ns: int) -> None:
+        self.st_dev = 1
+        self.st_ino = 2
+        self.st_size = size
+        self.st_mtime_ns = modified_ns
+        self.st_ctime_ns = changed_ns
 
 
 if __name__ == "__main__":

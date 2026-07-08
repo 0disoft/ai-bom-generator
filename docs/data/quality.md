@@ -18,6 +18,8 @@ output from the same input project.
 
 - Stable input produces byte-stable or semantically stable output.
 - Hashes use a documented algorithm.
+- Artifact size and digest are recorded from one stable file snapshot, not from
+  separate observations that can race with mutable checkpoints.
 - Exported CycloneDX JSON 1.7 BOM passes the vendored official schema.
 - Missing metadata appears in the warning report.
 - JSON output does not expose full source file contents.
@@ -31,6 +33,8 @@ output from the same input project.
 - Lockfile formats differ by ecosystem.
 - SPDX and CycloneDX mapping details can drift.
 - Large artifact hashing can be expensive.
+- Mutable checkpoints can change while being hashed; MVP treats this as a
+  collector failure instead of retrying or emitting mixed evidence.
 - Warning noise can make important gaps easy to ignore.
 - Schema-valid output can still be semantically misleading if declared, observed, derived, and concluded fields are mixed.
 

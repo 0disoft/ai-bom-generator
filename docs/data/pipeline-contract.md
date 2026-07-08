@@ -23,7 +23,10 @@ and a warning report.
    MVP discovers the in-root `MODEL_CARD.md` path only; it does not copy or
    parse model-card contents.
 4. Collect model card paths, training-code references, dependency lockfile references, dataset references, prompt references, eval references, and local Git commit references when in-root Git metadata is available.
-5. Hash selected model artifacts and checkpoints.
+5. Hash selected model artifacts and checkpoints through one open file
+   descriptor. The recorded size and SHA-256 digest must come from the same
+   stable file snapshot, verified by comparing file metadata before and after
+   hashing.
 6. Normalize collected evidence into an internal BOM model.
 7. Export to the selected standards-backed BOM format.
 8. Stage requested JSON outputs in destination-local temporary files.
@@ -59,6 +62,9 @@ component `bom-ref` values are derived from that identity.
 - Duplicate declared reference identity: invalid-config failure before writing
   generated output.
 - Hash failure: failure.
+- Artifact changed while hashing: collector failure before writing generated
+  output. The caller must retry after checkpoint writes finish or point the
+  config at an immutable or staged artifact copy.
 - Unsupported exporter mapping: failure.
 - Partial collector support: warning with unsupported field names.
 - Unresolved or unsupported Git metadata: warning without fabricating a commit.

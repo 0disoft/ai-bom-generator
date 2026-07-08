@@ -1,3 +1,3 @@
-from ai_bom_generator.hashing.sha256 import sha256_file
+from ai_bom_generator.hashing.sha256 import FileHashSnapshot, sha256_file, sha256_file_snapshot
 
-__all__ = ["sha256_file"]
+__all__ = ["FileHashSnapshot", "sha256_file", "sha256_file_snapshot"]
