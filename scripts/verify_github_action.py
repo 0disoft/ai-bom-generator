@@ -79,6 +79,7 @@ def main(argv: list[str] | None = None) -> int:
         for case in cases:
             _run_case(case, work / case.name)
         _run_missing_required_input_case(work / "missing-model-directory")
+        _run_stale_summary_failure_case(work / "stale-summary-failure")
         _verify_github_output_escaping(work / "escaped-github-output")
     return 0
 
@@ -245,6 +246,55 @@ def _run_missing_required_input_case(case_root: Path) -> None:
     outputs = _read_github_output(github_output)
     if outputs.get("exit-code") != "20":
         raise AssertionError(f"missing-model-directory output exit-code mismatch: {outputs.get('exit-code')}")
+
+
+def _run_stale_summary_failure_case(case_root: Path) -> None:
+    case_root.mkdir(parents=True)
+    github_output = case_root / "github-output.txt"
+    output = case_root / "bom.cdx.json"
+    warning_report = case_root / "warnings.json"
+    summary = case_root / "summary.json"
+    for path in (output, warning_report, summary):
+        path.write_text('{"status":"stale","warning_count":999}\n', encoding="utf-8", newline="\n")
+    env = os.environ.copy()
+    env.update(
+        {
+            "GITHUB_ACTION_PATH": str(ROOT),
+            "GITHUB_WORKSPACE": str(ROOT),
+            "GITHUB_OUTPUT": str(github_output),
+            "RUNNER_TEMP": str(case_root / "runner-temp"),
+            "INPUT_MODEL_DIRECTORY": "tests/fixtures/complete-project",
+            "INPUT_CONFIG": "tests/fixtures/complete-project/aibom.toml",
+            "INPUT_FORMAT": "spdx-ai",
+            "INPUT_OUTPUT": str(output),
+            "INPUT_WARNING_REPORT": str(warning_report),
+            "INPUT_SUMMARY": str(summary),
+            "INPUT_WARNINGS": "allow",
+            "INPUT_REDACTION": "strict",
+        }
+    )
+    result = subprocess.run(
+        [sys.executable, str(ENTRYPOINT)],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+    )
+    if result.returncode != 40:
+        print(result.stdout, file=sys.stderr)
+        print(result.stderr, file=sys.stderr)
+        raise AssertionError(f"stale-summary-failure returned {result.returncode}, expected 40")
+    outputs = _read_github_output(github_output)
+    if outputs.get("exit-code") != "40":
+        raise AssertionError(f"stale-summary-failure output exit-code mismatch: {outputs.get('exit-code')}")
+    for key in ("warning-count", "status", "completeness-status", "format"):
+        if key in outputs:
+            raise AssertionError(f"stale-summary-failure published stale summary output key: {key}")
+    for path in (output, warning_report, summary):
+        if path.exists():
+            raise AssertionError(f"stale-summary-failure left stale file: {path}")
 
 
 def _verify_github_output_escaping(case_root: Path) -> None:

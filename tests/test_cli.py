@@ -1407,6 +1407,84 @@ class CliTests(unittest.TestCase):
             self.assertFalse(warnings.exists())
             self.assertFalse(summary.exists())
 
+    def test_generation_failure_removes_stale_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+            for path in (bom, warnings, summary):
+                path.write_text('{"stale":true}\n', encoding="utf-8", newline="\n")
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--format",
+                    "spdx-ai",
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.EXPORTER_FAILURE)
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
+    def test_output_replace_failure_removes_partial_outputs_and_temp_files(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+            stderr = io.StringIO()
+            real_replace = os.replace
+            replace_count = 0
+
+            def flaky_replace(source: Path, destination: Path) -> None:
+                nonlocal replace_count
+                replace_count += 1
+                if replace_count == 2:
+                    raise OSError("blocked replace")
+                real_replace(source, destination)
+
+            with (
+                patch("ai_bom_generator.reporting.json_writer.os.replace", side_effect=flaky_replace),
+                redirect_stderr(stderr),
+            ):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(project / "aibom.toml"),
+                        "--output",
+                        str(bom),
+                        "--warning-report",
+                        str(warnings),
+                        "--summary",
+                        str(summary),
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.INTERNAL_ERROR)
+            self.assertIn("ai-bom: internal-error: blocked replace", stderr.getvalue())
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+            self.assertEqual([], list(work.glob(".*.tmp")))
+
     def test_output_path_inside_target_root_is_rejected_before_writing(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)

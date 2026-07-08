@@ -25,7 +25,10 @@ and a warning report.
 5. Hash selected model artifacts and checkpoints.
 6. Normalize collected evidence into an internal BOM model.
 7. Export to the selected standards-backed BOM format.
-8. Emit missing-metadata warnings and machine-readable summary output.
+8. Stage requested JSON outputs in destination-local temporary files, then
+   replace final BOM, warning-report, and summary files after all payloads are
+   renderable.
+9. Emit missing-metadata warnings and machine-readable summary output.
 
 Collectors must not know exporter-specific field names. Exporters must not read
 the filesystem directly. Reporters must not mutate normalized evidence.
@@ -55,6 +58,12 @@ component `bom-ref` values are derived from that identity.
 - Unsupported exporter mapping: failure.
 - Partial collector support: warning with unsupported field names.
 - Unresolved or unsupported Git metadata: warning without fabricating a commit.
+- Stale generated output from a previous run: removed after output-path
+  validation and before collection or export starts, so a failed run does not
+  leave old BOM, warning-report, or summary files at the requested destinations.
+- Output write failure: temporary files are removed, and any final files already
+  replaced by the current output staging attempt are removed before the failure
+  is surfaced.
 
 ## Validation Needed Before Merge
 

@@ -43,6 +43,11 @@ process code when `--warnings allow` is active.
 
 When `--summary -` is used, the same JSON summary object is written to stdout
 while BOM and warning-report outputs are still written to their explicit paths.
+Requested JSON files are staged in destination-local temporary files before
+final replacement. If generation fails, stale files at the requested generated
+output destinations are removed. If final replacement fails after one output has
+already been replaced, the current run removes that partial final output and any
+remaining staged temporary files before returning an internal error.
 
 - `schema_version`
 - `tool.name`

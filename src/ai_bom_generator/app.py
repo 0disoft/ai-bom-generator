@@ -8,7 +8,7 @@ from ai_bom_generator.collectors import collect_evidence
 from ai_bom_generator.config import LoadedConfig, load_config
 from ai_bom_generator.errors import ExitCode, ExporterError, InvalidInputError
 from ai_bom_generator.exporters.cyclonedx_json import SUPPORTED_FORMAT, export_cyclonedx_json
-from ai_bom_generator.reporting import build_summary, build_warning_report, write_json_file
+from ai_bom_generator.reporting import build_summary, build_warning_report, write_json_files_atomically
 from ai_bom_generator.reporting.json_writer import write_json_stream
 from ai_bom_generator.security import PathPolicy, Redactor
 
@@ -29,7 +29,8 @@ class GenerateBomOptions:
 def generate_bom(options: GenerateBomOptions) -> int:
     start = time.perf_counter()
     policy = PathPolicy(options.model_directory)
-    _validate_output_destinations(options, policy)
+    output_destinations = _validate_output_destinations(options, policy)
+    _remove_existing_output_files(output_destinations)
     redactor = Redactor(options.redaction)
     config = load_config(options.config, policy)
     output_format = _resolve_output_format(options, config)
@@ -52,14 +53,18 @@ def generate_bom(options: GenerateBomOptions) -> int:
         redactor=redactor,
     )
 
-    write_json_file(options.output, bom)
-    write_json_file(options.warning_report, warning_report)
+    output_items = [
+        (options.output, bom),
+        (options.warning_report, warning_report),
+    ]
+    if options.summary:
+        output_items.append((options.summary, summary))
+    write_json_files_atomically(output_items)
+
     if options.summary_stdout:
         import sys
 
         write_json_stream(sys.stdout, summary)
-    elif options.summary:
-        write_json_file(options.summary, summary)
 
     return ExitCode.WARNING_POLICY_FAILED if warning_policy_failed else ExitCode.SUCCESS
 
@@ -90,7 +95,7 @@ def _resolve_warning_policy(options: GenerateBomOptions, config: LoadedConfig) -
     raise InvalidInputError("[warning_policy].missing_metadata must be warn or fail.", "config")
 
 
-def _validate_output_destinations(options: GenerateBomOptions, policy: PathPolicy) -> None:
+def _validate_output_destinations(options: GenerateBomOptions, policy: PathPolicy) -> dict[str, Path]:
     destinations = {
         "bom": policy.validate_output_file(options.output, "BOM"),
         "warning_report": policy.validate_output_file(options.warning_report, "Warning report"),
@@ -114,6 +119,17 @@ def _validate_output_destinations(options: GenerateBomOptions, policy: PathPolic
                     "input",
                 )
         seen[path] = label
+    return destinations
+
+
+def _remove_existing_output_files(destinations: dict[str, Path]) -> None:
+    for label, path in destinations.items():
+        try:
+            if path.exists():
+                path.unlink()
+        except OSError as exc:
+            message = f"Could not remove stale {label} output before generation: {path}: {exc}"
+            raise InvalidInputError(message, "input") from exc
 
 
 def _paths_overlap(left: Path, right: Path) -> bool:

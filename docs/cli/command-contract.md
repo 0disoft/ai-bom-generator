@@ -48,8 +48,11 @@ When `--warnings` is omitted, the explicit config file's
 `[warning_policy].missing_metadata` value is used. Config `warn` maps to the
 executable `allow` behavior and config `fail` maps to the executable `fail`
 behavior.
-Config files are validated against AI-BOM config schema v1 before any output
-file is written.
+Config files are validated against AI-BOM config schema v1 before new final
+output files are written. After output-path validation succeeds, stale files at
+the requested generated-output destinations are removed before config loading,
+collection, or export starts, so a failed run does not leave previous-run JSON
+where callers expect current-run output.
 
 ## Review Blockers
 
