@@ -23,19 +23,23 @@ and a warning report.
    MVP discovers the in-root `MODEL_CARD.md` path only; it does not copy or
    parse model-card contents.
 4. Collect model card paths, training-code references, dependency lockfile references, dataset references, prompt references, eval references, and local Git commit references when in-root Git metadata is available.
-5. Hash selected model artifacts and checkpoints through one open file
+5. Apply fixed MVP artifact budgets before hashing: at most 256 candidate paths
+   per include pattern after excludes, at most 16 GiB for one artifact, and at
+   most 25 GiB of selected artifacts per run. Budget hits are machine-readable
+   warnings and the over-budget pattern or artifact is skipped.
+6. Hash selected model artifacts and checkpoints through one open file
    descriptor. The recorded size and SHA-256 digest must come from the same
    stable file snapshot, verified by comparing file metadata before and after
    hashing.
-6. Normalize collected evidence into an internal BOM model.
-7. Export to the selected standards-backed BOM format.
-8. Stage requested JSON outputs in destination-local temporary files.
-9. Build a generation manifest from the staged file bytes, including a
+7. Normalize collected evidence into an internal BOM model.
+8. Export to the selected standards-backed BOM format.
+9. Stage requested JSON outputs in destination-local temporary files.
+10. Build a generation manifest from the staged file bytes, including a
    run-unique generation id plus role, path, size, and SHA-256 digest for every
    final output in the set.
-10. Replace final BOM, warning-report, and summary files, then replace the
+11. Replace final BOM, warning-report, and summary files, then replace the
    manifest last as the commit marker for the output set.
-11. Emit missing-metadata warnings and machine-readable summary output.
+12. Emit missing-metadata warnings and machine-readable summary output.
 
 Collectors must not know exporter-specific field names. Exporters must not read
 the filesystem directly. Reporters must not mutate normalized evidence.
@@ -65,6 +69,12 @@ component `bom-ref` values are derived from that identity.
 - Artifact changed while hashing: collector failure before writing generated
   output. The caller must retry after checkpoint writes finish or point the
   config at an immutable or staged artifact copy.
+- Artifact include pattern exceeds the match-count budget: warning, skip that
+  pattern, and continue with other patterns.
+- Artifact exceeds the single-file byte budget: warning, skip that artifact, and
+  continue with other artifacts.
+- Artifact would exceed the total selected byte budget: warning, skip that
+  artifact, and continue with other artifacts.
 - Unsupported exporter mapping: failure.
 - Partial collector support: warning with unsupported field names.
 - Unresolved or unsupported Git metadata: warning without fabricating a commit.

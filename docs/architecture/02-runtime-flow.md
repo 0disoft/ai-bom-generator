@@ -16,15 +16,16 @@ model serving.
 4. Collect declared model metadata, dependency file references, prompt, dataset,
    eval, and training-code references from discovered or explicit config. Select model
    artifacts from explicit include/exclude patterns.
-5. Hash selected model artifacts through one open file descriptor and reject
+5. Apply fixed artifact match-count, single-file byte, and total-byte budgets.
+6. Hash selected model artifacts through one open file descriptor and reject
    artifacts that change before hashing completes.
-6. Normalize evidence and absence information.
-7. Run exporter mapping for the selected BOM family.
-8. Validate exporter output when the selected format has an available schema or conformance check.
-9. Write BOM, warning report, JSON summary, and generation manifest.
-10. Treat the manifest as the commit marker for consumers that need to verify
+7. Normalize evidence and absence information.
+8. Run exporter mapping for the selected BOM family.
+9. Validate exporter output when the selected format has an available schema or conformance check.
+10. Write BOM, warning report, JSON summary, and generation manifest.
+11. Treat the manifest as the commit marker for consumers that need to verify
     all generated JSON files belong to the same run.
-11. Return success, success-with-warnings, or failure according to the exit-code contract.
+12. Return success, success-with-warnings, or failure according to the exit-code contract.
 
 ## Quality Attributes
 

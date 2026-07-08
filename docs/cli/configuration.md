@@ -49,9 +49,16 @@ references, prompt references, eval references, and training references. The
 runtime validates discovered and explicit config files against the packaged
 schema before output files are written.
 
+Artifact budget limits are fixed in MVP and are not config or CLI options yet:
+256 candidate paths per include pattern after excludes, 16 GiB per artifact,
+and 25 GiB total selected artifact bytes per run. A budget hit is reported in
+the warning report and JSON summary, and the over-budget pattern or artifact is
+skipped.
+
 ## Still UNDECIDED
 
 - Format-specific dependency lockfile parsing.
+- Configurable artifact budget overrides.
 
 ## Review Blockers
 

@@ -26,6 +26,7 @@ The executable warning-report schema lives at
 
 - Missing model metadata.
 - Missing model artifact selection or matched artifact.
+- Artifact pattern, single-file, or total-byte budget hit.
 - Missing dataset license declaration.
 - Missing optional prompt, eval, or training reference files.
 - Unsupported config field.
@@ -41,6 +42,9 @@ The executable warning-report schema lives at
 | `EMPTY_MODEL_METADATA` | `[model]` exists without scalar metadata. | CLI empty model metadata warning test |
 | `MISSING_ARTIFACT_SELECTION` | No artifact include patterns were declared. | `sparse-project` CLI tests |
 | `MISSING_ARTIFACT` | Include pattern matched no artifact. | `missing-artifact` CLI tests |
+| `ARTIFACT_MATCH_LIMIT_EXCEEDED` | Include pattern matched more candidate paths than the fixed MVP budget allows. | CLI artifact budget tests |
+| `ARTIFACT_SIZE_LIMIT_EXCEEDED` | Selected artifact exceeded the fixed MVP single-file byte budget. | CLI artifact budget tests |
+| `ARTIFACT_TOTAL_SIZE_LIMIT_EXCEEDED` | Selected artifact would exceed the fixed MVP total artifact byte budget. | CLI artifact budget tests |
 | `SKIPPED_SYMLINK` | Symlink artifact or metadata file skipped. | `symlink-escape` fixture family and CLI model-card symlink tests |
 | `MISSING_PROMPTS_REFERENCE_FILE` | Optional prompt file reference could not be read. | `symlink-escape` CLI tests |
 | `MISSING_EVALS_REFERENCE_FILE` | Optional eval file reference could not be read. | CLI stale eval/training reference test |

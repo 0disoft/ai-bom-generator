@@ -20,6 +20,8 @@ output from the same input project.
 - Hashes use a documented algorithm.
 - Artifact size and digest are recorded from one stable file snapshot, not from
   separate observations that can race with mutable checkpoints.
+- Broad artifact patterns and oversized artifact sets are bounded before
+  hashing, with machine-readable warnings for skipped over-budget evidence.
 - Exported CycloneDX JSON 1.7 BOM passes the vendored official schema.
 - Missing metadata appears in the warning report.
 - JSON output does not expose full source file contents.
@@ -33,6 +35,8 @@ output from the same input project.
 - Lockfile formats differ by ecosystem.
 - SPDX and CycloneDX mapping details can drift.
 - Large artifact hashing can be expensive.
+- Fixed MVP artifact budgets may skip legitimate large local checkpoints until
+  configurable budgets are designed.
 - Mutable checkpoints can change while being hashed; MVP treats this as a
   collector failure instead of retrying or emitting mixed evidence.
 - Warning noise can make important gaps easy to ignore.

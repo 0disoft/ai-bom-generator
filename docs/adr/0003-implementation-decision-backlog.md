@@ -46,7 +46,8 @@ choices from plausible candidates that still need approval.
 | Generation manifest | Manifest-backed run identity and output-set verification | Approved for MVP hardening on 2026-07-08 |
 | Artifact snapshot consistency | Single-descriptor stat/hash/stat validation with conservative failure on mutation | Approved for MVP hardening on 2026-07-08 |
 | Artifact immutable staging | Tool-managed immutable artifact copy before hashing | Deferred |
-| Artifact glob budgets | Match-count and byte budgets for broad artifact patterns | Deferred |
+| Artifact glob budgets | Fixed MVP match-count, single-file byte, and total-byte budgets with warning skips | Approved for MVP hardening on 2026-07-09 |
+| Configurable artifact budgets | Config or CLI overrides for artifact match-count and byte budgets | Deferred |
 | Common provider-token redaction | AWS, Slack, GitLab, Google API key, Bearer, and JWT-shaped values in strict mode | Approved for MVP hardening on 2026-07-08 |
 | Key-aware redaction matrix | Schema-aware secret-key warnings and provider-specific validators beyond obvious token shapes | Proposed |
 
@@ -76,8 +77,9 @@ choices from plausible candidates that still need approval.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
 - Do not claim action-managed runtime setup, immutable artifact staging,
-  broad-glob budgets, or schema-aware redaction coverage until the corresponding
-  deferred/proposed decision is approved and implemented with fixtures.
+  configurable artifact budgets, or schema-aware redaction coverage until the
+  corresponding deferred/proposed decision is approved and implemented with
+  fixtures.
 
 ## Review Blockers
 

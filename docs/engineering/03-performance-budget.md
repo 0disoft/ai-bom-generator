@@ -6,8 +6,17 @@ Status: Draft
 
 Performance budgets must track model-directory scan cost, artifact hashing cost,
 memory usage while reading large model files, generated output size, and CI job
-runtime. Exact numeric thresholds remain UNDECIDED until executable fixtures
-exist.
+runtime.
+
+The MVP artifact collection budget is fixed rather than configurable:
+
+- 256 candidate paths per include pattern after excludes.
+- 16 GiB maximum single artifact size.
+- 25 GiB maximum selected artifact bytes per run.
+
+When a budget is hit, the collector emits a machine-readable warning and skips
+the over-budget pattern or artifact. It does not fail the whole run unless the
+configured warning policy treats warnings as failures.
 
 ## Required Evidence
 

@@ -1047,6 +1047,134 @@ class CliTests(unittest.TestCase):
             self.assertEqual(warning_payload["warnings"][0]["object_id"], "models/missing.safetensors")
             self.assertEqual(bom_payload.get("components"), [])
 
+    def test_artifact_match_limit_warns_and_skips_broad_pattern(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'include = ["models/model.safetensors"]',
+                    'include = ["**/*"]',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            summary = work / "summary.json"
+            warnings = work / "warnings.json"
+
+            with patch("ai_bom_generator.collectors.pipeline._MAX_ARTIFACT_MATCHES_PER_PATTERN", 2):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(config),
+                        "--output",
+                        str(work / "bom.json"),
+                        "--warning-report",
+                        str(warnings),
+                        "--summary",
+                        str(summary),
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            summary_payload = _read_json(summary)
+            warning_payload = _read_json(warnings)
+            self.assertEqual(summary_payload["status"], "success-with-warnings")
+            self.assertEqual(summary_payload["artifact_count"], 0)
+            self.assertIn("ARTIFACT_MATCH_LIMIT_EXCEEDED", _warning_codes(summary))
+            warning = _first_warning(summary_payload, "ARTIFACT_MATCH_LIMIT_EXCEEDED")
+            self.assertEqual(warning["object_id"], "**/*")
+            self.assertIn("2 candidate paths", warning["message"])
+            self.assertEqual(warning_payload["warnings"], summary_payload["warnings"])
+
+    def test_artifact_single_file_size_limit_warns_and_skips_artifact(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            summary = work / "summary.json"
+            warnings = work / "warnings.json"
+
+            with patch("ai_bom_generator.collectors.pipeline._MAX_ARTIFACT_SINGLE_FILE_BYTES", 1):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(project / "aibom.toml"),
+                        "--output",
+                        str(work / "bom.json"),
+                        "--warning-report",
+                        str(warnings),
+                        "--summary",
+                        str(summary),
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            summary_payload = _read_json(summary)
+            warning_payload = _read_json(warnings)
+            self.assertEqual(summary_payload["status"], "success-with-warnings")
+            self.assertEqual(summary_payload["artifact_count"], 0)
+            warning = _first_warning(summary_payload, "ARTIFACT_SIZE_LIMIT_EXCEEDED")
+            self.assertEqual(warning["object_id"], "models/model.safetensors")
+            self.assertIn("1 byte single-file budget", warning["message"])
+            self.assertEqual(warning_payload["warnings"], summary_payload["warnings"])
+
+    def test_artifact_total_size_limit_warns_and_skips_over_budget_artifact(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            models = project / "models"
+            (models / "a.bin").write_bytes(b"aaa")
+            (models / "b.bin").write_bytes(b"bbbb")
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'include = ["models/model.safetensors"]',
+                    'include = ["models/*.bin"]',
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            summary = work / "summary.json"
+
+            with (
+                patch("ai_bom_generator.collectors.pipeline._MAX_ARTIFACT_SINGLE_FILE_BYTES", 10),
+                patch("ai_bom_generator.collectors.pipeline._MAX_ARTIFACT_TOTAL_BYTES", 5),
+            ):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(config),
+                        "--output",
+                        str(bom),
+                        "--warning-report",
+                        str(work / "warnings.json"),
+                        "--summary",
+                        str(summary),
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            summary_payload = _read_json(summary)
+            self.assertEqual(summary_payload["status"], "success-with-warnings")
+            self.assertEqual(summary_payload["artifact_count"], 1)
+            warning = _first_warning(summary_payload, "ARTIFACT_TOTAL_SIZE_LIMIT_EXCEEDED")
+            self.assertEqual(warning["object_id"], "models/b.bin")
+            self.assertIn("5 byte total artifact budget", warning["message"])
+            component_refs = _component_refs(_read_json(bom))
+            self.assertIn("artifact:models/a.bin", component_refs)
+            self.assertNotIn("artifact:models/b.bin", component_refs)
+
     def test_hash_failure_returns_collector_failure_without_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
@@ -2348,6 +2476,15 @@ def _sha256_file(path: Path) -> str:
 
 def _warning_codes(summary_path: Path) -> set[str]:
     return {str(warning["code"]) for warning in _read_json(summary_path)["warnings"]}
+
+
+def _first_warning(payload: dict[str, object], code: str) -> dict[str, object]:
+    warnings = payload["warnings"]
+    assert isinstance(warnings, list)
+    for warning in warnings:
+        if isinstance(warning, dict) and warning.get("code") == code:
+            return warning
+    raise AssertionError(f"missing warning code: {code}")
 
 
 def _model_properties(bom_payload: dict[str, object]) -> dict[str, str]:

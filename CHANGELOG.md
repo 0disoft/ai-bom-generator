@@ -8,6 +8,8 @@
 - Documents the mutable `v0` GitHub Action tag for compatible patch updates.
 - Rejects artifacts that change while hashing so artifact size and digest
   describe the same stable file snapshot.
+- Adds fixed artifact match-count and byte budgets with machine-readable
+  warnings for skipped over-budget artifact patterns and files.
 
 ## v0.1.2
 

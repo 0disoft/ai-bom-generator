@@ -18,6 +18,9 @@ intended project boundary by default.
 - Do not read hidden, ignored, cache, dependency, or build-output paths as source
   truth unless explicitly configured.
 - Use explicit artifact include and exclude patterns for large model files.
+- Bound artifact include expansion with fixed MVP budgets before hashing:
+  256 candidate paths per include pattern after excludes, 16 GiB per artifact,
+  and 25 GiB total selected artifact bytes per run.
 - Require artifact include and exclude globs to be target-root-relative patterns.
 - Reject artifact include and exclude globs that are absolute or contain parent
   traversal.
@@ -39,6 +42,8 @@ intended project boundary by default.
 - Required artifact inaccessible: collector failure.
 - Required artifact changes while hashing: collector failure without emitting
   BOM evidence for a mixed size and digest snapshot.
+- Artifact pattern or byte budget hit: machine-readable warning without emitting
+  the skipped artifact as collected BOM evidence.
 - Unsafe artifact include or exclude glob: invalid-input failure before
   collecting or writing artifacts.
 - Generated output path inside the target root: invalid-input failure before
