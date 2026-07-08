@@ -32,6 +32,7 @@ implementation.
 | check | `uv build` |
 | check | `uv run --python 3.12 python scripts/verify_wheel.py dist` |
 | smoke | `uv run --python 3.12 python scripts/verify_github_action.py` |
+| smoke | `uv run --python 3.12 python scripts/verify_release.py --version <released-version> --publish-run-id <run-id>` |
 | smoke | `uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --config tests/fixtures/complete-project/aibom.toml --format cyclonedx-json-1.7 --output <temp>/bom.cdx.json --warning-report <temp>/warnings.json --summary <temp>/summary.json` |
 | check | `git diff --check` |
 
@@ -47,6 +48,11 @@ using the locked validation environment for dependencies.
 `scripts/verify_github_action.py` verifies the local composite `action.yml` and
 runs clean, warning-only, fail-on-warning, stale-output, and manifest-gated
 action wrapper smoke cases.
+
+`scripts/verify_release.py` verifies a published release by checking PyPI JSON,
+published wheel and source distribution entries, installed console-script help
+through `uv --with`, the immutable GitHub Release, the PyPI publish workflow
+run, and the external action smoke repository.
 
 ## Required Final Report
 

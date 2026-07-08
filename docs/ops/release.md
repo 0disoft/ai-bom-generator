@@ -57,6 +57,28 @@ The workflow intentionally rejects `v0.1.0` and `v0.1.1` because those tags were
 created as GitHub-only releases. The first PyPI upload must use `v0.1.2` or a
 later patch tag after the PyPI project and trusted publisher are configured.
 
+## Post-Release Verification
+
+After a package release, verify the registry, GitHub Release, publish workflow,
+external action smoke, and installed console script from the repository root:
+
+```powershell
+uv run --python 3.12 python scripts/verify_release.py --version 0.1.2 --publish-run-id 28930381437
+```
+
+The script checks:
+
+- PyPI project JSON and version JSON are live for `ai-bom-generator`;
+- the published version includes both wheel and source distributions;
+- `uv run --python 3.12 --with ai-bom-generator==<version> ai-bom --help`
+  succeeds outside the source tree;
+- the immutable GitHub Release for `v<version>` exists and is not draft or
+  prerelease;
+- the provided PyPI publish workflow run completed successfully against the
+  matching release tag;
+- the latest external smoke workflow in
+  `0disoft/ai-bom-generator-action-smoke` completed successfully.
+
 ## Owners
 
 - Primary owner: UNASSIGNED

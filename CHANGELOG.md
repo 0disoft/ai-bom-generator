@@ -3,6 +3,7 @@
 ## v0.1.2
 
 - Adds the first PyPI Trusted Publishing release path for package releases.
+- Adds a post-release verification script for PyPI, GitHub Release, and external smoke evidence.
 - Updates GitHub Actions `uv` setup pins to `astral-sh/setup-uv@v8.3.1`.
 
 ## v0.1.1
