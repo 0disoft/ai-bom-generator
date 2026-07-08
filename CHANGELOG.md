@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Improves the README and PyPI landing-page quickstart for first-time users.
+
 ## v0.1.2
 
 - Adds the first PyPI Trusted Publishing release path for package releases.

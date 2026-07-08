@@ -1,74 +1,60 @@
 # AI-BOM Generator
 
-Status: Draft
-Scope: data
-Repository Type: cli-tool
-Addons: github-action
+[![PyPI](https://img.shields.io/pypi/v/ai-bom-generator.svg)](https://pypi.org/project/ai-bom-generator/)
+[![CI](https://github.com/0disoft/ai-bom-generator/actions/workflows/ci.yml/badge.svg)](https://github.com/0disoft/ai-bom-generator/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/0disoft/ai-bom-generator)](https://github.com/0disoft/ai-bom-generator/releases)
+[![License](https://img.shields.io/pypi/l/ai-bom-generator.svg)](LICENSE)
 
-AI-BOM Generator is a small CLI and optional GitHub Action for producing an AI
-bill of materials from a model project directory.
+AI-BOM Generator is a small Python 3.12 CLI and GitHub Action for producing an
+AI/ML bill of materials from a local model project directory.
 
-The tool records declared model metadata, discovered `MODEL_CARD.md` paths,
-model or checkpoint digests, training-code references, dependency lockfiles,
-dataset references, prompt templates, and eval artifact references, then exports
-them to CycloneDX JSON 1.7.
+It records declared model metadata, in-root `MODEL_CARD.md` paths, model or
+checkpoint digests, training-code references, dependency lockfiles, dataset
+references, prompt templates, and eval artifact references, then exports
+CycloneDX JSON 1.7.
 
-It is a generator and evidence reporter. It is not a model registry, scanner,
+It is an evidence reporter. It is not a model registry, vulnerability scanner,
 legal compliance engine, dataset auditor, or AI governance platform.
 
-## Source Files
-
-- AGENTS.md: agent working rules
-- CHECKLIST.md: checklist router
-- VALIDATION.md: validation names and reporting requirements
-- .agents/context-map.md: agent route map
-- docs/product/02-spec.md: product source of truth
-- docs/cli/command-contract.md: CLI contract source
-- docs/github-action/action-contract.md: GitHub Action contract source
-- docs/data/pipeline-contract.md: artifact collection and export contract
-- docs/: design, operations, architecture, and engineering standards
-
-## Repository Shape Notes
-
-- cli-tool: This repository type owns command behavior, arguments, flags, config loading, exit codes, terminal output, JSON output, runtime compatibility, and shell integration contracts.
-- github-action: This repository type owns action inputs, outputs, permissions, token handling, and runner compatibility.
-
-## MVP Direction
-
-- accept one model directory as input;
-- discover in-root `MODEL_CARD.md` paths without copying model-card contents;
-- compute SHA-256 digests for model artifacts and checkpoints;
-- collect dependency and training-code references from known lockfile or config locations;
-- read dataset, prompt, and eval references from explicit config;
-- export one initial standards-backed BOM format;
-- report missing metadata as warnings without pretending the BOM is complete.
-
-## Quickstart
-
-The current public patch release is `v0.1.2`. It is distributed as a GitHub
-repository, GitHub Action, and Python package.
-
-Install the released package from PyPI:
+## Install
 
 ```powershell
-python -m pip install ai-bom-generator
+py -3.12 -m pip install ai-bom-generator
 ai-bom --help
 ```
 
-Try the bundled minimal project from a checkout:
+With `uv`, you can run the published package without installing it into the
+current environment:
 
 ```powershell
-uv sync --locked
+uv run --python 3.12 --with ai-bom-generator ai-bom --help
+```
+
+## Quickstart
+
+Clone the repository so the bundled minimal model project is available:
+
+```powershell
+git clone https://github.com/0disoft/ai-bom-generator.git
+cd ai-bom-generator
 $out = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-bom-example-" + [System.Guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $out | Out-Null
-uv run --python 3.12 ai-bom generate examples/minimal-model-project --config examples/minimal-model-project/aibom.toml --format cyclonedx-json-1.7 --output (Join-Path $out "bom.cdx.json") --warning-report (Join-Path $out "warnings.json") --summary (Join-Path $out "summary.json")
+uv run --python 3.12 --with ai-bom-generator ai-bom generate examples/minimal-model-project --config examples/minimal-model-project/aibom.toml --format cyclonedx-json-1.7 --output (Join-Path $out "bom.cdx.json") --warning-report (Join-Path $out "warnings.json") --summary (Join-Path $out "summary.json")
 Get-ChildItem -LiteralPath $out
 ```
 
-The same command shape works for your own model project as long as generated
-output paths resolve outside the target model directory.
+The command writes:
 
-Example `aibom.toml` from `examples/minimal-model-project`:
+- `bom.cdx.json`: CycloneDX JSON 1.7 BOM.
+- `warnings.json`: machine-readable warning report.
+- `summary.json`: generation status and output summary.
+- `summary.json.manifest.json`: output-set manifest when the default manifest path is used.
+
+Generated output paths must resolve outside the target model project directory.
+
+## Minimal Config
+
+Example `aibom.toml`:
 
 ```toml
 schema_version = "1"
@@ -77,7 +63,7 @@ schema_version = "1"
 format = "cyclonedx-json-1.7"
 
 [model]
-name = "example-model"
+name = "minimal-example-model"
 version = "0.1.0"
 model_card = "MODEL_CARD.md"
 license_declared = "NOASSERTION"
@@ -90,25 +76,25 @@ path = "requirements.lock"
 type = "pip"
 
 [[datasets]]
-name = "example-dataset"
+name = "minimal-example-dataset"
 license_declared = "NOASSERTION"
 ```
 
-The CLI writes a BOM, a warning report, a JSON summary, and a generation
-manifest. The manifest is the commit marker for the output set and records path,
-size, and SHA-256 entries for the generated JSON files. Missing optional
-metadata is reported as machine-readable warnings. Unreadable required files,
-invalid config, unsupported exporters, unsafe paths, and invalid generated BOM
-output fail with non-zero exit codes. Generated output paths must resolve
-outside the target model project directory.
+The current MVP reads explicit config files only. Automatic config discovery,
+artifact discovery defaults, SPDX export, mutable major action tags, and GitHub
+Marketplace registration are deferred.
 
-## Current CLI Smoke
+## CLI
 
 ```text
 ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --output <bom.json> --warning-report <warnings.json> --summary <summary.json> [--manifest <manifest.json>]
 ```
 
-## Current GitHub Action Smoke
+Missing optional metadata is reported as warnings without pretending the BOM is
+complete. Unreadable required files, invalid config, unsupported exporters,
+unsafe paths, and invalid generated BOM output fail with non-zero exit codes.
+
+## GitHub Action
 
 ```yaml
 - uses: actions/checkout@v7
@@ -137,41 +123,42 @@ ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --
 ```
 
 The action invokes the packaged CLI with `uv run --project`, so consuming
-workflows must make Python 3.12 and `uv` available before this action runs. When
-`format` or `warnings` inputs are omitted, the action lets the CLI use the
+workflows must make Python 3.12 and `uv` available before this action runs.
+When `format` or `warnings` inputs are omitted, the action lets the CLI use the
 explicit config values and CLI defaults. Generated files are written to explicit
 paths when provided, or to a run-unique directory under `RUNNER_TEMP`.
+
 Summary-derived action outputs are published only when the generation manifest
 matches the BOM, warning report, and summary files from the current run.
 
-The current implementation validates explicit `aibom.toml` config files against
-AI-BOM config schema v1, validates generated CycloneDX JSON 1.7 output against
-the vendored official schema, and validates AI-BOM summary/warning contracts in
-tests.
+## Validation
 
-## Non-Goals
+Local validation source of truth is [VALIDATION.md](VALIDATION.md).
 
-- no automatic legal license judgment;
-- no training-data audit guarantee;
-- no vulnerability scanner;
-- no model serving runtime;
-- no hosted registry;
-- no broad "all ML frameworks" promise until fixtures prove it.
+```powershell
+uv sync --locked
+uv run --python 3.12 python -m compileall -q src tests scripts
+uv run --python 3.12 ruff check src tests scripts
+uv run --python 3.12 python -m unittest discover -s tests -v
+uv build
+uv run --python 3.12 python scripts/verify_wheel.py dist
+uv run --python 3.12 python scripts/verify_github_action.py
+```
 
-## Repository Hygiene
+Post-release verification:
 
-.editorconfig, .gitattributes, and .gitignore are generated to keep line endings,
-binary diffs, local files, build outputs, caches, and secret files under control.
+```powershell
+uv run --python 3.12 python scripts/verify_release.py --version 0.1.2 --publish-run-id 28930381437
+```
 
-## Scope Notes
+## Project Docs
 
-Runtime floor is Python 3.12, the initial CLI adapter is `argparse`, package
-metadata lives in `pyproject.toml`, JSON Schema validation uses `jsonschema`,
-the project lockfile is `uv.lock`, explicit config files use `aibom.toml`, the
-first exporter is CycloneDX JSON 1.7, strict redaction is the default, and the
-repository license is Apache-2.0. The first public MVP release uses immutable
-GitHub tags, with `v0.1.2` as the current smoke-tested patch tag and first PyPI
-package release. Mutable major action tags, GitHub Marketplace registration,
-second exporter priority, automatic config discovery, and model artifact
-discovery defaults remain deferred until the repository owner records them in
-the source-of-truth documents.
+- [Product spec](docs/product/02-spec.md)
+- [CLI contract](docs/cli/command-contract.md)
+- [GitHub Action contract](docs/github-action/action-contract.md)
+- [Release operations](docs/ops/release.md)
+- [Changelog](CHANGELOG.md)
+
+## License
+
+Apache-2.0.
