@@ -5,6 +5,7 @@
 Unreleased PyPI packaging preparation.
 
 - Adds package classifiers, keywords, and project URLs for future PyPI publishing.
+- Adds Ruff as the configured lint runner for local and CI validation.
 - Preserves CLI config precedence in the GitHub Action when `format` or `warnings` inputs are omitted.
 - Uses run-unique default GitHub Action output directories under `RUNNER_TEMP`.
 - Rejects duplicate declared reference identities before exporting duplicate CycloneDX `bom-ref` values.

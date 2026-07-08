@@ -42,6 +42,7 @@ belong to future GitHub Action wrapper decisions and must stay opt-in.
 | --- | --- |
 | check | Install locked environment with `uv sync --locked`. |
 | check | Compile `src`, `tests`, and `scripts` with `python -m compileall`. |
+| lint | Run `ruff check src tests scripts`. |
 | test | Run `python -m unittest discover -s tests -v`. |
 | check | Build source and wheel distributions with `uv build`. |
 | check | Verify the wheel includes runtime schemas, includes the `ai-bom` console script entry point, installs into an isolated virtual environment without dependency resolution, renders `ai-bom --help`, and can run an installed-console-script fixture smoke with the locked validation dependencies. |
@@ -59,6 +60,7 @@ Run these commands from the repository root:
 ```powershell
 uv sync --locked
 uv run --python 3.12 python -m compileall -q src tests scripts
+uv run --python 3.12 ruff check src tests scripts
 uv run --python 3.12 python -m unittest discover -s tests -v
 uv build
 uv run --python 3.12 python scripts/verify_wheel.py dist

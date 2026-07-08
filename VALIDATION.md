@@ -27,6 +27,7 @@ implementation.
 | --- | --- |
 | check | `uv sync --locked` |
 | check | `uv run --python 3.12 python -m compileall -q src tests scripts` |
+| lint | `uv run --python 3.12 ruff check src tests scripts` |
 | test | `uv run --python 3.12 python -m unittest discover -s tests -v` |
 | check | `uv build` |
 | check | `uv run --python 3.12 python scripts/verify_wheel.py dist` |
@@ -35,8 +36,8 @@ implementation.
 | check | `git diff --check` |
 
 Docs validation is review-based until a documentation linter is configured.
-Format, lint, typecheck, contract, and migration-check are stable names but do
-not have configured runners yet.
+Format, typecheck, contract, and migration-check are stable names but do not
+have configured runners yet.
 
 `scripts/verify_wheel.py` verifies required package data, the `ai-bom` entry
 point metadata, installation of the built wheel into an isolated virtual

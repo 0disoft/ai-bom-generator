@@ -56,3 +56,12 @@ ai_bom_generator = [
   "exporters/cyclonedx_json/schema/*.json",
   "exporters/cyclonedx_json/schema/LICENSE"
 ]
+
+[tool.ruff]
+target-version = "py312"
+src = ["src", "tests", "scripts"]
+
+[dependency-groups]
+dev = [
+  "ruff>=0.15.20",
+]

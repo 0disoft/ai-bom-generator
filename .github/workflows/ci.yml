@@ -36,6 +36,9 @@ jobs:
       - name: Compile sources
         run: uv run --python 3.12 python -m compileall -q src tests scripts
 
+      - name: Lint sources
+        run: uv run --python 3.12 ruff check src tests scripts
+
       - name: Run unit and contract tests
         run: uv run --python 3.12 python -m unittest discover -s tests -v
 
