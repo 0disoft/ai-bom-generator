@@ -5,6 +5,11 @@
 Unreleased PyPI packaging preparation.
 
 - Adds package classifiers, keywords, and project URLs for future PyPI publishing.
+- Preserves CLI config precedence in the GitHub Action when `format` or `warnings` inputs are omitted.
+- Uses run-unique default GitHub Action output directories under `RUNNER_TEMP`.
+- Rejects duplicate declared reference identities before exporting duplicate CycloneDX `bom-ref` values.
+- Excludes optional prompt, eval, and training references from BOM output when their declared paths are unreadable or unsafe.
+- Tightens config schema validation for unknown top-level sections and `warning_policy` keys.
 - Keeps PyPI publishing deferred until package-registry policy is approved.
 
 ## v0.1.0

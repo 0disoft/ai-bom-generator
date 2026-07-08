@@ -107,6 +107,7 @@ class CliTests(unittest.TestCase):
                 os.symlink(target, project / "MODEL_CARD.md")
             except (OSError, NotImplementedError) as exc:
                 self.skipTest(f"symlink creation is unavailable: {exc}")
+            bom = work / "bom.json"
             summary = work / "summary.json"
 
             code = main(
@@ -114,7 +115,7 @@ class CliTests(unittest.TestCase):
                     "generate",
                     str(project),
                     "--output",
-                    str(work / "bom.json"),
+                    str(bom),
                     "--warning-report",
                     str(work / "warnings.json"),
                     "--summary",
@@ -1087,6 +1088,42 @@ class CliTests(unittest.TestCase):
             self.assertEqual(artifact_refs, ["artifact:models/model.safetensors"])
             self.assertEqual(len(artifact_refs), len(set(artifact_refs)))
 
+    def test_duplicate_declared_reference_identity_is_rejected_before_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8")
+                + '\n[[datasets]]\nname = "example-dataset"\nlicense_declared = "NOASSERTION"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
     def test_warning_policy_fail_returns_policy_exit_code(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
@@ -1204,6 +1241,76 @@ class CliTests(unittest.TestCase):
             config = project / "aibom.toml"
             config.write_text(
                 config.read_text(encoding="utf-8") + '\n[warning_policy]\nmissing_metadata = "block"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
+    def test_config_warning_policy_rejects_unknown_keys(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "sparse-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8") + '\n[warning_policy]\nmissing_metdata = "fail"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            warnings = work / "warnings.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(warnings),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.INVALID_INPUT)
+            self.assertFalse(bom.exists())
+            self.assertFalse(warnings.exists())
+            self.assertFalse(summary.exists())
+
+    def test_config_rejects_unknown_top_level_sections(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8") + '\n[artifact]\ninclude = ["models/model.safetensors"]\n',
                 encoding="utf-8",
                 newline="\n",
             )
@@ -1665,6 +1772,7 @@ class CliTests(unittest.TestCase):
                 encoding="utf-8",
                 newline="\n",
             )
+            bom = work / "bom.json"
             summary = work / "summary.json"
 
             code = main(
@@ -1674,7 +1782,7 @@ class CliTests(unittest.TestCase):
                     "--config",
                     str(config),
                     "--output",
-                    str(work / "bom.json"),
+                    str(bom),
                     "--warning-report",
                     str(work / "warnings.json"),
                     "--summary",
@@ -1686,6 +1794,9 @@ class CliTests(unittest.TestCase):
             codes = _warning_codes(summary)
             self.assertIn("MISSING_EVALS_REFERENCE_FILE", codes)
             self.assertIn("MISSING_TRAINING_REFERENCE_FILE", codes)
+            component_refs = _component_refs(_read_json(bom))
+            self.assertNotIn("eval:stale-eval", component_refs)
+            self.assertNotIn("training:stale-training", component_refs)
 
     def test_target_root_escape_is_reported_for_optional_reference(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -1714,8 +1825,10 @@ class CliTests(unittest.TestCase):
             warnings = _read_json(summary)["warnings"]
             codes = {str(warning["code"]) for warning in warnings}
             self.assertIn("MISSING_PROMPTS_REFERENCE_FILE", codes)
-            bom_text = (work / "bom.json").read_text(encoding="utf-8")
+            bom = work / "bom.json"
+            bom_text = bom.read_text(encoding="utf-8")
             self.assertNotIn("../outside.txt", bom_text)
+            self.assertNotIn("prompt:outside", _component_refs(_read_json(bom)))
 
 
 def _read_json(path: Path) -> dict[str, object]:
@@ -1737,6 +1850,16 @@ def _model_properties(bom_payload: dict[str, object]) -> dict[str, str]:
         str(item["name"]): str(item["value"])
         for item in properties
         if isinstance(item, dict)
+    }
+
+
+def _component_refs(bom_payload: dict[str, object]) -> set[str]:
+    components = bom_payload["components"]
+    assert isinstance(components, list)
+    return {
+        str(component["bom-ref"])
+        for component in components
+        if isinstance(component, dict)
     }
 
 

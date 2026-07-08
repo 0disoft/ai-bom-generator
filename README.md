@@ -102,12 +102,21 @@ ai-bom generate <model-directory> --config <path> --format cyclonedx-json-1.7 --
 ## Current GitHub Action Smoke
 
 ```yaml
+- uses: actions/setup-python@v6
+  with:
+    python-version: "3.12"
+- uses: astral-sh/setup-uv@v8.3.1
 - uses: 0disoft/ai-bom-generator@v0.1.0
   with:
     model-directory: .
     config: aibom.toml
-    warnings: allow
 ```
+
+The action invokes the packaged CLI with `uv run --project`, so consuming
+workflows must make Python 3.12 and `uv` available before this action runs. When
+`format` or `warnings` inputs are omitted, the action lets the CLI use the
+explicit config values and CLI defaults. Generated files are written to explicit
+paths when provided, or to a run-unique directory under `RUNNER_TEMP`.
 
 The current implementation validates explicit `aibom.toml` config files against
 AI-BOM config schema v1, validates generated CycloneDX JSON 1.7 output against

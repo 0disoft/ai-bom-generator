@@ -39,6 +39,7 @@ def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redacto
     prompts = _collect_path_references("prompts", config, policy, warnings, redactor, optional_paths=True)
     evals = _collect_path_references("evals", config, policy, warnings, redactor, optional_paths=True)
     training = _collect_path_references("training", config, policy, warnings, redactor, optional_paths=True)
+    _ensure_unique_reference_ids([*dependencies, *datasets, *prompts, *evals, *training])
     git = _collect_git(policy, warnings)
 
     return NormalizedEvidence(
@@ -308,6 +309,7 @@ def _collect_path_references(
                             remediation="Check the path or remove the stale reference.",
                         )
                     )
+                    continue
                 else:
                     raise
         references.append(DeclaredReference(kind=_singular_kind(section), object_id=object_id, values=values, source=source))
@@ -540,3 +542,18 @@ def _singular_kind(section: str) -> str:
         "evals": "eval",
         "training": "training",
     }.get(section, section)
+
+
+def _ensure_unique_reference_ids(references: list[DeclaredReference]) -> None:
+    seen: dict[tuple[str, str], DeclaredReference] = {}
+    for reference in references:
+        key = (reference.kind, reference.object_id)
+        previous = seen.get(key)
+        if previous is not None:
+            raise InvalidInputError(
+                "Duplicate reference identity would create duplicate CycloneDX bom-ref "
+                f"{reference.kind}:{reference.object_id}. "
+                f"First declared at {previous.source.field}; duplicate declared at {reference.source.field}.",
+                "config",
+            )
+        seen[key] = reference

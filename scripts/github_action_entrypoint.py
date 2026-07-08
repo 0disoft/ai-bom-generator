@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import uuid
 
 
 def main() -> int:
@@ -13,9 +14,10 @@ def main() -> int:
     workspace = _path_env("GITHUB_WORKSPACE", Path.cwd())
     runner_temp = _path_env("RUNNER_TEMP", Path(tempfile.gettempdir()))
     model_directory = _required_input("INPUT_MODEL_DIRECTORY")
-    output = _input_path("INPUT_OUTPUT", runner_temp / "ai-bom-generator" / "bom.cdx.json")
-    warning_report = _input_path("INPUT_WARNING_REPORT", runner_temp / "ai-bom-generator" / "warnings.json")
-    summary = _input_path("INPUT_SUMMARY", runner_temp / "ai-bom-generator" / "summary.json")
+    default_output_dir = runner_temp / "ai-bom-generator" / uuid.uuid4().hex
+    output = _input_path("INPUT_OUTPUT", default_output_dir / "bom.cdx.json")
+    warning_report = _input_path("INPUT_WARNING_REPORT", default_output_dir / "warnings.json")
+    summary = _input_path("INPUT_SUMMARY", default_output_dir / "summary.json")
     output.parent.mkdir(parents=True, exist_ok=True)
     warning_report.parent.mkdir(parents=True, exist_ok=True)
     summary.parent.mkdir(parents=True, exist_ok=True)
@@ -34,22 +36,14 @@ def main() -> int:
     config = os.environ.get("INPUT_CONFIG", "").strip()
     if config:
         args.extend(["--config", config])
-    args.extend(
-        [
-            "--format",
-            _input_value("INPUT_FORMAT", "cyclonedx-json-1.7"),
-            "--output",
-            str(output),
-            "--warning-report",
-            str(warning_report),
-            "--summary",
-            str(summary),
-            "--warnings",
-            _input_value("INPUT_WARNINGS", "allow"),
-            "--redaction",
-            _input_value("INPUT_REDACTION", "strict"),
-        ]
-    )
+    output_format = os.environ.get("INPUT_FORMAT", "").strip()
+    if output_format:
+        args.extend(["--format", output_format])
+    args.extend(["--output", str(output), "--warning-report", str(warning_report), "--summary", str(summary)])
+    warnings = os.environ.get("INPUT_WARNINGS", "").strip()
+    if warnings:
+        args.extend(["--warnings", warnings])
+    args.extend(["--redaction", _input_value("INPUT_REDACTION", "strict")])
 
     env = os.environ.copy()
     env.setdefault("UV_PROJECT_ENVIRONMENT", str(runner_temp / "ai-bom-generator-venv"))

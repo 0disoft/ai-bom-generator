@@ -20,6 +20,15 @@ This repository type owns action inputs, outputs, permissions, token handling, a
   compliance approval.
 - GitHub Action public contract: inputs cover model directory, config path,
   output format, output path, warning policy, and redaction mode.
+- GitHub Action config precedence: `format` and `warnings` inputs are optional
+  overrides. When omitted, the action must not pass the corresponding CLI flag,
+  so the CLI uses explicit config values and executable defaults.
+- GitHub Action default output paths: when output paths are omitted, the action
+  writes BOM, warning report, and summary files under a run-unique directory in
+  `RUNNER_TEMP` and exposes those paths as action outputs.
+- GitHub Action runtime prerequisites: consuming workflows must provide Python
+  3.12 and `uv` before invoking the action until an action-managed setup policy
+  is approved.
 - GitHub Action validation evidence: workflow fixtures must cover clean output,
   warning output, and failure output.
 - GitHub Action release or rollout policy: immutable version tag `v0.1.0` for

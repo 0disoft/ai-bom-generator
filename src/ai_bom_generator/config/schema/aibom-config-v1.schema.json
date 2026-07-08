@@ -3,7 +3,7 @@
   "$id": "https://0disoft.example/schemas/aibom-config-v1.schema.json",
   "title": "AI-BOM Generator Config v1",
   "type": "object",
-  "additionalProperties": true,
+  "additionalProperties": false,
   "required": ["schema_version"],
   "properties": {
     "schema_version": { "const": "1" },
@@ -16,7 +16,10 @@
     },
     "warning_policy": {
       "type": "object",
-      "additionalProperties": { "enum": ["warn", "fail"] }
+      "additionalProperties": false,
+      "properties": {
+        "missing_metadata": { "enum": ["warn", "fail"] }
+      }
     },
     "model": {
       "type": "object",

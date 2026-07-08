@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -42,6 +44,20 @@ def main(argv: list[str] | None = None) -> int:
                 explicit_output_paths=False,
             ),
             ActionCase(
+                "config-warning-policy",
+                "tests/fixtures/sparse-project",
+                None,
+                None,
+                10,
+                "failed",
+                "partial",
+                config_text=(
+                    'schema_version = "1"\n\n'
+                    '[model]\nname = "sparse-model"\n\n'
+                    '[warning_policy]\nmissing_metadata = "fail"\n'
+                ),
+            ),
+            ActionCase(
                 "warning",
                 "tests/fixtures/sparse-project",
                 "tests/fixtures/sparse-project/aibom.toml",
@@ -72,12 +88,14 @@ class ActionCase:
         self,
         name: str,
         model_directory: str,
-        config: str,
-        warnings: str,
+        config: str | None,
+        warnings: str | None,
         expected_exit: int,
         expected_status: str,
         expected_completeness_status: str,
         explicit_output_paths: bool = True,
+        format: str | None = "cyclonedx-json-1.7",
+        config_text: str | None = None,
     ) -> None:
         self.name = name
         self.model_directory = model_directory
@@ -87,6 +105,8 @@ class ActionCase:
         self.expected_status = expected_status
         self.expected_completeness_status = expected_completeness_status
         self.explicit_output_paths = explicit_output_paths
+        self.format = format
+        self.config_text = config_text
 
 
 def _verify_action_metadata() -> None:
@@ -115,10 +135,18 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
         warning_report = case_root / "warnings.json"
         summary = case_root / "summary.json"
     else:
-        default_output_root = runner_temp / "ai-bom-generator"
-        output = default_output_root / "bom.cdx.json"
-        warning_report = default_output_root / "warnings.json"
-        summary = default_output_root / "summary.json"
+        output = None
+        warning_report = None
+        summary = None
+    model_directory = case.model_directory
+    config = case.config
+    if case.config_text is not None:
+        project = case_root / "project"
+        shutil.copytree(ROOT / case.model_directory, project)
+        model_directory = str(project)
+        config_path = project / "aibom.toml"
+        config_path.write_text(case.config_text, encoding="utf-8", newline="\n")
+        config = str(config_path)
     env = os.environ.copy()
     env.update(
         {
@@ -126,13 +154,13 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
             "GITHUB_WORKSPACE": str(ROOT),
             "GITHUB_OUTPUT": str(github_output),
             "RUNNER_TEMP": str(runner_temp),
-            "INPUT_MODEL_DIRECTORY": case.model_directory,
-            "INPUT_CONFIG": case.config,
-            "INPUT_FORMAT": "cyclonedx-json-1.7",
-            "INPUT_OUTPUT": str(output) if case.explicit_output_paths else "",
-            "INPUT_WARNING_REPORT": str(warning_report) if case.explicit_output_paths else "",
-            "INPUT_SUMMARY": str(summary) if case.explicit_output_paths else "",
-            "INPUT_WARNINGS": case.warnings,
+            "INPUT_MODEL_DIRECTORY": model_directory,
+            "INPUT_CONFIG": config or "",
+            "INPUT_FORMAT": case.format or "",
+            "INPUT_OUTPUT": str(output) if output else "",
+            "INPUT_WARNING_REPORT": str(warning_report) if warning_report else "",
+            "INPUT_SUMMARY": str(summary) if summary else "",
+            "INPUT_WARNINGS": case.warnings or "",
             "INPUT_REDACTION": "strict",
         }
     )
@@ -149,10 +177,16 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
         print(result.stdout, file=sys.stderr)
         print(result.stderr, file=sys.stderr)
         raise AssertionError(f"{case.name} returned {result.returncode}, expected {case.expected_exit}")
+    if not github_output.is_file() or github_output.stat().st_size == 0:
+        raise AssertionError(f"{case.name} did not create non-empty file: {github_output}")
+    outputs = _read_github_output(github_output)
+    if output is None:
+        output = Path(outputs.get("bom-path", ""))
+        warning_report = Path(outputs.get("warning-report-path", ""))
+        summary = Path(outputs.get("summary-path", ""))
     for path in (output, warning_report, summary, github_output):
         if not path.is_file() or path.stat().st_size == 0:
             raise AssertionError(f"{case.name} did not create non-empty file: {path}")
-    outputs = _read_github_output(github_output)
     if outputs.get("exit-code") != str(case.expected_exit):
         raise AssertionError(f"{case.name} output exit-code mismatch: {outputs.get('exit-code')}")
     if outputs.get("status") != case.expected_status:
@@ -167,6 +201,12 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
         raise AssertionError(f"{case.name} output warning-report-path mismatch: {outputs.get('warning-report-path')}")
     if outputs.get("summary-path") != summary.as_posix():
         raise AssertionError(f"{case.name} output summary-path mismatch: {outputs.get('summary-path')}")
+    if not case.explicit_output_paths and output.parent == runner_temp / "ai-bom-generator":
+        raise AssertionError(f"{case.name} default output path did not include a run-unique directory")
+
+    summary_payload = json.loads(summary.read_text(encoding="utf-8"))
+    if str(summary_payload.get("status")) != case.expected_status:
+        raise AssertionError(f"{case.name} summary status mismatch: {summary_payload.get('status')}")
 
 
 def _run_missing_required_input_case(case_root: Path) -> None:

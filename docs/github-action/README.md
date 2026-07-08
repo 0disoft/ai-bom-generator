@@ -18,9 +18,14 @@ state, registry publication, or compliance approval.
 ## Action Responsibilities
 
 - Invoke the packaged CLI from the action checkout with `uv run --project`.
-- Pass model directory, config, exporter, output path, and warning policy inputs.
+- Pass model directory, config, exporter, output path, and warning policy inputs
+  only when the caller provides those optional overrides.
 - Expose BOM path, warning count, and completeness status as outputs.
-- Write generated files under explicit paths or under `RUNNER_TEMP` defaults.
+- Write generated files under explicit paths or under run-unique `RUNNER_TEMP`
+  defaults.
+- Preserve CLI config precedence for omitted `format` and `warnings` inputs.
+- Require consuming workflows to provide Python 3.12 and `uv` before invoking
+  the action until action-managed setup is explicitly approved.
 - Preserve read-only default permissions.
 
 ## Release Policy

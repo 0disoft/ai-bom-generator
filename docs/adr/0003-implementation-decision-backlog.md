@@ -39,6 +39,11 @@ choices from plausible candidates that still need approval.
 | Telemetry policy | No telemetry in MVP | Proposed |
 | Cache policy | No hidden cache in MVP | Proposed |
 | Redaction default | strict | Approved for CLI and terminal output on 2026-07-07 |
+| Action-managed runtime setup | Composite action installs or prepares Python and `uv` itself | Deferred |
+| Atomic output transaction | Temp-file writes, generation manifest, and stale-output cleanup | Deferred |
+| Artifact snapshot consistency | Single-descriptor stat/hash validation or immutable staging | Deferred |
+| Artifact glob budgets | Match-count and byte budgets for broad artifact patterns | Deferred |
+| Provider-aware redaction matrix | Key-aware and provider-token redaction beyond current strict patterns | Proposed |
 
 ## Guardrails
 
@@ -60,6 +65,10 @@ choices from plausible candidates that still need approval.
   a package-registry release policy is approved.
 - Do not add network, cache, telemetry, hosted registry, or write-permission
   behavior while these decisions remain proposed.
+- Do not claim action-managed runtime setup, atomic multi-file output
+  transactions, artifact snapshot consistency guarantees, broad-glob budgets, or
+  expanded provider-token coverage until the corresponding deferred/proposed
+  decision is approved and implemented with fixtures.
 
 ## Review Blockers
 

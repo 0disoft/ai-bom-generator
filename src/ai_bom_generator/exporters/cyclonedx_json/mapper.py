@@ -55,6 +55,7 @@ def export_cyclonedx_json(evidence: NormalizedEvidence, redactor: Redactor) -> d
     redacted = redactor.redact_json(bom)
     if not isinstance(redacted, dict):
         raise ExporterError("CycloneDX exporter produced a non-object BOM.", "exporter")
+    _validate_unique_bom_refs(redacted)
     validate_cyclonedx_1_7(redacted)
     return redacted
 
@@ -71,3 +72,20 @@ def _model_properties(evidence: NormalizedEvidence) -> list[dict[str, str]]:
         for key, value in reference.values:
             properties.append({"name": f"ai-bom:git:{key}", "value": value})
     return sorted(properties, key=lambda item: item["name"])
+
+
+def _validate_unique_bom_refs(bom: dict[str, object]) -> None:
+    components = bom.get("components", [])
+    if not isinstance(components, list):
+        return
+
+    seen: set[str] = set()
+    for component in components:
+        if not isinstance(component, dict):
+            continue
+        bom_ref = component.get("bom-ref")
+        if not isinstance(bom_ref, str):
+            continue
+        if bom_ref in seen:
+            raise ExporterError(f"CycloneDX exporter produced duplicate bom-ref: {bom_ref}", "exporter")
+        seen.add(bom_ref)

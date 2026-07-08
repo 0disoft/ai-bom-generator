@@ -31,6 +31,9 @@ Collectors must not know exporter-specific field names. Exporters must not read
 the filesystem directly. Reporters must not mutate normalized evidence.
 Overlapping artifact include patterns must normalize to one artifact evidence
 record per resolved target-root-relative file path.
+Declared dependency, dataset, prompt, eval, and training references must have a
+unique `kind` plus `object_id` identity before export, because CycloneDX
+component `bom-ref` values are derived from that identity.
 
 ## Ownership Boundary
 
@@ -46,6 +49,8 @@ record per resolved target-root-relative file path.
 - Unreadable required input: failure.
 - Unreadable or unsafe optional reference path: warning without adding the
   rejected path to normalized BOM evidence.
+- Duplicate declared reference identity: invalid-config failure before writing
+  generated output.
 - Hash failure: failure.
 - Unsupported exporter mapping: failure.
 - Partial collector support: warning with unsupported field names.

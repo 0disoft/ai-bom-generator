@@ -42,8 +42,9 @@ tables are ignored with an `UNSUPPORTED_CONFIG_FIELD` warning until the field is
 explicitly modeled.
 
 The runtime schema validates section shape, config version, artifact pattern
-types, warning-policy values, and known path fields before output files are
-written. It intentionally allows unknown nested values in metadata/reference
+types, warning-policy field names and values, known top-level sections, and
+known path fields before output files are written. It intentionally allows
+unknown nested values in metadata/reference
 objects so the collector can emit `UNSUPPORTED_CONFIG_FIELD` warnings instead of
 silently dropping user intent.
 

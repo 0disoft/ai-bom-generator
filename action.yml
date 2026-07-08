@@ -10,9 +10,9 @@ inputs:
     required: false
     default: ""
   format:
-    description: Output format passed to ai-bom.
+    description: Optional output format override passed to ai-bom. Leave empty to use config or CLI defaults.
     required: false
-    default: cyclonedx-json-1.7
+    default: ""
   output:
     description: Output path for the generated BOM. Defaults under RUNNER_TEMP.
     required: false
@@ -26,9 +26,9 @@ inputs:
     required: false
     default: ""
   warnings:
-    description: Warning policy passed to ai-bom.
+    description: Optional warning policy override passed to ai-bom. Leave empty to use config or CLI defaults.
     required: false
-    default: allow
+    default: ""
   redaction:
     description: Redaction mode passed to ai-bom.
     required: false
