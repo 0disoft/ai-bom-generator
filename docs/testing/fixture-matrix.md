@@ -13,6 +13,7 @@ honestly. They should be synthetic and safe to publish.
 | Fixture | Purpose |
 | --- | --- |
 | `complete-project` | Full metadata, artifact digest, dependencies, dataset, prompt, eval, and training references. Covered by CLI smoke, schema, and deterministic-output tests. |
+| `dependency-lockfiles` | Explicit requirements and `uv.lock` files map to CycloneDX library and SPDX software package elements without resolution or downloads. Covered by parser and CLI integration tests. |
 | `sparse-project` | Missing optional metadata appears as warnings, not inferred facts. Covered by CLI warning tests. |
 | `invalid-config` | Invalid config fails with actionable location. Covered by CLI invalid-input tests. |
 | `missing-artifact` | Unmatched artifact include patterns warn without fabricating artifact evidence. Covered by CLI warning tests. |

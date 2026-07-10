@@ -78,6 +78,283 @@ class CliTests(unittest.TestCase):
             self.assertEqual(eval_properties["ai-bom:artifact"], "evals/result.json")
             self.assertEqual(eval_properties["ai-bom:path"], "evals/result.json")
 
+    def test_dependency_lockfiles_generate_cyclonedx_library_components(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "dependency-lockfiles", project)
+            bom = work / "bom.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertEqual(_read_json(summary)["warning_count"], 0)
+            components = _read_json(bom)["components"]
+            libraries = [component for component in components if component["type"] == "library"]
+            self.assertEqual(
+                sorted(component["name"] for component in libraries),
+                ["example-locked", "example-pinned", "example-range", "example-wheel", "workspace-model"],
+            )
+            pinned = next(component for component in libraries if component["name"] == "example-pinned")
+            ranged = next(component for component in libraries if component["name"] == "example-range")
+            pinned_properties = _component_properties(pinned)
+            ranged_properties = _component_properties(ranged)
+            self.assertEqual(pinned["version"], "1.2.3")
+            self.assertEqual(pinned_properties["ai-bom:dependency:source-path"], "requirements.txt")
+            self.assertNotIn("version", ranged)
+            self.assertEqual(ranged_properties["ai-bom:dependency:extras"], "fast")
+            self.assertIn("python_version", ranged_properties["ai-bom:dependency:marker"])
+            self.assertIn("dependency:requirements-fixture", {component["bom-ref"] for component in components})
+            self.assertIn("dependency:uv-fixture", {component["bom-ref"] for component in components})
+
+    def test_dependency_lockfiles_generate_spdx_software_packages(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "dependency-lockfiles", project)
+            bom = work / "bom.spdx.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--format",
+                    "spdx-ai",
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(work / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            packages = _spdx_graph_by_type(_read_json(bom))["software_Package"]
+            self.assertEqual(
+                sorted(package["name"] for package in packages),
+                ["example-locked", "example-pinned", "example-range", "example-wheel", "workspace-model"],
+            )
+            pinned = next(package for package in packages if package["name"] == "example-pinned")
+            ranged = next(package for package in packages if package["name"] == "example-range")
+            self.assertEqual(pinned["packageVersion"], "1.2.3")
+            self.assertEqual(pinned["aiBom:sourcePath"], "requirements.txt")
+            self.assertEqual(ranged["packageVersion"], "NOASSERTION")
+            self.assertEqual(ranged["aiBom:extras"], ["fast"])
+
+    def test_dependency_parsing_can_be_disabled_per_reference(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "dependency-lockfiles", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8")
+                .replace('type = "pip"', 'type = "pip"\nparse = false')
+                .replace('type = "uv"', 'type = "uv"\nparse = false'),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(work / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            components = _read_json(bom)["components"]
+            self.assertFalse(any(component["type"] == "library" for component in components))
+            self.assertIn("dependency:requirements-fixture", {component["bom-ref"] for component in components})
+
+    def test_malformed_dependency_entries_warn_without_fabricated_packages(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            (project / "requirements.lock").write_text(
+                "not a valid requirement ???\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(project / "aibom.toml"),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("DEPENDENCY_PARSE_PARTIAL", _warning_codes(summary))
+            components = _read_json(bom)["components"]
+            self.assertFalse(any(component["type"] == "library" for component in components))
+            self.assertIn("dependency:pip", {component["bom-ref"] for component in components})
+
+    def test_unsupported_dependency_format_warns_without_parsing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace('type = "pip"', 'type = "poetry"'),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("UNSUPPORTED_DEPENDENCY_FORMAT", _warning_codes(summary))
+            self.assertFalse(any(component["type"] == "library" for component in _read_json(bom)["components"]))
+
+    def test_dependency_file_limit_warns_without_partial_packages(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            bom = work / "bom.json"
+            summary = work / "summary.json"
+
+            with patch("ai_bom_generator.collectors.dependency_files.MAX_DEPENDENCY_FILE_BYTES", 4):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(project / "aibom.toml"),
+                        "--output",
+                        str(bom),
+                        "--warning-report",
+                        str(work / "warnings.json"),
+                        "--summary",
+                        str(summary),
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("DEPENDENCY_FILE_LIMIT_EXCEEDED", _warning_codes(summary))
+            self.assertFalse(any(component["type"] == "library" for component in _read_json(bom)["components"]))
+
+    def test_invalid_uv_lock_warns_without_fabricated_packages(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            (project / "requirements.lock").write_text("[[package]\n", encoding="utf-8", newline="\n")
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace('type = "pip"', 'type = "uv"'),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+            summary = work / "summary.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertIn("DEPENDENCY_PARSE_FAILED", _warning_codes(summary))
+            self.assertFalse(any(component["type"] == "library" for component in _read_json(bom)["components"]))
+
+    def test_duplicate_dependency_file_declarations_do_not_duplicate_packages(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8")
+                + '\n[[dependencies]]\nname = "second-lock-reference"\npath = "requirements.lock"\ntype = "pip"\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(work / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            libraries = [component for component in _read_json(bom)["components"] if component["type"] == "library"]
+            self.assertEqual(len(libraries), 1)
+
     def test_aibom_toml_is_discovered_when_config_is_omitted(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
@@ -2891,6 +3168,14 @@ def _spdx_graph_by_type(bom_payload: dict[str, object]) -> dict[str, list[dict[s
         assert isinstance(element, dict)
         by_type.setdefault(str(element["type"]), []).append(element)
     return by_type
+
+
+def _component_properties(component: dict[str, object]) -> dict[str, str]:
+    return {
+        str(item["name"]): str(item["value"])
+        for item in component.get("properties", [])
+        if isinstance(item, dict) and "name" in item and "value" in item
+    }
 
 
 def _generate_fixture_outputs(work: Path, name: str, fixture: str, output_format: str) -> Path:

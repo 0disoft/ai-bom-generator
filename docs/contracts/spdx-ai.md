@@ -46,6 +46,7 @@ and contract update.
 | Model `model_card` | `aiBom:modelCard` extension field |
 | Model `license_declared` | `aiBom:licenseDeclared` extension field |
 | Artifact paths and SHA-256 digests | `software_File` elements with `verifiedUsing` |
+| Parsed Python dependency packages | `software_Package` elements; `packageVersion` is `NOASSERTION` when no exact version is evidenced |
 | Dependency, dataset, prompt, eval, training, and Git references | `aiBom_Reference` extension elements |
 | Evidence containment | One `Relationship` from the model to collected evidence elements |
 | Warning and completeness state | `aiBom:warningCount` and `aiBom:completenessStatus` |

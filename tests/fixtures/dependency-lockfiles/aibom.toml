@@ -1,0 +1,18 @@
+schema_version = "1"
+
+[model]
+name = "dependency-lockfile-model"
+version = "0.1.0"
+
+[artifacts]
+include = ["models/model.onnx"]
+
+[[dependencies]]
+name = "requirements-fixture"
+path = "requirements.txt"
+type = "pip"
+
+[[dependencies]]
+name = "uv-fixture"
+path = "uv.lock"
+type = "uv"

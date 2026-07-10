@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ai_bom_generator.domain.artifact import ModelArtifact
+from ai_bom_generator.domain.dependency import DependencyPackage
 from ai_bom_generator.domain.reference import DeclaredReference
 from ai_bom_generator.domain.warning import Warning
 
@@ -13,6 +14,7 @@ class NormalizedEvidence:
     model_metadata: tuple[DeclaredReference, ...]
     artifacts: tuple[ModelArtifact, ...]
     dependencies: tuple[DeclaredReference, ...]
+    dependency_packages: tuple[DependencyPackage, ...]
     datasets: tuple[DeclaredReference, ...]
     prompts: tuple[DeclaredReference, ...]
     evals: tuple[DeclaredReference, ...]

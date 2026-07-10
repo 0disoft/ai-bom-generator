@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from hashlib import sha256
+
+from ai_bom_generator.domain.dependency import DependencyPackage
 from ai_bom_generator.domain.evidence import NormalizedEvidence
 from ai_bom_generator.errors import ExporterError
 from ai_bom_generator.exporters.cyclonedx_schema import validate_cyclonedx_1_7
@@ -38,6 +41,17 @@ def export_cyclonedx_json(evidence: NormalizedEvidence, redactor: Redactor) -> d
             }
         )
 
+    for package in evidence.dependency_packages:
+        component: dict[str, object] = {
+            "type": "library",
+            "name": package.name,
+            "bom-ref": _dependency_package_ref(package.identity_key()),
+            "properties": _dependency_package_properties(package),
+        }
+        if package.version:
+            component["version"] = package.version
+        components.append(component)
+
     model_name = evidence.model_metadata[0].object_id if evidence.model_metadata else "unnamed-model"
     bom = {
         "bomFormat": "CycloneDX",
@@ -58,6 +72,25 @@ def export_cyclonedx_json(evidence: NormalizedEvidence, redactor: Redactor) -> d
     _validate_unique_bom_refs(redacted)
     validate_cyclonedx_1_7(redacted)
     return redacted
+
+
+def _dependency_package_ref(identity_key: str) -> str:
+    digest = sha256(identity_key.encode("utf-8")).hexdigest()[:24]
+    return f"dependency-package:{digest}"
+
+
+def _dependency_package_properties(package: DependencyPackage) -> list[dict[str, str]]:
+    properties = [
+        {"name": "ai-bom:dependency:lockfile-format", "value": package.lockfile_format},
+        {"name": "ai-bom:dependency:requirement", "value": package.requirement},
+        {"name": "ai-bom:dependency:source-path", "value": package.source.path},
+        {"name": "ai-bom:dependency:source-type", "value": package.source_type},
+    ]
+    if package.marker:
+        properties.append({"name": "ai-bom:dependency:marker", "value": package.marker})
+    if package.extras:
+        properties.append({"name": "ai-bom:dependency:extras", "value": ",".join(package.extras)})
+    return sorted(properties, key=lambda item: item["name"])
 
 
 def _model_properties(evidence: NormalizedEvidence) -> list[dict[str, str]]:

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import configparser
+from email.parser import BytesParser
+from email.policy import default as default_email_policy
 import importlib
 import io
 import os
@@ -10,6 +12,9 @@ import subprocess
 import sys
 import tempfile
 import zipfile
+
+from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name
 
 
 REQUIRED_WHEEL_FILES = {
@@ -24,6 +29,9 @@ REQUIRED_WHEEL_FILES = {
 ENTRY_POINT_GROUP = "console_scripts"
 ENTRY_POINT_NAME = "ai-bom"
 ENTRY_POINT_TARGET = "ai_bom_generator.cli:main"
+REQUIRED_RUNTIME_REQUIREMENTS = {
+    "packaging": "<27,>=24",
+}
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -54,6 +62,18 @@ def main(argv: list[str] | None = None) -> int:
                 file=sys.stderr,
             )
             return 1
+
+        runtime_requirements = _read_runtime_requirements(archive)
+        for name, expected_specifier in REQUIRED_RUNTIME_REQUIREMENTS.items():
+            requirement = runtime_requirements.get(name)
+            if requirement is None or str(requirement.specifier) != expected_specifier:
+                actual = str(requirement.specifier) if requirement else "missing"
+                print(
+                    f"wheel {wheel.name} runtime requirement mismatch for {name}: "
+                    f"expected {expected_specifier}, got {actual}",
+                    file=sys.stderr,
+                )
+                return 1
 
     return _verify_installed_entry_point(wheel)
 
@@ -202,6 +222,18 @@ def _read_entry_points(archive: zipfile.ZipFile) -> configparser.ConfigParser:
     return parser
 
 
+def _read_runtime_requirements(archive: zipfile.ZipFile) -> dict[str, Requirement]:
+    matches = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
+    if len(matches) != 1:
+        raise RuntimeError(f"expected exactly one METADATA file, found {len(matches)}")
+    metadata = BytesParser(policy=default_email_policy).parsebytes(archive.read(matches[0]))
+    requirements: dict[str, Requirement] = {}
+    for value in metadata.get_all("Requires-Dist", []):
+        requirement = Requirement(value)
+        requirements[canonicalize_name(requirement.name)] = requirement
+    return requirements
+
+
 def _venv_python(venv: Path) -> Path:
     if sys.platform == "win32":
         return venv / "Scripts" / "python.exe"
@@ -232,7 +264,7 @@ def _runtime_env_with_locked_dependencies() -> dict[str, str]:
 
 def _locked_dependency_roots() -> list[Path]:
     roots: set[Path] = set()
-    for module_name in ("attrs", "jsonschema", "jsonschema_specifications", "referencing", "rpds"):
+    for module_name in ("attrs", "jsonschema", "jsonschema_specifications", "packaging", "referencing", "rpds"):
         module = importlib.import_module(module_name)
         module_file = getattr(module, "__file__", None)
         if module_file is None:

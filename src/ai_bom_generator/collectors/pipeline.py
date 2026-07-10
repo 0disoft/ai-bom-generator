@@ -5,8 +5,15 @@ from pathlib import Path
 import re
 from typing import Any, Iterator
 
+from ai_bom_generator.collectors.dependency_files import (
+    DependencyFileLimitError,
+    DependencyParseError,
+    detect_dependency_format,
+    parse_dependency_file,
+)
 from ai_bom_generator.config import LoadedConfig
 from ai_bom_generator.domain.artifact import ModelArtifact
+from ai_bom_generator.domain.dependency import DependencyPackage
 from ai_bom_generator.domain.evidence import NormalizedEvidence
 from ai_bom_generator.domain.reference import DeclaredReference
 from ai_bom_generator.domain.source_location import SourceLocation
@@ -62,7 +69,7 @@ def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redacto
         )
     model_metadata = _collect_model(config, policy, warnings, redactor)
     artifacts = _collect_artifacts(config, policy, warnings)
-    dependencies = _collect_path_references("dependencies", config, policy, warnings, redactor)
+    dependencies, dependency_packages = _collect_dependencies(config, policy, warnings, redactor)
     datasets = _collect_named_references("datasets", config, warnings, redactor)
     prompts = _collect_path_references("prompts", config, policy, warnings, redactor, optional_paths=True)
     evals = _collect_path_references("evals", config, policy, warnings, redactor, optional_paths=True)
@@ -70,11 +77,18 @@ def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redacto
     _ensure_unique_reference_ids([*dependencies, *datasets, *prompts, *evals, *training])
     git = _collect_git(policy, warnings)
 
+    unique_dependency_packages = {package.identity_key(): package for package in dependency_packages}
     return NormalizedEvidence(
         target_root=policy.root.as_posix(),
         model_metadata=tuple(sorted(model_metadata)),
         artifacts=tuple(sorted(artifacts)),
         dependencies=tuple(sorted(dependencies)),
+        dependency_packages=tuple(
+            sorted(
+                unique_dependency_packages.values(),
+                key=lambda item: (item.source.path, item.name, item.version or "", item.requirement),
+            )
+        ),
         datasets=tuple(sorted(datasets)),
         prompts=tuple(sorted(prompts)),
         evals=tuple(sorted(evals)),
@@ -433,6 +447,7 @@ def _collect_path_references(
     warnings: list[Warning],
     redactor: Redactor,
     optional_paths: bool = False,
+    metadata_skip_keys: set[str] | None = None,
 ) -> list[DeclaredReference]:
     items = config.get_array(section)
     references: list[DeclaredReference] = []
@@ -454,7 +469,7 @@ def _collect_path_references(
             f"{section}[{index}]",
             _singular_kind(section),
             object_id,
-            skip_keys={"path", "artifact"},
+            skip_keys={"path", "artifact", *(metadata_skip_keys or set())},
         )
         if raw_path:
             if not isinstance(raw_path, str):
@@ -487,6 +502,103 @@ def _collect_path_references(
                     raise
         references.append(DeclaredReference(kind=_singular_kind(section), object_id=object_id, values=values, source=source))
     return references
+
+
+def _collect_dependencies(
+    config: LoadedConfig,
+    policy: PathPolicy,
+    warnings: list[Warning],
+    redactor: Redactor,
+) -> tuple[list[DeclaredReference], list[DependencyPackage]]:
+    items = config.get_array("dependencies")
+    references = _collect_path_references(
+        "dependencies",
+        config,
+        policy,
+        warnings,
+        redactor,
+        metadata_skip_keys={"parse"},
+    )
+    packages: list[DependencyPackage] = []
+    for index, (item, reference) in enumerate(zip(items, references, strict=True)):
+        parse_enabled = item.get("parse", True)
+        if not isinstance(parse_enabled, bool):
+            raise InvalidInputError(f"dependencies[{index}].parse must be a boolean.", "config")
+        values = dict(reference.values)
+        relative_path = values.get("path")
+        if not parse_enabled or relative_path is None:
+            continue
+
+        dependency_format = detect_dependency_format(relative_path, item.get("type"))
+        warning_source = _source(config, f"dependencies[{index}].path")
+        if dependency_format is None:
+            warnings.append(
+                Warning(
+                    code="UNSUPPORTED_DEPENDENCY_FORMAT",
+                    severity="warning",
+                    object_kind="dependency",
+                    object_id=relative_path,
+                    message=f"Dependency file format is not supported for parsing: {relative_path}",
+                    source=warning_source,
+                    remediation=(
+                        "Use type = \"uv\" for uv.lock, type = \"pip\" or \"requirements\" "
+                        "for requirements files, or set parse = false."
+                    ),
+                )
+            )
+            continue
+
+        path = policy.root / relative_path
+        try:
+            result = parse_dependency_file(path, relative_path, dependency_format, redactor)
+        except DependencyFileLimitError as exc:
+            warnings.append(
+                Warning(
+                    code="DEPENDENCY_FILE_LIMIT_EXCEEDED",
+                    severity="warning",
+                    object_kind="dependency",
+                    object_id=relative_path,
+                    message=f"Dependency file was not parsed because a fixed safety limit was exceeded: {exc}",
+                    source=warning_source,
+                    remediation="Use a smaller lockfile or set parse = false while keeping the file reference.",
+                )
+            )
+            continue
+        except DependencyParseError as exc:
+            warnings.append(
+                Warning(
+                    code="DEPENDENCY_PARSE_FAILED",
+                    severity="warning",
+                    object_kind="dependency",
+                    object_id=relative_path,
+                    message=f"Dependency file could not be parsed: {relative_path}: {redactor.redact_text(str(exc))}",
+                    source=warning_source,
+                    remediation="Fix the dependency file, choose the correct type, or set parse = false.",
+                )
+            )
+            continue
+
+        packages.extend(result.packages)
+        if result.skipped_entries and result.first_issue:
+            warnings.append(
+                Warning(
+                    code="DEPENDENCY_PARSE_PARTIAL",
+                    severity="warning",
+                    object_kind="dependency",
+                    object_id=relative_path,
+                    message=(
+                        f"Skipped {result.skipped_entries} unsupported or malformed dependency entries in "
+                        f"{relative_path}; first issue at {result.first_issue.location}: "
+                        f"{result.first_issue.reason}."
+                    ),
+                    source=warning_source,
+                    remediation=(
+                        "Replace unsupported directives with explicit PEP 508 entries or set parse = false "
+                        "if only file-level evidence is required."
+                    ),
+                )
+            )
+    return references, packages
 
 
 def _collect_named_references(

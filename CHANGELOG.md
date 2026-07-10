@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v0.2.0
+
+- Parses explicitly declared `uv.lock` and requirements files into normalized
+  dependency package components without discovery, resolution, or downloads.
+- Adds bounded dependency-file reads and machine-readable warnings for
+  unsupported formats, malformed files, skipped entries, and safety limits.
+
 ## v0.1.4
 
 - Adds the `spdx-ai` exporter as a partial SPDX 3.0.1 AI Profile preview with

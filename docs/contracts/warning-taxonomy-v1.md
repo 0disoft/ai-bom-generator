@@ -27,6 +27,7 @@ The executable warning-report schema lives at
 - Missing model metadata.
 - Missing model artifact selection or matched artifact.
 - Artifact pattern, single-file, or total-byte budget hit.
+- Unsupported, malformed, partially parsed, or over-budget dependency files.
 - Missing dataset license declaration.
 - Missing optional prompt, eval, or training reference files.
 - Unsupported config field.
@@ -45,6 +46,10 @@ The executable warning-report schema lives at
 | `ARTIFACT_MATCH_LIMIT_EXCEEDED` | Include pattern matched more candidate paths than the fixed MVP budget allows. | CLI artifact budget tests |
 | `ARTIFACT_SIZE_LIMIT_EXCEEDED` | Selected artifact exceeded the fixed MVP single-file byte budget. | CLI artifact budget tests |
 | `ARTIFACT_TOTAL_SIZE_LIMIT_EXCEEDED` | Selected artifact would exceed the fixed MVP total artifact byte budget. | CLI artifact budget tests |
+| `UNSUPPORTED_DEPENDENCY_FORMAT` | Explicit dependency file uses a format that is not supported for package parsing. | CLI dependency format warning test |
+| `DEPENDENCY_PARSE_FAILED` | Supported dependency file is unreadable as its declared UTF-8/TOML format. | CLI invalid uv.lock test |
+| `DEPENDENCY_PARSE_PARTIAL` | Supported dependency file contains skipped directives or malformed entries while retaining valid packages. | CLI malformed requirements test |
+| `DEPENDENCY_FILE_LIMIT_EXCEEDED` | Dependency file exceeds a fixed byte, logical-line, or package-count safety limit. | Dependency parser and CLI limit tests |
 | `SKIPPED_SYMLINK` | Symlink artifact or metadata file skipped. | `symlink-escape` fixture family and CLI model-card symlink tests |
 | `MISSING_PROMPTS_REFERENCE_FILE` | Optional prompt file reference could not be read. | `symlink-escape` CLI tests |
 | `MISSING_EVALS_REFERENCE_FILE` | Optional eval file reference could not be read. | CLI stale eval/training reference test |

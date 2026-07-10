@@ -4,6 +4,7 @@ from hashlib import sha256
 from importlib import resources
 
 from ai_bom_generator import __version__
+from ai_bom_generator.domain.dependency import DependencyPackage
 from ai_bom_generator.domain.evidence import NormalizedEvidence
 from ai_bom_generator.domain.reference import DeclaredReference
 from ai_bom_generator.errors import ExporterError
@@ -28,6 +29,9 @@ def export_spdx_ai(evidence: NormalizedEvidence, redactor: Redactor) -> dict[str
     model_id = f"{_SPDX_NAMESPACE}:model"
     references = _all_declared_references(evidence)
     reference_elements = [_reference_element(reference, creation_info_id) for reference in references]
+    dependency_package_elements = [
+        _dependency_package_element(package, creation_info_id) for package in evidence.dependency_packages
+    ]
     artifact_elements = [
         {
             "type": "software_File",
@@ -49,6 +53,7 @@ def export_spdx_ai(evidence: NormalizedEvidence, redactor: Redactor) -> dict[str
     related_ids = sorted(
         [
             *[str(item["spdxId"]) for item in artifact_elements],
+            *[str(item["spdxId"]) for item in dependency_package_elements],
             *[str(item["spdxId"]) for item in reference_elements],
         ]
     )
@@ -77,6 +82,7 @@ def export_spdx_ai(evidence: NormalizedEvidence, redactor: Redactor) -> dict[str
         },
         _model_package(evidence, creation_info_id, model_id),
         *artifact_elements,
+        *dependency_package_elements,
         *reference_elements,
     ]
     if related_ids:
@@ -156,6 +162,28 @@ def _reference_element(reference: DeclaredReference, creation_info_id: str) -> d
     }
     for key, value in sorted(values.items()):
         element[f"aiBom:{key}"] = value
+    return element
+
+
+def _dependency_package_element(
+    package: DependencyPackage,
+    creation_info_id: str,
+) -> dict[str, object]:
+    element: dict[str, object] = {
+        "type": "software_Package",
+        "spdxId": _stable_spdx_id("dependency-package", package.identity_key()),
+        "name": package.name,
+        "packageVersion": package.version or "NOASSERTION",
+        "creationInfo": creation_info_id,
+        "aiBom:lockfileFormat": package.lockfile_format,
+        "aiBom:requirement": package.requirement,
+        "aiBom:sourcePath": package.source.path,
+        "aiBom:sourceType": package.source_type,
+    }
+    if package.marker:
+        element["aiBom:marker"] = package.marker
+    if package.extras:
+        element["aiBom:extras"] = list(package.extras)
     return element
 
 

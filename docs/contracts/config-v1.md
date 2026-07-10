@@ -32,7 +32,8 @@ the CLI uses inline defaults and reports missing optional metadata as warnings.
 - `model`: declared model metadata and model-card path.
 - `artifacts`: include and exclude patterns for model artifacts and checkpoints,
   plus explicit opt-in artifact discovery.
-- `dependencies`: explicit dependency lockfile references and scalar metadata.
+- `dependencies`: explicit dependency-file references, scalar metadata, and an
+  optional `parse` boolean.
 - `datasets`: declared dataset references.
 - `prompts`: declared prompt references, with content inclusion disabled by default.
 - `evals`: declared eval artifact references.
@@ -80,10 +81,23 @@ behavior are explicitly designed.
 
 ## Dependency Lockfiles
 
-MVP dependency lockfile intake is config-driven. The tool records declared
-dependency file paths and scalar metadata. It does not automatically discover,
-parse, or claim completeness for `uv.lock`, `requirements*.txt`, package-lock,
-poetry, conda, or other lockfile formats yet.
+Dependency-file intake is config-driven. Every `[[dependencies]]` entry keeps
+its declared file path and scalar metadata as evidence. Supported Python files
+are also parsed unless `parse = false`:
+
+- `type = "uv"` or an undeclared type with path `uv.lock` parses the TOML
+  `package` array.
+- `type = "pip"` or `type = "requirements"` parses PEP 508 requirement lines,
+  including exact pins, ranges, markers, extras, direct URLs, continuations,
+  and hash options.
+- When `type` is absent, `requirements*.txt` and `requirements.lock` paths use
+  the requirements parser.
+
+Requirements-file includes, constraints, editable installs, local paths,
+dependency resolution, package downloads, and automatic discovery are not
+followed. Unsupported or malformed entries produce warnings and no fabricated
+package components. Package-lock, Poetry, Conda, and other formats remain
+unsupported.
 
 ## Review Blockers
 

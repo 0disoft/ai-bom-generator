@@ -29,8 +29,9 @@ choices from plausible candidates that still need approval.
 | CLI adapter | `argparse` | Approved by owner on 2026-07-06 |
 | Package metadata | `pyproject.toml` with setuptools build backend | Approved by implementation kickoff on 2026-07-06 |
 | Schema validation dependency | `jsonschema>=4.25,<5` | Approved by implementation kickoff on 2026-07-06 |
+| Python requirement parser dependency | `packaging>=24,<27` | Approved for Python-first dependency parsing on 2026-07-10 |
 | Project lockfile | `uv.lock` | Approved by uv adoption on 2026-07-06 |
-| Dependency lockfile intake | Explicit config-declared dependency file references | Approved for MVP on 2026-07-07 |
+| Dependency lockfile intake | Explicit config-declared file references plus bounded parsing for `uv.lock` and requirements files | Approved for Python-first expansion on 2026-07-10 |
 | Artifact discovery opt-in | `[artifacts].discovery = true` adds bounded default model artifact patterns in config only | Approved for MVP polish on 2026-07-09 |
 | Artifact discovery CLI flag | CLI override for artifact discovery | Deferred |
 | Action wrapper | Composite GitHub Action invoking `uv run --project` | Approved for MVP on 2026-07-07 |
@@ -63,9 +64,12 @@ choices from plausible candidates that still need approval.
 - SPDX AI export is a preview mapping to SPDX 3.0.1 AI Profile terms. It must
   mark conformance as partial, validate the local preview schema, and list
   unavailable or unsupported AI fields instead of fabricating evidence.
-- Dependency lockfile support is config-driven path evidence in MVP. Automatic
-  discovery, lockfile parsing, and package-manager-specific completeness claims
-  remain deferred until a later ADR approves them.
+- Dependency lockfile support remains config-driven and never discovers files
+  implicitly. Explicit `uv.lock` and requirements-file references may produce
+  normalized Python package evidence through bounded local parsing. Recursive
+  requirement includes, constraints, editable installs, package downloads, and
+  completeness claims remain unsupported; skipped or malformed entries must
+  produce warnings instead of fabricated package components.
 - Artifact discovery is config-driven opt-in only. It must not run when
   `[artifacts].discovery` is absent or false, and it must reuse artifact budget,
   symlink, target-root, and no-fabrication warning policies.

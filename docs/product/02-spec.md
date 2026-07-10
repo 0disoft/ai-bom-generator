@@ -26,9 +26,11 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 - Model card or model metadata file when present. MVP discovers an in-root
   `MODEL_CARD.md` path as evidence without copying or parsing its contents.
 - Model artifact or checkpoint files selected by explicit patterns.
-- Dependency lockfile references declared in config. MVP records dependency
-  file paths and scalar metadata; automatic lockfile discovery and
-  package-manager-specific parsing remain deferred.
+- Dependency files declared explicitly in config. The Python-first parser reads
+  bounded `uv.lock` and requirements files into normalized package evidence
+  while preserving the original file reference. Automatic discovery, recursive
+  includes, dependency resolution, downloads, and completeness claims remain
+  out of scope.
 - Dataset, prompt template, eval dataset, and training script references from
   discovered or explicit config.
 - Git commit reference when the target project is a Git repository.
@@ -65,14 +67,16 @@ metadata.
 - Repository license: Apache-2.0 is approved.
 - Package metadata: `pyproject.toml` with setuptools build backend is approved.
 - Schema validation dependency: `jsonschema>=4.25,<5` is approved.
+- Python requirement parser dependency: `packaging>=24,<27` is approved.
 - Project lockfile: `uv.lock` is approved.
 - Config filename and schema: `aibom.toml` plus config schema v1 is approved.
   Automatic config discovery is limited to `<model-directory>/aibom.toml`.
 - First exporter: CycloneDX JSON 1.7 is implemented first and must stay schema-validated.
 - Second exporter: `spdx-ai` emits an SPDX 3.0.1 AI Profile preview with local
   preview contract validation and explicit unsupported-field notes.
-- Lockfile support set: explicit config-declared dependency file references
-  only in MVP; automatic discovery and format-specific parsing remain deferred.
+- Lockfile support set: explicit config-declared dependency file references,
+  with bounded local parsing for `uv.lock` and requirements files. Parsing may
+  be disabled per reference with `parse = false`.
 - Model artifact discovery defaults: config opt-in discovery is approved.
 - Redaction default: strict redaction is approved for CLI and terminal output.
 - Validation needed before merge: VALIDATION.md.

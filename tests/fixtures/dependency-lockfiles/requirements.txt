@@ -1,0 +1,3 @@
+example-pinned==1.2.3
+example-range[fast]>=2.0; python_version >= "3.12"
+example-wheel @ https://example.invalid/packages/example-wheel.whl

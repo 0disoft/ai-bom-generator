@@ -14,10 +14,11 @@ model serving.
 2. Resolve the target model directory and explicit or discovered config path.
 3. Validate config shape and warning policy.
 4. Collect declared model metadata, dependency file references, prompt, dataset,
-   eval, and training-code references from discovered or explicit config. Select model
-   artifacts from explicit include/exclude patterns and config-enabled artifact
-   discovery defaults.
-5. Apply fixed artifact match-count, single-file byte, and total-byte budgets.
+   eval, and training-code references from discovered or explicit config. Parse
+   explicitly declared supported Python dependency files into package evidence.
+   Select model artifacts from explicit include/exclude patterns and
+   config-enabled artifact discovery defaults.
+5. Apply fixed dependency-file and artifact collection budgets.
 6. Hash selected model artifacts through one open file descriptor and reject
    artifacts that change before hashing completes.
 7. Normalize evidence and absence information.

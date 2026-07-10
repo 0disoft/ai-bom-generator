@@ -43,13 +43,27 @@
         "discovery": { "type": "boolean" }
       }
     },
-    "dependencies": { "$ref": "#/$defs/referenceList" },
+    "dependencies": { "$ref": "#/$defs/dependencyReferenceList" },
     "datasets": { "$ref": "#/$defs/referenceList" },
     "prompts": { "$ref": "#/$defs/referenceList" },
     "evals": { "$ref": "#/$defs/referenceList" },
     "training": { "$ref": "#/$defs/referenceList" }
   },
   "$defs": {
+    "dependencyReferenceList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "name": { "type": ["string", "number", "boolean"] },
+          "type": { "type": ["string", "number", "boolean"] },
+          "path": { "type": "string", "minLength": 1 },
+          "artifact": { "type": "string", "minLength": 1 },
+          "parse": { "type": "boolean" }
+        }
+      }
+    },
     "referenceList": {
       "type": "array",
       "items": {

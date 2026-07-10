@@ -1,0 +1,13 @@
+version = 1
+revision = 3
+requires-python = ">=3.12"
+
+[[package]]
+name = "example-locked"
+version = "4.5.6"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "workspace-model"
+version = "0.1.0"
+source = { editable = "." }

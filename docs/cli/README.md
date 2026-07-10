@@ -29,7 +29,6 @@ CI without requiring a hosted service.
 ## Still UNDECIDED
 
 - Parent-directory or alternate-filename config discovery.
-- Format-specific dependency lockfile parsing.
 
 ## Approved Baseline
 
@@ -39,6 +38,9 @@ CI without requiring a hosted service.
 - Config schema: AI-BOM config schema v1.
 - CLI adapter: `argparse`, isolated from application and domain layers.
 - First exporter: CycloneDX JSON 1.7.
+- Explicit Python dependency parsing: `uv.lock` and requirements files selected
+  through `[[dependencies]]`; automatic discovery, recursive includes, and
+  dependency resolution remain out of scope.
 
 ## Review Blockers
 

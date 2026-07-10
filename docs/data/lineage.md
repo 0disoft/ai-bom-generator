@@ -19,6 +19,8 @@ derived, or missing.
 - Source file path or config path.
 - Source field name when structured.
 - Collection mode: declared, derived, defaulted, or missing.
+- Lockfile package index or requirements-file line for parsed dependency
+  packages.
 - Digest algorithm and value for hashed artifacts.
 - Warning code when metadata is absent or ambiguous.
 

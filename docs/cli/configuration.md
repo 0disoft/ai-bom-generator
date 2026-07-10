@@ -68,7 +68,7 @@ skipped.
 
 ## Still UNDECIDED
 
-- Format-specific dependency lockfile parsing.
+- Support for dependency formats beyond `uv.lock` and requirements files.
 - CLI override for artifact discovery.
 - Configurable artifact budget overrides.
 

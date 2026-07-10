@@ -22,7 +22,11 @@ and a warning report.
 3. Discover known metadata files without reading arbitrary generated output as truth.
    MVP discovers the in-root `MODEL_CARD.md` path only; it does not copy or
    parse model-card contents.
-4. Collect model card paths, training-code references, dependency lockfile references, dataset references, prompt references, eval references, and local Git commit references when in-root Git metadata is available.
+4. Collect model card paths, training-code references, dependency-file
+   references, dataset references, prompt references, eval references, and
+   local Git commit references when in-root Git metadata is available. Parse
+   explicitly declared `uv.lock` and requirements files into bounded normalized
+   Python package evidence unless parsing is disabled for that reference.
 5. Select artifacts from explicit include patterns and, only when
    `[artifacts].discovery = true`, bounded default model artifact patterns for
    `.safetensors`, `.gguf`, `.bin`, `.pt`, `.pth`, `.ckpt`, and `.onnx` files.

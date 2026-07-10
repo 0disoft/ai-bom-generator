@@ -22,6 +22,16 @@ Artifact discovery is config opt-in and reuses the same budgets. Discovery must
 not add unbounded recursive scans outside the fixed default model artifact
 patterns and built-in hidden/cache/build/dependency excludes.
 
+Explicit dependency-file parsing has separate fixed limits:
+
+- 4 MiB maximum dependency-file read size.
+- 10,000 logical lines per requirements file.
+- 5,000 parsed packages per dependency file.
+
+When a dependency limit is hit, the original file reference remains in the BOM,
+no package components are emitted for that file, and the collector emits
+`DEPENDENCY_FILE_LIMIT_EXCEEDED`.
+
 ## Required Evidence
 
 - Source of truth: docs/architecture/03-quality-attributes.md

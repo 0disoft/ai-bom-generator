@@ -18,6 +18,10 @@ mapping constraints that must stay true as the exporter matures.
 - Keep prompt, dataset, eval, and model-card contents out of generated summaries.
 - Map collected local Git HEAD/ref/commit evidence into `ai-bom:git:*`
   properties without reading Git metadata from the exporter.
+- Map parsed Python dependency packages to `library` components. Emit `version`
+  only for exact pins or lockfile versions, and preserve requirement, marker,
+  extras, source path, source type, and lockfile format as
+  `ai-bom:dependency:*` properties.
 
 ## Required Fixtures
 

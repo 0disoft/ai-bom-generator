@@ -70,7 +70,7 @@ existing GitHub-only tag (`0.1.0` or `0.1.1`).
 | lint | Run `ruff check src tests scripts`. |
 | test | Run `python -m unittest discover -s tests -v`. |
 | check | Build source and wheel distributions with `uv build`. |
-| check | Verify the wheel includes runtime schemas, includes the `ai-bom` console script entry point, installs into an isolated virtual environment without dependency resolution, renders `ai-bom --help` and `ai-bom --version`, and can run an installed-console-script fixture smoke with the locked validation dependencies. |
+| check | Verify the wheel includes runtime schemas, the `ai-bom` console script entry point, and required runtime dependency metadata; installs into an isolated virtual environment without dependency resolution; renders `ai-bom --help` and `ai-bom --version`; and can run an installed-console-script fixture smoke with the locked validation dependencies. |
 | smoke | Verify the composite GitHub Action wrapper with clean, warning-only, fail-on-warning, stale-output, and manifest-gated output fixture cases. |
 | smoke | Generate a CycloneDX JSON 1.7 BOM, warning report, summary, and generation manifest from `tests/fixtures/complete-project` through the `ai-bom` console script using target-root config discovery. |
 | check | Run `git diff --check` for whitespace and diff hygiene. |

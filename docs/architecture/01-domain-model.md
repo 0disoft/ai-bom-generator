@@ -13,7 +13,10 @@ observed files, derived hashes, missing metadata warnings, and generated output.
 - Target project: caller-owned model directory.
 - Model metadata: model card or manifest fields discovered from supported files.
 - Model artifact: checkpoint, weight, or related file selected for digesting.
-- Dependency evidence: lockfile or dependency manifest reference.
+- Dependency evidence: explicit lockfile or dependency manifest reference.
+- Dependency package: normalized Python package name, evidenced exact version or
+  requirement expression, source format/type, marker, extras, and source
+  location parsed from a supported dependency file.
 - Training reference: script path, commit reference, or declared training pipeline reference.
 - Dataset reference: declared source, version, license, or provenance pointer; not dataset contents.
 - Prompt reference: declared prompt template or prompt artifact pointer.
