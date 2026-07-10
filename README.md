@@ -154,8 +154,8 @@ written to explicit paths when provided, or to a run-unique directory under
 Summary-derived action outputs are published only when the generation manifest
 matches the BOM, warning report, and summary files from the current run.
 
-Use `@v0` for compatible patch updates, or pin an immutable patch tag such as
-`@v0.1.2` when a workflow needs exact release reproducibility.
+Use `@v0` for compatible patch updates, or pin the immutable `@v0.1.4` tag
+when a workflow needs exact release reproducibility.
 
 ## Validation
 
@@ -174,7 +174,9 @@ uv run --python 3.12 python scripts/verify_github_action.py
 Post-release verification:
 
 ```powershell
-uv run --python 3.12 python scripts/verify_release.py --version 0.1.2 --publish-run-id 28930381437
+$env:RELEASE_VERSION = "0.1.4"
+$env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
+uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID
 ```
 
 ## Project Docs

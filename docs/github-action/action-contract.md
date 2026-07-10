@@ -41,7 +41,7 @@ This repository type owns action inputs, outputs, permissions, token handling, a
 - GitHub Action validation evidence: workflow fixtures must cover clean output,
   warning output, and failure output.
 - GitHub Action release or rollout policy: immutable version tag `v0.1.0` for
-  the first public MVP, immutable patch tags such as `v0.1.2`, and mutable
+  the first public MVP, immutable patch tags such as `v0.1.4`, and mutable
   `v0` for the latest compatible 0.x action release after external smoke
   verification; Marketplace registration is deferred.
 - GitHub Action compatibility and migration policy: patch tags may preserve the

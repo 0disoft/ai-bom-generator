@@ -6,6 +6,8 @@
 
 - Adds the `spdx-ai` exporter as a partial SPDX 3.0.1 AI Profile preview with
   local contract validation and explicit unavailable-field notes.
+- Extends deterministic output regression coverage to both CycloneDX and SPDX
+  AI export paths and synchronizes the release documentation.
 
 ## v0.1.3
 

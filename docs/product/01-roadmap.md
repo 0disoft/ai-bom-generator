@@ -41,8 +41,9 @@ later exporter and CI integrations.
 
 ## Phase 3: Exporter Expansion
 
-- Add the second standards-backed exporter after the first exporter has stable fixtures.
-- Add compatibility tests for deterministic output.
+- The second standards-backed exporter is implemented as the partial
+  `spdx-ai` preview after CycloneDX fixtures stabilized.
+- Deterministic output compatibility tests cover both exporter paths.
 - Consider bridges to registry, release, or provenance tooling only after local generation is solid.
 
 ## Deferred

@@ -14,7 +14,7 @@ exporter validation, README non-goal language, and a rollback path for the
 CLI/action contract.
 
 The first public MVP release is `v0.1.0` as an immutable GitHub Release tag.
-Patch releases such as `v0.1.2` remain immutable GitHub Release tags and may be
+Patch releases such as `v0.1.4` remain immutable GitHub Release tags and may be
 used directly as exact GitHub Action refs. The mutable `v0` action tag may point
 to the latest compatible 0.x action release after external smoke verification.
 GitHub Marketplace registration and generated artifact upload are deferred until
@@ -61,8 +61,13 @@ After a package release, verify the registry, GitHub Release, publish workflow,
 external action smoke, and installed console script from the repository root:
 
 ```powershell
-uv run --python 3.12 python scripts/verify_release.py --version 0.1.2 --publish-run-id 28930381437
+$env:RELEASE_VERSION = "0.1.4"
+$env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
+uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID
 ```
+
+Set `PUBLISH_RUN_ID` to the successful `Publish PyPI` workflow run for the
+matching immutable release tag. Do not reuse an older release's run id.
 
 The script checks:
 
@@ -80,7 +85,7 @@ The script checks:
 ## Mutable Action Tag
 
 `v0` is a convenience ref for users who want compatible patch updates without
-editing workflow files. Keep immutable patch tags such as `v0.1.2` for exact
+editing workflow files. Keep immutable patch tags such as `v0.1.4` for exact
 release reproducibility.
 
 Only move `v0` after:

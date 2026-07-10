@@ -1757,17 +1757,29 @@ class CliTests(unittest.TestCase):
     def test_stable_input_produces_deterministic_bom_and_warning_report(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
-            first = _generate_fixture_outputs(work, "first", "complete-project")
-            second = _generate_fixture_outputs(work, "second", "complete-project")
+            for output_format in ("cyclonedx-json-1.7", "spdx-ai"):
+                with self.subTest(output_format=output_format):
+                    first = _generate_fixture_outputs(
+                        work,
+                        f"{output_format}-first",
+                        "complete-project",
+                        output_format,
+                    )
+                    second = _generate_fixture_outputs(
+                        work,
+                        f"{output_format}-second",
+                        "complete-project",
+                        output_format,
+                    )
 
-            self.assertEqual(
-                (first / "bom.json").read_text(encoding="utf-8"),
-                (second / "bom.json").read_text(encoding="utf-8"),
-            )
-            self.assertEqual(
-                (first / "warnings.json").read_text(encoding="utf-8"),
-                (second / "warnings.json").read_text(encoding="utf-8"),
-            )
+                    self.assertEqual(
+                        (first / "bom.json").read_text(encoding="utf-8"),
+                        (second / "bom.json").read_text(encoding="utf-8"),
+                    )
+                    self.assertEqual(
+                        (first / "warnings.json").read_text(encoding="utf-8"),
+                        (second / "warnings.json").read_text(encoding="utf-8"),
+                    )
 
     def test_overlapping_artifact_patterns_emit_one_bom_component(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -2880,7 +2892,7 @@ def _spdx_graph_by_type(bom_payload: dict[str, object]) -> dict[str, list[dict[s
     return by_type
 
 
-def _generate_fixture_outputs(work: Path, name: str, fixture: str) -> Path:
+def _generate_fixture_outputs(work: Path, name: str, fixture: str, output_format: str) -> Path:
     project = work / f"{name}-project"
     shutil.copytree(FIXTURES / fixture, project)
     out = work / name / "out"
@@ -2890,6 +2902,8 @@ def _generate_fixture_outputs(work: Path, name: str, fixture: str) -> Path:
             str(project),
             "--config",
             str(project / "aibom.toml"),
+            "--format",
+            output_format,
             "--output",
             str(out / "bom.json"),
             "--warning-report",
