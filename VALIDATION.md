@@ -40,9 +40,10 @@ Docs validation is review-based until a documentation linter is configured.
 Format, typecheck, contract, and migration-check are stable names but do not
 have configured runners yet.
 
-`scripts/verify_wheel.py` verifies required package data, the `ai-bom` entry
-point metadata, required runtime dependency metadata, installation of the built
-wheel into an isolated virtual environment, `ai-bom --help`, `ai-bom --version`, and an
+`scripts/verify_wheel.py` verifies required package data, required synthetic
+test fixtures in the source distribution, the `ai-bom` entry point metadata,
+required runtime dependency metadata, installation of the built wheel into an
+isolated virtual environment, `ai-bom --help`, `ai-bom --version`, and an
 installed-console-script fixture smoke that relies on target-root config
 discovery while using the locked validation environment for dependencies.
 

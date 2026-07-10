@@ -1,0 +1,2 @@
+recursive-include tests/fixtures *
+global-exclude *.py[cod]

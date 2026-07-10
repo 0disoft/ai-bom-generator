@@ -14,6 +14,7 @@ honestly. They should be synthetic and safe to publish.
 | --- | --- |
 | `complete-project` | Full metadata, artifact digest, dependencies, dataset, prompt, eval, and training references. Covered by CLI smoke, schema, and deterministic-output tests. |
 | `dependency-lockfiles` | Explicit requirements and `uv.lock` files map to CycloneDX library and SPDX software package elements without resolution or downloads. Covered by parser and CLI integration tests. |
+| `ml-ecosystem-dependencies` | Synthetic Transformers, PyTorch CUDA, ONNX Runtime, and GGUF dependency shapes preserve source types, local versions, markers, ranges, extras, and remote direct references. Covered by parser-profile and combined CycloneDX/SPDX integration tests. |
 | `sparse-project` | Missing optional metadata appears as warnings, not inferred facts. Covered by CLI warning tests. |
 | `invalid-config` | Invalid config fails with actionable location. Covered by CLI invalid-input tests. |
 | `missing-artifact` | Unmatched artifact include patterns warn without fabricating artifact evidence. Covered by CLI warning tests. |
@@ -27,6 +28,9 @@ honestly. They should be synthetic and safe to publish.
 ## Fixture Rules
 
 - Use synthetic data only.
+- Ecosystem compatibility fixtures may use public package names and representative
+  syntax, but their versions and URLs are immutable test data rather than claims
+  about current upstream releases.
 - Do not commit real model weights, real private prompts, real customer data, or real private dataset URLs.
 - Dummy model files may use small binary files with model-like names.
 - Golden outputs must be stable and reviewed when schema or warning taxonomy changes.

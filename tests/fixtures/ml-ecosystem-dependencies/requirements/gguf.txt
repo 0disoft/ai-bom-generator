@@ -1,0 +1,4 @@
+# Representative GGUF conversion and local inference tooling.
+llama-cpp-python[server]>=0.3.9
+huggingface-hub[hf-transfer]>=0.33
+gguf-toolkit @ https://example.invalid/releases/gguf_toolkit-1.0.0-py3-none-any.whl#sha256=synthetic

@@ -1,0 +1,42 @@
+version = 1
+revision = 3
+requires-python = ">=3.12"
+
+[[package]]
+name = "transformers-lab"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+  { name = "huggingface-hub" },
+  { name = "tokenizers" },
+  { name = "transformers" },
+]
+
+[package.metadata]
+requires-dist = [
+  { name = "transformers", specifier = ">=4.50,<5" },
+  { name = "torch", marker = "extra == 'torch'", specifier = ">=2.6" },
+]
+
+[[package]]
+name = "huggingface-hub"
+version = "0.33.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/example/hugging_face_hub.tar.gz", hash = "sha256:synthetic", size = 1 }
+wheels = [
+  { url = "https://files.pythonhosted.org/packages/example/hugging_face_hub.whl", hash = "sha256:synthetic", size = 1 },
+]
+
+[[package]]
+name = "tokenizers"
+version = "0.21.2"
+source = { git = "https://example.invalid/tokenizers.git?rev=fixture#0000000" }
+
+[[package]]
+name = "transformers"
+version = "4.53.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "huggingface-hub" },
+  { name = "tokenizers" },
+]

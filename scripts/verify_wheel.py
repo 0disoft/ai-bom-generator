@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import tarfile
 import tempfile
 import zipfile
 
@@ -25,6 +26,15 @@ REQUIRED_WHEEL_FILES = {
     "ai_bom_generator/exporters/spdx_ai/schema/aibom-spdx-ai-preview.schema.json",
     "ai_bom_generator/exporters/spdx_ai/schema/__init__.py",
 }
+REQUIRED_SDIST_FILES = {
+    "tests/fixtures/ml-ecosystem-dependencies/MODEL_CARD.md",
+    "tests/fixtures/ml-ecosystem-dependencies/aibom.toml",
+    "tests/fixtures/ml-ecosystem-dependencies/lockfiles/transformers/uv.lock",
+    "tests/fixtures/ml-ecosystem-dependencies/models/model.onnx",
+    "tests/fixtures/ml-ecosystem-dependencies/requirements/gguf.txt",
+    "tests/fixtures/ml-ecosystem-dependencies/requirements/onnx.txt",
+    "tests/fixtures/ml-ecosystem-dependencies/requirements/pytorch-cu128.txt",
+}
 
 ENTRY_POINT_GROUP = "console_scripts"
 ENTRY_POINT_NAME = "ai-bom"
@@ -36,9 +46,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Verify AI-BOM Generator wheel contents.")
-    parser.add_argument("dist_dir", type=Path, help="Directory containing exactly one built wheel.")
+    parser = argparse.ArgumentParser(description="Verify AI-BOM Generator distribution contents.")
+    parser.add_argument(
+        "dist_dir",
+        type=Path,
+        help="Directory containing exactly one built wheel and source distribution.",
+    )
     args = parser.parse_args(argv)
+
+    sdist_result = _verify_sdist(args.dist_dir)
+    if sdist_result:
+        return sdist_result
 
     wheels = sorted(args.dist_dir.glob("*.whl"))
     if len(wheels) != 1:
@@ -76,6 +94,26 @@ def main(argv: list[str] | None = None) -> int:
                 return 1
 
     return _verify_installed_entry_point(wheel)
+
+
+def _verify_sdist(dist_dir: Path) -> int:
+    sdists = sorted(dist_dir.glob("*.tar.gz"))
+    if len(sdists) != 1:
+        print(f"expected exactly one source distribution in {dist_dir}, found {len(sdists)}", file=sys.stderr)
+        return 1
+
+    sdist = sdists[0]
+    with tarfile.open(sdist, mode="r:gz") as archive:
+        names = {
+            "/".join(Path(member.name).parts[1:])
+            for member in archive.getmembers()
+            if len(Path(member.name).parts) > 1
+        }
+    missing = sorted(REQUIRED_SDIST_FILES - names)
+    if missing:
+        print(f"source distribution {sdist.name} is missing required files: {', '.join(missing)}", file=sys.stderr)
+        return 1
+    return 0
 
 
 def _verify_installed_entry_point(wheel: Path) -> int:

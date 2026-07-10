@@ -1,0 +1,29 @@
+schema_version = "1"
+
+[model]
+name = "ml-ecosystem-fixture"
+version = "0.1.0"
+model_card = "MODEL_CARD.md"
+
+[artifacts]
+include = ["models/model.onnx"]
+
+[[dependencies]]
+name = "transformers-uv"
+path = "lockfiles/transformers/uv.lock"
+type = "uv"
+
+[[dependencies]]
+name = "pytorch-cuda"
+path = "requirements/pytorch-cu128.txt"
+type = "pip"
+
+[[dependencies]]
+name = "onnx-runtime"
+path = "requirements/onnx.txt"
+type = "requirements"
+
+[[dependencies]]
+name = "gguf-tooling"
+path = "requirements/gguf.txt"
+type = "pip"

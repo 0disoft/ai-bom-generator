@@ -1,0 +1,5 @@
+# Representative ONNX and ONNX Runtime constraints.
+onnx==1.18.0
+onnxruntime-gpu>=1.22,<2; platform_system != "Darwin"
+numpy>=1.26,<3; python_version >= "3.12"
+protobuf!=4.24.0,>=4.25.1,<7.0.0

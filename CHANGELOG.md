@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Adds synthetic Transformers, PyTorch CUDA, ONNX Runtime, and GGUF compatibility
+  fixtures that exercise representative dependency syntax across both exporters.
+
 ## v0.2.0
 
 - Parses explicitly declared `uv.lock` and requirements files into normalized
