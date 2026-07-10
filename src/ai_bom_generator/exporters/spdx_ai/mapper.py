@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
 from hashlib import sha256
 from importlib import resources
 
@@ -67,7 +66,6 @@ def export_spdx_ai(evidence: NormalizedEvidence, redactor: Redactor) -> dict[str
         {
             "type": "CreationInfo",
             "spdxId": creation_info_id,
-            "created": _created_timestamp(),
             "createdBy": [tool_id],
             "createdUsing": [tool_id],
         },
@@ -199,10 +197,6 @@ def _unavailable_spdx_ai_fields(values: dict[str, str]) -> list[str]:
 def _stable_spdx_id(kind: str, object_id: str) -> str:
     digest = sha256(f"{kind}:{object_id}".encode("utf-8")).hexdigest()[:16]
     return f"{_SPDX_NAMESPACE}:{kind}:{digest}"
-
-
-def _created_timestamp() -> str:
-    return datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def _validate_unique_spdx_ids(payload: dict[str, object]) -> None:

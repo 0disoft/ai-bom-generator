@@ -30,6 +30,12 @@ The output declares:
 The exporter validates this local preview contract before writing output. It
 does not yet perform full upstream SPDX SHACL or JSON-LD conformance validation.
 
+`CreationInfo` identifies the generating tool but intentionally omits `created`.
+The normalized evidence model has no trustworthy source creation timestamp, and
+using the wall-clock generation time would make identical inputs produce
+different BOMs. A future timestamp field requires an explicit evidence source
+and contract update.
+
 ## Mapping
 
 | AI-BOM evidence | SPDX-oriented element |

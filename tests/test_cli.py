@@ -392,6 +392,7 @@ class CliTests(unittest.TestCase):
             self.assertEqual(bom_payload["@context"], "https://spdx.org/rdf/3.0.1/spdx-context.jsonld")
             self.assertEqual(bom_payload["aiBom:spdxTarget"], "SPDX 3.0.1 AI Profile preview")
             self.assertEqual(bom_payload["aiBom:conformance"], "partial")
+            self.assertNotIn("created", graph_by_type["CreationInfo"][0])
             self.assertEqual(model["name"], "example-model")
             self.assertEqual(model["packageVersion"], "0.1.0")
             self.assertEqual(model["aiBom:modelCard"], "MODEL_CARD.md")
