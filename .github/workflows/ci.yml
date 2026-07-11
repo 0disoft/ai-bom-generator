@@ -67,3 +67,29 @@ jobs:
 
       - name: Check repository diff hygiene
         run: git diff --check
+
+  action-runtime-smoke:
+    name: Action-managed runtime smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.0
+
+      - id: ai-bom
+        name: Run action without caller runtime setup
+        uses: ./
+        with:
+          model-directory: tests/fixtures/complete-project
+          warnings: allow
+
+      - name: Verify managed-runtime outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "${{ steps.ai-bom.outputs.bom-path }}"
+          test -s "${{ steps.ai-bom.outputs.warning-report-path }}"
+          test -s "${{ steps.ai-bom.outputs.summary-path }}"
+          test -s "${{ steps.ai-bom.outputs.manifest-path }}"
+          test "${{ steps.ai-bom.outputs.exit-code }}" = "0"
+          test "${{ steps.ai-bom.outputs.status }}" = "success"

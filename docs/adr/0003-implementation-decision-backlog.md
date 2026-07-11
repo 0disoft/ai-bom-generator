@@ -40,11 +40,11 @@ choices from plausible candidates that still need approval.
 | PyPI package metadata | Classifiers, keywords, and project URLs in `pyproject.toml` | Approved for pre-publish preparation on 2026-07-07 |
 | PyPI package publishing | `.github/workflows/publish-pypi.yml` publishes `v0.1.2` or later patch tags via PyPI Trusted Publishing after registry setup and external action smoke | Approved workflow policy on 2026-07-08 |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
-| Network policy | No network in MVP | Proposed |
+| Network policy | CLI collection and export do not access the network; Action-managed setup may download pinned Python, uv, and the action's locked dependencies | Approved by owner on 2026-07-11 |
 | Telemetry policy | No telemetry in MVP | Proposed |
-| Cache policy | No hidden cache in MVP | Proposed |
+| Cache policy | No persistent GitHub Actions cache; Action runtime environment and uv cache are explicit under `RUNNER_TEMP` | Approved by owner on 2026-07-11 |
 | Redaction default | strict | Approved for CLI and terminal output on 2026-07-07 |
-| Action-managed runtime setup | Composite action installs or prepares Python and `uv` itself | Deferred |
+| Action-managed runtime setup | Composite action prepares Python 3.12 and uv 0.11.28, disables the GitHub cache, and runs the locked action project from `RUNNER_TEMP` state | Approved by owner on 2026-07-11 |
 | Staged output writes | Destination-local temp-file writes, stale-output cleanup, and partial-output cleanup | Approved for MVP hardening on 2026-07-08 |
 | Generation manifest | Manifest-backed run identity and output-set verification | Approved for MVP hardening on 2026-07-08 |
 | Artifact snapshot consistency | Single-descriptor stat/hash/stat validation with conservative failure on mutation | Approved for MVP hardening on 2026-07-08 |
@@ -87,9 +87,10 @@ choices from plausible candidates that still need approval.
   PyPI Trusted Publishing through `.github/workflows/publish-pypi.yml`,
   registry ownership confirmation, package-name recheck at release time, full
   validation, and a new patch tag.
-- Do not add network, cache, telemetry, hosted registry, or write-permission
-  behavior while these decisions remain proposed.
-- Do not claim action-managed runtime setup, immutable artifact staging,
+- Do not add collector/exporter network access, telemetry, hosted registry,
+  persistent GitHub cache, or write-permission behavior beyond the approved
+  Action-managed toolchain and locked-dependency setup boundary.
+- Do not claim immutable artifact staging,
   artifact discovery CLI overrides, configurable artifact budgets, or
   full SPDX AI conformance, or schema-aware secret-key warnings until the
   corresponding deferred/proposed decision is approved and implemented with

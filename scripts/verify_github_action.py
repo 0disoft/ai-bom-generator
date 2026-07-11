@@ -134,6 +134,11 @@ def _verify_action_metadata() -> None:
     text = ACTION.read_text(encoding="utf-8")
     required_snippets = [
         "using: composite",
+        "actions/setup-python@v6.3.0",
+        "astral-sh/setup-uv@v8.3.1",
+        'version: "0.11.28"',
+        'enable-cache: "false"',
+        "working-directory: ${{ github.action_path }}",
         "INPUT_MODEL_DIRECTORY",
         "INPUT_MANIFEST",
         "scripts/github_action_entrypoint.py",
@@ -147,6 +152,19 @@ def _verify_action_metadata() -> None:
     missing = [snippet for snippet in required_snippets if snippet not in text]
     if missing:
         raise AssertionError(f"action.yml is missing required snippets: {', '.join(missing)}")
+
+    entrypoint_text = ENTRYPOINT.read_text(encoding="utf-8")
+    required_entrypoint_snippets = [
+        '"--locked"',
+        'env["UV_PROJECT_ENVIRONMENT"]',
+        'env["UV_CACHE_DIR"]',
+    ]
+    missing_entrypoint = [snippet for snippet in required_entrypoint_snippets if snippet not in entrypoint_text]
+    if missing_entrypoint:
+        raise AssertionError(
+            "GitHub Action entrypoint is missing runtime isolation snippets: "
+            f"{', '.join(missing_entrypoint)}"
+        )
 
 
 def _run_case(case: ActionCase, case_root: Path) -> None:

@@ -31,6 +31,8 @@ The repository CI workflow lives at `.github/workflows/ci.yml`.
 - Action pins: `actions/checkout@v7.0.0`, `actions/setup-python@v6.3.0`,
   and `astral-sh/setup-uv@v8.3.1`.
 - Permissions: `contents: read`.
+- Managed-runtime smoke: a separate clean `ubuntu-latest` job checks out the
+  repository and invokes `uses: ./` without caller-side Python or uv setup.
 
 The workflow intentionally does not upload artifacts, write pull request
 comments, attach releases, publish packages, or request secrets. Release

@@ -48,7 +48,10 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 - Does not inspect private dataset contents unless a future explicit mode is designed.
 - Does not infer dataset licenses from names, URLs, or comments.
 - Does not claim model safety, bias status, vulnerability status, or regulatory compliance.
-- Does not perform network access, telemetry, hidden caching, or target-directory mutation in MVP.
+- The collector and exporters do not perform network access, telemetry, hidden
+  caching, or target-directory mutation. The GitHub Action may download its
+  approved pinned runtime and locked dependencies into `RUNNER_TEMP` without
+  resolving or mutating the caller project.
 
 ## Exporter Direction
 
@@ -79,6 +82,9 @@ metadata.
   be disabled per reference with `parse = false`.
 - Model artifact discovery defaults: config opt-in discovery is approved.
 - Redaction default: strict redaction is approved for CLI and terminal output.
+- GitHub Action runtime: the composite action prepares Python 3.12 and pinned
+  uv `0.11.28`, disables persistent GitHub caching, and keeps its environment
+  and uv cache under `RUNNER_TEMP`.
 - Validation needed before merge: VALIDATION.md.
 
 ## Review Blockers

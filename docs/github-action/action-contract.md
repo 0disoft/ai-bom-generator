@@ -34,12 +34,17 @@ This repository type owns action inputs, outputs, permissions, token handling, a
   output files before invoking the CLI and must publish summary-derived outputs
   only when the generation manifest matches the current BOM, warning-report, and
   summary files by path, size, and SHA-256 digest.
-- GitHub Action runtime prerequisites: consuming workflows must provide Python
-  3.12 and `uv` before invoking the action. The current `v0` contract is
-  caller-managed setup; action-managed setup is deferred until a future
-  contract decision changes the runner responsibility boundary.
+- GitHub Action runtime setup: the composite action prepares Python 3.12 and
+  pinned uv `0.11.28`, with setup-uv's GitHub cache disabled. It runs the
+  action checkout through `uv run --project --locked` and forces both the
+  action environment and uv download cache under `RUNNER_TEMP`.
+- GitHub Action network boundary: managed setup may download the pinned Python
+  and uv toolchains plus dependencies from the action's own lockfile. The
+  collector and exporters do not perform network requests, resolve the caller
+  project's dependencies, or upload generated evidence.
 - GitHub Action validation evidence: workflow fixtures must cover clean output,
-  warning output, and failure output.
+  warning output, failure output, and a clean hosted runner with no caller-side
+  Python or uv setup step.
 - GitHub Action release or rollout policy: immutable version tag `v0.1.0` for
   the first public MVP, immutable patch tags such as `v0.1.4`, and mutable
   `v0` for the latest compatible 0.x action release after external smoke

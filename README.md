@@ -131,6 +131,8 @@ unsafe paths, and invalid generated BOM output fail with non-zero exit codes.
     python-version: "3.12"
 
 - uses: astral-sh/setup-uv@v8.3.1
+  with:
+    enable-cache: false
 
 - id: ai-bom
   uses: 0disoft/ai-bom-generator@v0
@@ -148,10 +150,12 @@ unsafe paths, and invalid generated BOM output fail with non-zero exit codes.
     test "${{ steps.ai-bom.outputs.status }}" = "success"
 ```
 
-The action invokes the packaged CLI with `uv run --project`, so consuming
-workflows must make Python 3.12 and `uv` available before this action runs.
-The current `v0` contract intentionally keeps Python and `uv` setup
-caller-managed instead of installing toolchains inside the action.
+Starting with the unreleased `v0.2.0` contract, the action prepares Python 3.12
+and pinned uv `0.11.28`, disables the setup-uv GitHub cache, and invokes the
+packaged CLI with `uv run --project --locked`. Its virtual environment and uv
+download cache stay under `RUNNER_TEMP`; the caller repository is not used for
+action runtime state. The setup steps remain in this example until mutable tag
+`v0` moves to `v0.2.0`, so it also works with the currently published action.
 When `format` or `warnings` inputs are omitted, the action lets the CLI use the
 discovered or explicit config values and CLI defaults. Generated files are
 written to explicit paths when provided, or to a run-unique directory under

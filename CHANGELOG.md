@@ -4,6 +4,9 @@
 
 - Adds synthetic Transformers, PyTorch CUDA, ONNX Runtime, and GGUF compatibility
   fixtures that exercise representative dependency syntax across both exporters.
+- Makes the composite GitHub Action prepare pinned Python and uv runtimes,
+  disables persistent setup caching, and verifies caller-setup-free execution
+  in hosted CI.
 
 ## v0.2.0
 

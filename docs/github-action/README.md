@@ -26,9 +26,10 @@ state, registry publication, or compliance approval.
   defaults.
 - Preserve CLI config precedence for omitted `config`, `format`, and `warnings`
   inputs.
-- Require consuming workflows to provide Python 3.12 and `uv` before invoking
-  the action. The current `v0` contract keeps setup caller-managed so the
-  action does not install or upgrade toolchains inside consumer jobs.
+- Prepare Python 3.12 and pinned uv `0.11.28` inside the composite action,
+  disable setup-uv's GitHub cache, and keep runtime state under `RUNNER_TEMP`.
+- Install only the action's own locked project environment. Do not resolve or
+  mutate the caller project's dependencies.
 - Preserve read-only default permissions.
 
 ## Release Policy

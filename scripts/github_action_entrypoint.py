@@ -31,6 +31,7 @@ def main() -> int:
         "run",
         "--project",
         str(action_root),
+        "--locked",
         "--python",
         "3.12",
         "ai-bom",
@@ -61,7 +62,8 @@ def main() -> int:
     args.extend(["--redaction", _input_value("INPUT_REDACTION", "strict")])
 
     env = os.environ.copy()
-    env.setdefault("UV_PROJECT_ENVIRONMENT", str(runner_temp / "ai-bom-generator-venv"))
+    env["UV_PROJECT_ENVIRONMENT"] = str(runner_temp / "ai-bom-generator-venv")
+    env["UV_CACHE_DIR"] = str(runner_temp / "ai-bom-generator-uv-cache")
     result = subprocess.run(args, cwd=workspace, env=env)
     _write_outputs(output, warning_report, summary, manifest, result.returncode)
     return result.returncode

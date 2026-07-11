@@ -21,6 +21,9 @@ boundaries, and avoidance of implicit network access.
 - A change lets sensitive key names such as token, secret, password,
   credential, authorization, or api_key reach generated output unredacted.
 - A change enables network access, registry publication, PR comments, or artifact upload without an explicit contract.
+- Action-managed downloads must remain limited to the pinned runtime and the
+  action checkout's locked dependencies; caller project dependency resolution
+  and evidence upload remain blocked.
 - A change treats user-provided paths or config as trusted.
 - A change follows symlinks or reads outside the target root without an explicit policy.
 - A change adds hidden cache, telemetry, or background state without an ADR.

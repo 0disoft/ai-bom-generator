@@ -22,7 +22,9 @@ metadata rather than copying source file contents into telemetry or JSON summari
 - JSON summary must not include full model card, prompt, eval, or dataset file contents.
 - Known secret-shaped values and values attached to sensitive key names should
   be redacted or rejected before they enter generated reports.
-- Network access is out of scope unless explicitly designed later.
+- The collector and exporters do not make network requests. GitHub Action
+  runtime setup may download only the approved pinned toolchain and the
+  action's locked dependencies; it does not upload or resolve caller evidence.
 - Prompt contents, private dataset rows, model weights, and full eval output contents are not collected by default.
 - BOM output is also a privacy surface and must follow redaction rules, not only the JSON summary.
 
@@ -30,6 +32,8 @@ metadata rather than copying source file contents into telemetry or JSON summari
 
 - The CLI should write only requested output artifacts.
 - No background cache, telemetry log, or hidden local database is part of MVP.
+  The Action's explicit `RUNNER_TEMP` uv cache is ephemeral runtime state and
+  is not persisted through the GitHub Actions cache service.
 - GitHub Action artifact upload must be explicit and documented.
 
 ## Validation Needed Before Merge
