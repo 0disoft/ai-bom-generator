@@ -89,6 +89,73 @@ class ReleaseVerificationTests(unittest.TestCase):
                     "v0.2.0",
                 )
 
+    def test_external_smoke_rejects_successful_run_without_head_sha(self) -> None:
+        run = _successful_run()
+        run["headSha"] = ""
+        with patch.object(verify_release, "_gh_json", return_value=run) as gh_json:
+            with self.assertRaisesRegex(verify_release.ReleaseVerificationError, "missing headSha"):
+                verify_release._verify_external_smoke(
+                    SMOKE_REPOSITORY,
+                    SMOKE_WORKFLOW,
+                    SMOKE_WORKFLOW_PATH,
+                    RUN_ID,
+                    ACTION_REPOSITORY,
+                    "v0.2.0",
+                )
+
+        self.assertEqual(gh_json.call_count, 1)
+
+    def test_external_smoke_rejects_failed_run_before_reading_workflow(self) -> None:
+        run = _successful_run()
+        run["conclusion"] = "failure"
+        with patch.object(verify_release, "_gh_json", return_value=run) as gh_json:
+            with self.assertRaisesRegex(verify_release.ReleaseVerificationError, "did not succeed"):
+                verify_release._verify_external_smoke(
+                    SMOKE_REPOSITORY,
+                    SMOKE_WORKFLOW,
+                    SMOKE_WORKFLOW_PATH,
+                    RUN_ID,
+                    ACTION_REPOSITORY,
+                    "v0.2.0",
+                )
+
+        self.assertEqual(gh_json.call_count, 1)
+
+    def test_external_smoke_rejects_non_file_workflow_response(self) -> None:
+        with patch.object(
+            verify_release,
+            "_gh_json",
+            side_effect=[_successful_run(), [{"type": "file"}]],
+        ):
+            with self.assertRaisesRegex(verify_release.ReleaseVerificationError, "not base64 encoded"):
+                verify_release._verify_external_smoke(
+                    SMOKE_REPOSITORY,
+                    SMOKE_WORKFLOW,
+                    SMOKE_WORKFLOW_PATH,
+                    RUN_ID,
+                    ACTION_REPOSITORY,
+                    "v0.2.0",
+                )
+
+    def test_external_smoke_rejects_invalid_base64_workflow_content(self) -> None:
+        with patch.object(
+            verify_release,
+            "_gh_json",
+            side_effect=[
+                _successful_run(),
+                {"encoding": "base64", "content": "not-valid-base64%%%"},
+            ],
+        ):
+            with self.assertRaisesRegex(verify_release.ReleaseVerificationError, "not valid base64 UTF-8"):
+                verify_release._verify_external_smoke(
+                    SMOKE_REPOSITORY,
+                    SMOKE_WORKFLOW,
+                    SMOKE_WORKFLOW_PATH,
+                    RUN_ID,
+                    ACTION_REPOSITORY,
+                    "v0.2.0",
+                )
+
     def test_external_smoke_resolves_latest_run_before_reading_workflow(self) -> None:
         with patch.object(
             verify_release,
