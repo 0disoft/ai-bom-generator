@@ -4,6 +4,8 @@
 
 - Expands the caller-setup-free GitHub Action smoke to Ubuntu, macOS, and
   Windows hosted runners without fail-fast result suppression.
+- Adds a repository security policy backed by GitHub Private Vulnerability
+  Reporting, with supported-version and sensitive-reporting guidance.
 
 ## v0.2.0
 

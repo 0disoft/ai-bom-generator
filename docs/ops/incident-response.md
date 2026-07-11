@@ -18,4 +18,6 @@ change generated output without a migration path.
 
 - Required validation names: VALIDATION.md
 - Release blocker status: unresolved secret disclosure, invalid exporter output, or action permission escalation blocks release.
-- Remaining operational risk: public security advisory process and support response targets remain UNDECIDED.
+- Vulnerability intake and disclosure path: GitHub Private Vulnerability
+  Reporting and repository security advisories, as documented in `SECURITY.md`.
+- Remaining operational risk: support response targets remain UNDECIDED.

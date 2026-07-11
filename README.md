@@ -188,6 +188,12 @@ uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VER
 - [Release operations](docs/ops/release.md)
 - [Changelog](CHANGELOG.md)
 
+## Security
+
+Report suspected vulnerabilities privately through the repository Security tab.
+Do not include real credentials, model weights, prompts, or private datasets.
+See [SECURITY.md](SECURITY.md) for supported versions and reporting guidance.
+
 ## License
 
 Apache-2.0.

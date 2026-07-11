@@ -29,3 +29,8 @@ hosted governance service.
 - The change invents exporter mappings without fixtures or standard-backed evidence.
 - The change weakens validation or skips required evidence.
 - The change relies on generated, cache, or build output as source truth.
+
+## Security Reports
+
+Do not disclose suspected vulnerabilities in public issues or pull requests.
+Follow [SECURITY.md](SECURITY.md) and use GitHub Private Vulnerability Reporting.
