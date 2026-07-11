@@ -40,6 +40,22 @@ The workflow intentionally does not upload artifacts, write pull request
 comments, attach releases, publish packages, or request secrets. Release
 publishing is isolated in `.github/workflows/publish-pypi.yml`.
 
+## CodeQL Workflow
+
+The repository CodeQL workflow lives at `.github/workflows/codeql.yml`.
+
+- Triggers: pull requests and pushes targeting `main`, plus a weekly scheduled
+  scan at `03:23 UTC` on Wednesday.
+- Runner: `ubuntu-latest`.
+- Language and build mode: Python with `build-mode: none`.
+- Action pins: `actions/checkout@v7.0.0` and
+  `github/codeql-action@v4.37.0` for initialization and analysis.
+- Permissions: `contents: read` and `security-events: write` only.
+
+CodeQL result upload is the only reason this workflow receives
+`security-events: write`. It does not publish packages, upload generated BOMs,
+request secrets, or mutate repository contents.
+
 ## PyPI Publish Workflow
 
 The PyPI publish workflow lives at `.github/workflows/publish-pypi.yml`.

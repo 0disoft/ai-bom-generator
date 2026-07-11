@@ -14,6 +14,9 @@ boundaries, and avoidance of implicit network access.
 - Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
+- Automated static analysis: `.github/workflows/codeql.yml` uploads Python
+  CodeQL results with repository-content read and security-event write
+  permissions only.
 
 ## Review Blockers
 

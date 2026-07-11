@@ -6,6 +6,8 @@
   Windows hosted runners without fail-fast result suppression.
 - Adds a repository security policy backed by GitHub Private Vulnerability
   Reporting, with supported-version and sensitive-reporting guidance.
+- Adds weekly and change-triggered Python CodeQL analysis with least-privilege
+  result-upload permissions.
 
 ## v0.2.0
 

@@ -40,6 +40,10 @@ Docs validation is review-based until a documentation linter is configured.
 Format, typecheck, contract, and migration-check are stable names but do not
 have configured runners yet.
 
+CodeQL is hosted-only validation. Its workflow is checked locally with
+`actionlint`; analysis and security-event upload require GitHub's CodeQL runner
+and are verified after the final push.
+
 `scripts/verify_wheel.py` verifies required package data, required synthetic
 test fixtures in the source distribution, the `ai-bom` entry point metadata,
 required runtime dependency metadata, installation of the built wheel into an
