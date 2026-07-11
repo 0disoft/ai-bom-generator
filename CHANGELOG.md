@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.2.0
+
 - Adds synthetic Transformers, PyTorch CUDA, ONNX Runtime, and GGUF compatibility
   fixtures that exercise representative dependency syntax across both exporters.
 - Makes the composite GitHub Action prepare pinned Python and uv runtimes,
@@ -9,9 +11,6 @@
   in hosted CI.
 - Binds post-release verification to the external smoke run's exact workflow
   commit and immutable Action version reference.
-
-## v0.2.0
-
 - Parses explicitly declared `uv.lock` and requirements files into normalized
   dependency package components without discovery, resolution, or downloads.
 - Adds bounded dependency-file reads and machine-readable warnings for

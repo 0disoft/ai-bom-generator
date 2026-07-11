@@ -46,12 +46,12 @@ This repository type owns action inputs, outputs, permissions, token handling, a
   warning output, failure output, and a clean hosted runner with no caller-side
   Python or uv setup step.
 - GitHub Action release or rollout policy: immutable version tag `v0.1.0` for
-  the first public MVP, immutable patch tags such as `v0.1.4`, and mutable
+  the first public MVP, immutable semver tags such as `v0.2.0`, and mutable
   `v0` for the latest compatible 0.x action release after external smoke
   verification; Marketplace registration is deferred.
-- GitHub Action compatibility and migration policy: patch tags may preserve the
-  current input/output contract; breaking action contract changes require a new
-  documented release decision.
+- GitHub Action compatibility and migration policy: compatible 0.x releases
+  preserve the input/output contract; breaking action contract changes require
+  a new documented release decision.
 
 ## Permission Policy
 

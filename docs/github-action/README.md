@@ -36,12 +36,13 @@ state, registry publication, or compliance approval.
 
 - Artifact upload behavior: UNDECIDED
 - First MVP action release: immutable `v0.1.0` tag.
-- Immutable patch tags are smoke-tested before the mutable `v0` tag moves.
+- Immutable semver tags are smoke-tested before the mutable `v0` tag moves.
 - Mutable major tag: `v0` tracks the latest compatible 0.x action release after
   external smoke verification.
 - Marketplace registration: deferred.
-- Compatibility policy: patch tags preserve the current input/output contract;
-  breaking changes require a new documented release decision.
+- Compatibility policy: compatible 0.x releases preserve the current
+  input/output contract; breaking changes require a new documented release
+  decision.
 
 ## Review Blockers
 

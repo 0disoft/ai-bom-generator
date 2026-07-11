@@ -126,16 +126,8 @@ unsafe paths, and invalid generated BOM output fail with non-zero exit codes.
 ```yaml
 - uses: actions/checkout@v7
 
-- uses: actions/setup-python@v6
-  with:
-    python-version: "3.12"
-
-- uses: astral-sh/setup-uv@v8.3.1
-  with:
-    enable-cache: false
-
 - id: ai-bom
-  uses: 0disoft/ai-bom-generator@v0
+  uses: 0disoft/ai-bom-generator@v0.2.0
   with:
     model-directory: .
     warnings: allow
@@ -150,12 +142,10 @@ unsafe paths, and invalid generated BOM output fail with non-zero exit codes.
     test "${{ steps.ai-bom.outputs.status }}" = "success"
 ```
 
-Starting with the unreleased `v0.2.0` contract, the action prepares Python 3.12
-and pinned uv `0.11.28`, disables the setup-uv GitHub cache, and invokes the
-packaged CLI with `uv run --project --locked`. Its virtual environment and uv
-download cache stay under `RUNNER_TEMP`; the caller repository is not used for
-action runtime state. The setup steps remain in this example until mutable tag
-`v0` moves to `v0.2.0`, so it also works with the currently published action.
+The action prepares Python 3.12 and pinned uv `0.11.28`, disables the setup-uv
+GitHub cache, and invokes the packaged CLI with `uv run --project --locked`.
+Its virtual environment and uv download cache stay under `RUNNER_TEMP`; the
+caller repository is not used for action runtime state.
 When `format` or `warnings` inputs are omitted, the action lets the CLI use the
 discovered or explicit config values and CLI defaults. Generated files are
 written to explicit paths when provided, or to a run-unique directory under
@@ -164,7 +154,7 @@ written to explicit paths when provided, or to a run-unique directory under
 Summary-derived action outputs are published only when the generation manifest
 matches the BOM, warning report, and summary files from the current run.
 
-Use `@v0` for compatible patch updates, or pin the immutable `@v0.1.4` tag
+Use `@v0` for compatible 0.x updates, or pin the immutable `@v0.2.0` tag
 when a workflow needs exact release reproducibility.
 
 ## Validation
@@ -184,7 +174,7 @@ uv run --python 3.12 python scripts/verify_github_action.py
 Post-release verification:
 
 ```powershell
-$env:RELEASE_VERSION = "0.1.4"
+$env:RELEASE_VERSION = "0.2.0"
 $env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
 $env:SMOKE_RUN_ID = "<successful-immutable-action-smoke-run-id>"
 uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID --smoke-run-id $env:SMOKE_RUN_ID

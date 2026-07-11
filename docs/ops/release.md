@@ -14,7 +14,7 @@ exporter validation, README non-goal language, and a rollback path for the
 CLI/action contract.
 
 The first public MVP release is `v0.1.0` as an immutable GitHub Release tag.
-Patch releases such as `v0.1.4` remain immutable GitHub Release tags and may be
+Version releases such as `v0.2.0` remain immutable GitHub Release tags and may be
 used directly as exact GitHub Action refs. The mutable `v0` action tag may point
 to the latest compatible 0.x action release after external smoke verification.
 GitHub Marketplace registration and generated artifact upload are deferred until
@@ -26,7 +26,7 @@ rendering and wheel contents before upload.
 
 ## PyPI Publishing Policy
 
-PyPI publishing is approved for patch releases after the package registry setup
+PyPI publishing is approved for strict semver releases after the package registry setup
 is complete. Do not reuse a GitHub-only tag for a first package upload.
 
 PyPI uploads must use PyPI Trusted Publishing from a GitHub Actions workflow.
@@ -41,7 +41,7 @@ publishing. Before an upload, the maintainer must:
   GitHub Action wrapper smoke;
 - confirm an external repository smoke has passed against the latest immutable
   GitHub Action tag;
-- publish from a new patch tag and mark rollback guidance in the GitHub Release
+- publish from a new immutable semver tag and mark rollback guidance in the GitHub Release
   notes if the package is broken.
 
 The prepared publish workflow is `.github/workflows/publish-pypi.yml`. It runs
@@ -52,7 +52,7 @@ re-runs compile, lint, unit/contract tests, wheel verification, GitHub Action
 wrapper smoke, CLI fixture smoke, and diff hygiene before upload.
 
 The workflow intentionally rejects `v0.1.0` and `v0.1.1` because those tags were
-created as GitHub-only releases. Future PyPI uploads must use a patch tag whose
+created as GitHub-only releases. Future PyPI uploads must use a strict semver tag whose
 version exactly matches `pyproject.toml` and has not already been published.
 
 ## Post-Release Verification
@@ -61,7 +61,7 @@ After a package release, verify the registry, GitHub Release, publish workflow,
 external action smoke, and installed console script from the repository root:
 
 ```powershell
-$env:RELEASE_VERSION = "0.1.4"
+$env:RELEASE_VERSION = "0.2.0"
 $env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
 $env:SMOKE_RUN_ID = "<successful-immutable-action-smoke-run-id>"
 uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID --smoke-run-id $env:SMOKE_RUN_ID
@@ -90,13 +90,13 @@ The script checks:
 
 ## Mutable Action Tag
 
-`v0` is a convenience ref for users who want compatible patch updates without
-editing workflow files. Keep immutable patch tags such as `v0.1.4` for exact
+`v0` is a convenience ref for users who want compatible 0.x updates without
+editing workflow files. Keep immutable version tags such as `v0.2.0` for exact
 release reproducibility.
 
 Only move `v0` after:
 
-- the target immutable patch tag is published;
+- the target immutable version tag is published;
 - the repository CI and package release verification pass;
 - an external smoke repository passes against the new `v0` target.
 
@@ -113,8 +113,9 @@ The PyPI publish workflow intentionally triggers only strict
 
 - Required validation names: VALIDATION.md
 - Release blocker status: contract drift, missing fixture evidence, invalid exporter output, or action permission drift blocks release.
-- Versioning scheme: `0.1.0` marks the first public MVP; patch releases may use
-  `0.1.x` while the MVP contract remains compatible.
+- Versioning scheme: `0.1.0` marks the first public MVP; compatible 0.x releases
+  use immutable semver tags while the mutable `v0` tag tracks the supported
+  action line.
 - Rollback: mark a broken GitHub Release in release notes, then publish a patch
   tag after validation. Do not retarget or delete an existing immutable release
   tag.

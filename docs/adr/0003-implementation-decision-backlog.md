@@ -36,9 +36,9 @@ choices from plausible candidates that still need approval.
 | Artifact discovery CLI flag | CLI override for artifact discovery | Deferred |
 | Action wrapper | Composite GitHub Action invoking `uv run --project` | Approved for MVP on 2026-07-07 |
 | First public release | GitHub Release `v0.1.0` with no PyPI package | Approved by owner on 2026-07-07 |
-| Action tag policy | Immutable patch tags plus mutable `v0` for compatible 0.x action updates | Approved by owner on 2026-07-08 |
+| Action tag policy | Immutable semver tags plus mutable `v0` for compatible 0.x action updates | Approved by owner on 2026-07-08 |
 | PyPI package metadata | Classifiers, keywords, and project URLs in `pyproject.toml` | Approved for pre-publish preparation on 2026-07-07 |
-| PyPI package publishing | `.github/workflows/publish-pypi.yml` publishes `v0.1.2` or later patch tags via PyPI Trusted Publishing after registry setup and external action smoke | Approved workflow policy on 2026-07-08 |
+| PyPI package publishing | `.github/workflows/publish-pypi.yml` publishes new strict semver tags via PyPI Trusted Publishing after registry setup and external action smoke | Approved workflow policy on 2026-07-08 |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
 | Network policy | CLI collection and export do not access the network; Action-managed setup may download pinned Python, uv, and the action's locked dependencies | Approved by owner on 2026-07-11 |
 | Telemetry policy | No telemetry in MVP | Proposed |
@@ -86,7 +86,7 @@ choices from plausible candidates that still need approval.
 - PyPI metadata may be prepared and validated locally. Package upload requires
   PyPI Trusted Publishing through `.github/workflows/publish-pypi.yml`,
   registry ownership confirmation, package-name recheck at release time, full
-  validation, and a new patch tag.
+  validation, and a new immutable semver tag.
 - Do not add collector/exporter network access, telemetry, hosted registry,
   persistent GitHub cache, or write-permission behavior beyond the approved
   Action-managed toolchain and locked-dependency setup boundary.
