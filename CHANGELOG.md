@@ -10,6 +10,8 @@
   result-upload permissions.
 - Prevents PyPI project-root `latest` propagation lag from failing exact-version
   release verification while preserving artifact and version checks.
+- Adds grouped weekly Dependabot updates for the root uv project and GitHub
+  Actions with bounded open pull requests.
 
 ## v0.2.0
 

@@ -17,6 +17,9 @@ boundaries, and avoidance of implicit network access.
 - Automated static analysis: `.github/workflows/codeql.yml` uploads Python
   CodeQL results with repository-content read and security-event write
   permissions only.
+- Dependency updates: `.github/dependabot.yml` proposes grouped weekly `uv`
+  and GitHub Actions updates through reviewable pull requests without merge or
+  release authority.
 
 ## Review Blockers
 

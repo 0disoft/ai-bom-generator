@@ -44,6 +44,10 @@ CodeQL is hosted-only validation. Its workflow is checked locally with
 `actionlint`; analysis and security-event upload require GitHub's CodeQL runner
 and are verified after the final push.
 
+Dependabot configuration is validated locally as YAML and against the current
+Dependabot 2.0 JSON Schema. Actual update proposal behavior is hosted-only and
+is observed after the final push or next scheduled run.
+
 `scripts/verify_wheel.py` verifies required package data, required synthetic
 test fixtures in the source distribution, the `ai-bom` entry point metadata,
 required runtime dependency metadata, installation of the built wheel into an

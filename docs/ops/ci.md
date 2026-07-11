@@ -56,6 +56,18 @@ CodeQL result upload is the only reason this workflow receives
 `security-events: write`. It does not publish packages, upload generated BOMs,
 request secrets, or mutate repository contents.
 
+## Dependency Update Automation
+
+Dependabot version updates are configured in `.github/dependabot.yml`.
+
+- Ecosystems: root `uv` project and GitHub Actions.
+- Schedule: weekly on Monday at `04:17 UTC` for Python dependencies and
+  `04:27 UTC` for Actions.
+- Pull request limit: three open version-update PRs per ecosystem.
+- Grouping: one grouped PR per ecosystem to limit update noise.
+- Authority boundary: Dependabot may propose lockfile and Action-reference
+  changes through pull requests. It cannot merge, publish, tag, or release.
+
 ## PyPI Publish Workflow
 
 The PyPI publish workflow lives at `.github/workflows/publish-pypi.yml`.
