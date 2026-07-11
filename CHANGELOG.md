@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Keeps GitHub Action setup dependencies exactly pinned without duplicating
+  their current versions in the verifier, so Dependabot patch updates remain
+  independently testable.
 - Expands the caller-setup-free GitHub Action smoke to Ubuntu, macOS, and
   Windows hosted runners without fail-fast result suppression.
 - Adds a repository security policy backed by GitHub Private Vulnerability

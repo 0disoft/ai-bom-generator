@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -134,8 +135,6 @@ def _verify_action_metadata() -> None:
     text = ACTION.read_text(encoding="utf-8")
     required_snippets = [
         "using: composite",
-        "actions/setup-python@v6.3.0",
-        "astral-sh/setup-uv@v8.3.1",
         'version: "0.11.28"',
         'enable-cache: "false"',
         "working-directory: ${{ github.action_path }}",
@@ -153,6 +152,9 @@ def _verify_action_metadata() -> None:
     if missing:
         raise AssertionError(f"action.yml is missing required snippets: {', '.join(missing)}")
 
+    _require_exact_action_pin(text, "actions/setup-python")
+    _require_exact_action_pin(text, "astral-sh/setup-uv")
+
     entrypoint_text = ENTRYPOINT.read_text(encoding="utf-8")
     required_entrypoint_snippets = [
         '"--locked"',
@@ -165,6 +167,21 @@ def _verify_action_metadata() -> None:
             "GitHub Action entrypoint is missing runtime isolation snippets: "
             f"{', '.join(missing_entrypoint)}"
         )
+
+
+def _require_exact_action_pin(text: str, action: str) -> str:
+    uses_pattern = re.compile(
+        rf"^\s*uses:\s*{re.escape(action)}@(?P<ref>[^\s#]+)\s*(?:#.*)?$",
+        re.MULTILINE,
+    )
+    refs = [match.group("ref") for match in uses_pattern.finditer(text)]
+    if len(refs) != 1:
+        raise AssertionError(f"action.yml must use {action} exactly once; found {len(refs)}")
+
+    ref = refs[0]
+    if re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", ref) is None:
+        raise AssertionError(f"action.yml must pin {action} to an exact vMAJOR.MINOR.PATCH ref; found {ref}")
+    return ref
 
 
 def _run_case(case: ActionCase, case_root: Path) -> None:

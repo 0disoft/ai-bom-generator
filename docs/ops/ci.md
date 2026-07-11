@@ -28,8 +28,8 @@ The repository CI workflow lives at `.github/workflows/ci.yml`.
 - Runner: `ubuntu-latest`.
 - Runtime: Python 3.12.
 - Environment manager: `uv`, locked by `uv.lock`.
-- Action pins: `actions/checkout@v7.0.0`, `actions/setup-python@v6.3.0`,
-  and `astral-sh/setup-uv@v8.3.1`.
+- Action dependencies use exact semantic-version pins. The current values are
+  owned by `.github/workflows/*.yml` and `action.yml`.
 - Permissions: `contents: read`.
 - Managed-runtime smoke: a clean `ubuntu-latest`, `macos-latest`, and
   `windows-latest` matrix checks out the repository and invokes `uses: ./`
@@ -48,8 +48,8 @@ The repository CodeQL workflow lives at `.github/workflows/codeql.yml`.
   scan at `03:23 UTC` on Wednesday.
 - Runner: `ubuntu-latest`.
 - Language and build mode: Python with `build-mode: none`.
-- Action pins: `actions/checkout@v7.0.0` and
-  `github/codeql-action@v4.37.0` for initialization and analysis.
+- Action dependencies use exact semantic-version pins. The current values are
+  owned by `.github/workflows/codeql.yml`.
 - Permissions: `contents: read` and `security-events: write` only.
 
 CodeQL result upload is the only reason this workflow receives
@@ -77,9 +77,8 @@ The PyPI publish workflow lives at `.github/workflows/publish-pypi.yml`.
 - Runner: `ubuntu-latest`.
 - Runtime: Python 3.12.
 - Environment manager: `uv`, locked by `uv.lock`.
-- Action pins: `actions/checkout@v7.0.0`, `actions/setup-python@v6.3.0`,
-  `astral-sh/setup-uv@v8.3.1`, and
-  `pypa/gh-action-pypi-publish@v1.14.0`.
+- Action dependencies use exact semantic-version pins. The current values are
+  owned by `.github/workflows/publish-pypi.yml`.
 - Permissions: `contents: read` and job-scoped `id-token: write`.
 - GitHub environment: `pypi`.
 

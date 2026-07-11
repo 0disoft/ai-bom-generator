@@ -57,7 +57,9 @@ discovery while using the locked validation environment for dependencies.
 
 `scripts/verify_github_action.py` verifies the local composite `action.yml` and
 runs clean, warning-only, fail-on-warning, stale-output, and manifest-gated
-action wrapper smoke cases. Hosted CI separately invokes the local action on a
+action wrapper smoke cases. Setup actions must use one exact semantic-version
+pin, while Dependabot may update that pin without requiring a duplicate verifier
+constant change. Hosted CI separately invokes the local action on a
 clean Ubuntu, macOS, and Windows runner matrix without caller-side Python or uv
 setup. Matrix fail-fast is disabled so one platform failure does not hide the
 other runner results.
