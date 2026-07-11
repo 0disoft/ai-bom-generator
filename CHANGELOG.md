@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Expands the caller-setup-free GitHub Action smoke to Ubuntu, macOS, and
+  Windows hosted runners without fail-fast result suppression.
+
 ## v0.2.0
 
 - Adds synthetic Transformers, PyTorch CUDA, ONNX Runtime, and GGUF compatibility

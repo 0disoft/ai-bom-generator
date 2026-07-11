@@ -50,7 +50,9 @@ discovery while using the locked validation environment for dependencies.
 `scripts/verify_github_action.py` verifies the local composite `action.yml` and
 runs clean, warning-only, fail-on-warning, stale-output, and manifest-gated
 action wrapper smoke cases. Hosted CI separately invokes the local action on a
-clean runner without caller-side Python or uv setup.
+clean Ubuntu, macOS, and Windows runner matrix without caller-side Python or uv
+setup. Matrix fail-fast is disabled so one platform failure does not hide the
+other runner results.
 
 `scripts/verify_release.py` verifies a published release by checking PyPI JSON,
 published wheel and source distribution entries, installed console-script help

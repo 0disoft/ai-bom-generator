@@ -18,7 +18,7 @@ permission review for the GitHub Action wrapper.
 
 - Required validation names: VALIDATION.md
 - Release blocker status: failing check/test/docs validation, nondeterministic fixture output, or action permission drift blocks release.
-- Remaining operational risk: exact branch protection and hosted CI matrix remain UNDECIDED.
+- Remaining operational risk: exact branch protection remains UNDECIDED.
 
 ## Hosted Workflow
 
@@ -31,8 +31,10 @@ The repository CI workflow lives at `.github/workflows/ci.yml`.
 - Action pins: `actions/checkout@v7.0.0`, `actions/setup-python@v6.3.0`,
   and `astral-sh/setup-uv@v8.3.1`.
 - Permissions: `contents: read`.
-- Managed-runtime smoke: a separate clean `ubuntu-latest` job checks out the
-  repository and invokes `uses: ./` without caller-side Python or uv setup.
+- Managed-runtime smoke: a clean `ubuntu-latest`, `macos-latest`, and
+  `windows-latest` matrix checks out the repository and invokes `uses: ./`
+  without caller-side Python or uv setup. Fail-fast is disabled so every runner
+  reports its own result.
 
 The workflow intentionally does not upload artifacts, write pull request
 comments, attach releases, publish packages, or request secrets. Release

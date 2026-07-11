@@ -69,8 +69,15 @@ jobs:
         run: git diff --check
 
   action-runtime-smoke:
-    name: Action-managed runtime smoke
-    runs-on: ubuntu-latest
+    name: Action-managed runtime smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
 
     steps:
       - name: Check out repository
@@ -85,8 +92,11 @@ jobs:
 
       - name: Verify managed-runtime outputs
         shell: bash
+        env:
+          RUNNER_OS_NAME: ${{ runner.os }}
         run: |
           set -euo pipefail
+          printf 'Verified action-managed runtime on %s\n' "$RUNNER_OS_NAME"
           test -s "${{ steps.ai-bom.outputs.bom-path }}"
           test -s "${{ steps.ai-bom.outputs.warning-report-path }}"
           test -s "${{ steps.ai-bom.outputs.summary-path }}"
