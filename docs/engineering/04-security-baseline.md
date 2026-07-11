@@ -21,6 +21,16 @@ boundaries, and avoidance of implicit network access.
   and GitHub Actions updates through reviewable pull requests without merge or
   release authority.
 
+## Hosted Repository Controls
+
+- GitHub secret scanning and push protection are enabled.
+- Dependabot security updates are enabled.
+- Private vulnerability reporting is the supported disclosure channel described
+  in `SECURITY.md`.
+- Non-provider secret patterns and partner-token validity checks remain disabled
+  by the current repository or organization security configuration. They should
+  be enabled when the hosting plan and organization policy make them available.
+
 ## Review Blockers
 
 - A change logs credentials, private dataset contents, model weights, or full source files.

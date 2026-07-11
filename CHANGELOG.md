@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Restores the canonical Apache License 2.0 text so repository and package
+  metadata scanners can identify the declared SPDX license consistently.
 - Keeps GitHub Action setup dependencies exactly pinned without duplicating
   their current versions in the verifier, so Dependabot patch updates remain
   independently testable.
