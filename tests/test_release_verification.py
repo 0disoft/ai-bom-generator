@@ -8,8 +8,8 @@ from scripts import verify_release
 
 
 SMOKE_REPOSITORY = "0disoft/ai-bom-generator-action-smoke"
-SMOKE_WORKFLOW = "AI-BOM Smoke"
-SMOKE_WORKFLOW_PATH = ".github/workflows/ai-bom-smoke.yml"
+SMOKE_WORKFLOW = "AI-BOM Release Smoke"
+SMOKE_WORKFLOW_PATH = ".github/workflows/ai-bom-release-smoke.yml"
 ACTION_REPOSITORY = "0disoft/ai-bom-generator"
 RUN_ID = "12345"
 HEAD_SHA = "a" * 40
@@ -93,7 +93,7 @@ class ReleaseVerificationTests(unittest.TestCase):
             api_args,
             [
                 "api",
-                f"repos/{SMOKE_REPOSITORY}/contents/.github/workflows/ai-bom-smoke.yml?ref={HEAD_SHA}",
+                f"repos/{SMOKE_REPOSITORY}/contents/.github/workflows/ai-bom-release-smoke.yml?ref={HEAD_SHA}",
             ],
         )
 

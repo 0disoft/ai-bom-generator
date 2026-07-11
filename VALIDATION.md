@@ -70,8 +70,10 @@ through `uv --with`, GitHub-enforced release immutability for post-enforcement
 tags, the PyPI publish workflow run, and the external action smoke repository.
 Known releases through `v0.2.0` predate repository-level enforcement and remain
 an explicit verifier exception. The external smoke check reads
-the workflow at the successful run's exact `headSha` and requires one exact
-immutable `owner/repository@v<version>` Action reference.
+the dedicated `AI-BOM Release Smoke` workflow at the successful run's exact
+`headSha` and requires one exact `owner/repository@v<version>` Action reference.
+The separate mutable-channel workflow can remain on `@v0` without temporary
+release-verification rewrites.
 PyPI project-root metadata establishes package identity, while the exact-version
 endpoint establishes the requested version and artifacts; a temporarily stale
 project-root `latest` value does not create a false release failure.

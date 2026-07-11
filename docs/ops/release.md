@@ -64,7 +64,7 @@ After a package release, verify the registry, GitHub Release, publish workflow,
 external action smoke, and installed console script from the repository root:
 
 ```powershell
-$env:RELEASE_VERSION = "0.2.0"
+$env:RELEASE_VERSION = "0.2.1"
 $env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
 $env:SMOKE_RUN_ID = "<successful-exact-version-action-smoke-run-id>"
 uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID --smoke-run-id $env:SMOKE_RUN_ID
@@ -75,6 +75,11 @@ matching exact release tag. Do not reuse an older release's run id.
 Set `SMOKE_RUN_ID` to the external smoke run that used that same exact version
 Action tag. A successful run against `main`, mutable `v0`, another version, or
 multiple refs is rejected.
+
+The smoke repository keeps mutable-channel and exact-release workflows
+separate. `AI-BOM Smoke` continuously exercises `@v0`, while
+`AI-BOM Release Smoke` pins the newest exact version and is the default evidence
+source for `scripts/verify_release.py`.
 
 The script checks:
 

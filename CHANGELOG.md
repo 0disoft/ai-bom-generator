@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## v0.2.1
+
+- Separates mutable-channel and exact-release consumer smoke workflows so
+  release verification no longer requires temporarily rewriting the `@v0`
+  smoke test.
 - Enables GitHub immutable releases for future versions and makes release
   verification reject non-immutable post-enforcement tags while retaining an
   explicit legacy exception through `v0.2.0`.
