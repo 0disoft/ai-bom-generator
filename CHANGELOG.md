@@ -7,6 +7,8 @@
 - Makes the composite GitHub Action prepare pinned Python and uv runtimes,
   disables persistent setup caching, and verifies caller-setup-free execution
   in hosted CI.
+- Binds post-release verification to the external smoke run's exact workflow
+  commit and immutable Action version reference.
 
 ## v0.2.0
 

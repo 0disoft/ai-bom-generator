@@ -63,11 +63,15 @@ external action smoke, and installed console script from the repository root:
 ```powershell
 $env:RELEASE_VERSION = "0.1.4"
 $env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
-uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID
+$env:SMOKE_RUN_ID = "<successful-immutable-action-smoke-run-id>"
+uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID --smoke-run-id $env:SMOKE_RUN_ID
 ```
 
 Set `PUBLISH_RUN_ID` to the successful `Publish PyPI` workflow run for the
 matching immutable release tag. Do not reuse an older release's run id.
+Set `SMOKE_RUN_ID` to the external smoke run that used that same immutable
+Action tag. A successful run against `main`, mutable `v0`, another version, or
+multiple refs is rejected.
 
 The script checks:
 
@@ -79,8 +83,10 @@ The script checks:
   prerelease;
 - the provided PyPI publish workflow run completed successfully against the
   matching release tag;
-- the latest external smoke workflow in
-  `0disoft/ai-bom-generator-action-smoke` completed successfully.
+- the selected external smoke workflow in
+  `0disoft/ai-bom-generator-action-smoke` completed successfully and its
+  workflow at the run's exact commit uses only the matching immutable Action
+  ref.
 
 ## Mutable Action Tag
 

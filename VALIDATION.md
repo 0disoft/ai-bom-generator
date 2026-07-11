@@ -32,7 +32,7 @@ implementation.
 | check | `uv build` |
 | check | `uv run --python 3.12 python scripts/verify_wheel.py dist` |
 | smoke | `uv run --python 3.12 python scripts/verify_github_action.py` |
-| smoke | `uv run --python 3.12 python scripts/verify_release.py --version <released-version> --publish-run-id <run-id>` |
+| smoke | `uv run --python 3.12 python scripts/verify_release.py --version <released-version> --publish-run-id <run-id> --smoke-run-id <run-id>` |
 | smoke | `uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --format cyclonedx-json-1.7 --output <temp>/bom.cdx.json --warning-report <temp>/warnings.json --summary <temp>/summary.json` |
 | check | `git diff --check` |
 
@@ -55,7 +55,9 @@ clean runner without caller-side Python or uv setup.
 `scripts/verify_release.py` verifies a published release by checking PyPI JSON,
 published wheel and source distribution entries, installed console-script help
 through `uv --with`, the immutable GitHub Release, the PyPI publish workflow
-run, and the external action smoke repository.
+run, and the external action smoke repository. The external smoke check reads
+the workflow at the successful run's exact `headSha` and requires one exact
+immutable `owner/repository@v<version>` Action reference.
 
 ## Required Final Report
 

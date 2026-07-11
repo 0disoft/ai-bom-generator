@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
 import json
 from pathlib import Path
 import re
@@ -9,6 +11,7 @@ import sys
 import tempfile
 import tomllib
 from urllib.error import HTTPError, URLError
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 
@@ -17,6 +20,7 @@ PYPROJECT = ROOT / "pyproject.toml"
 DEFAULT_REPOSITORY = "0disoft/ai-bom-generator"
 DEFAULT_SMOKE_REPOSITORY = "0disoft/ai-bom-generator-action-smoke"
 DEFAULT_SMOKE_WORKFLOW = "AI-BOM Smoke"
+DEFAULT_SMOKE_WORKFLOW_PATH = ".github/workflows/ai-bom-smoke.yml"
 DEFAULT_PYTHON = "3.12"
 DEFAULT_CONSOLE = "ai-bom"
 REQUIRED_PACKAGE_TYPES = {"bdist_wheel", "sdist"}
@@ -32,6 +36,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--publish-run-id", help="GitHub Actions run id for the PyPI publish workflow.")
     parser.add_argument("--smoke-repository", default=DEFAULT_SMOKE_REPOSITORY, help="External smoke repository.")
     parser.add_argument("--smoke-workflow", default=DEFAULT_SMOKE_WORKFLOW, help="External smoke workflow name.")
+    parser.add_argument(
+        "--smoke-workflow-path",
+        default=DEFAULT_SMOKE_WORKFLOW_PATH,
+        help="External smoke workflow path used to verify the immutable action ref.",
+    )
     parser.add_argument("--smoke-run-id", help="External smoke workflow run id. Defaults to latest run.")
     parser.add_argument("--python", default=DEFAULT_PYTHON, help="Python version passed to uv for install smoke.")
     parser.add_argument("--console", default=DEFAULT_CONSOLE, help="Installed console script command.")
@@ -46,7 +55,14 @@ def main(argv: list[str] | None = None) -> int:
         if args.publish_run_id:
             _verify_github_run(args.repository, args.publish_run_id, expected_head_branch=tag, label="publish")
         if args.smoke_repository:
-            _verify_external_smoke(args.smoke_repository, args.smoke_workflow, args.smoke_run_id)
+            _verify_external_smoke(
+                args.smoke_repository,
+                args.smoke_workflow,
+                args.smoke_workflow_path,
+                args.smoke_run_id,
+                args.repository,
+                tag,
+            )
     except ReleaseVerificationError as error:
         print(f"release verification failed: {error}", file=sys.stderr)
         return 1
@@ -137,11 +153,34 @@ def _verify_github_release(repository: str, tag: str) -> None:
         raise ReleaseVerificationError(f"GitHub Release {tag} is marked prerelease")
 
 
-def _verify_external_smoke(repository: str, workflow: str, run_id: str | None) -> None:
-    if run_id:
-        _verify_github_run(repository, run_id, label="external smoke")
-        return
+def _verify_external_smoke(
+    repository: str,
+    workflow: str,
+    workflow_path: str,
+    run_id: str | None,
+    action_repository: str,
+    expected_tag: str,
+) -> None:
+    resolved_run_id = run_id or _latest_workflow_run_id(repository, workflow)
+    run = _github_run_payload(repository, resolved_run_id)
+    _verify_run_payload(run, label="external smoke")
+    if run.get("workflowName") != workflow:
+        raise ReleaseVerificationError(
+            f"external smoke run workflow mismatch: expected {workflow!r}, got {run.get('workflowName')!r}"
+        )
+    head_sha = run.get("headSha")
+    if not isinstance(head_sha, str) or not head_sha:
+        raise ReleaseVerificationError("external smoke run is missing headSha")
+    _verify_smoke_action_ref(
+        repository,
+        workflow_path,
+        head_sha,
+        action_repository,
+        expected_tag,
+    )
 
+
+def _latest_workflow_run_id(repository: str, workflow: str) -> str:
     payload = _gh_json(
         [
             "run",
@@ -153,15 +192,51 @@ def _verify_external_smoke(repository: str, workflow: str, run_id: str | None) -
             "--limit",
             "1",
             "--json",
-            "databaseId,status,conclusion,url,headBranch,createdAt",
+            "databaseId",
         ]
     )
     if not isinstance(payload, list) or not payload:
         raise ReleaseVerificationError(f"no workflow runs found for {repository} workflow {workflow!r}")
     run = payload[0]
-    if not isinstance(run, dict):
+    if not isinstance(run, dict) or run.get("databaseId") is None:
         raise ReleaseVerificationError(f"unexpected GitHub run payload for {repository}: {run!r}")
-    _verify_run_payload(run, label="external smoke")
+    return str(run["databaseId"])
+
+
+def _verify_smoke_action_ref(
+    repository: str,
+    workflow_path: str,
+    head_sha: str,
+    action_repository: str,
+    expected_tag: str,
+) -> None:
+    normalized_path = quote(workflow_path.strip("/"), safe="/")
+    encoded_sha = quote(head_sha, safe="")
+    payload = _gh_json(["api", f"repos/{repository}/contents/{normalized_path}?ref={encoded_sha}"])
+    if not isinstance(payload, dict) or payload.get("encoding") != "base64":
+        raise ReleaseVerificationError("external smoke workflow content is not base64 encoded")
+    encoded_content = payload.get("content")
+    if not isinstance(encoded_content, str):
+        raise ReleaseVerificationError("external smoke workflow content is missing")
+    try:
+        workflow_text = base64.b64decode("".join(encoded_content.split()), validate=True).decode("utf-8")
+    except (binascii.Error, UnicodeDecodeError) as error:
+        raise ReleaseVerificationError("external smoke workflow content is not valid base64 UTF-8") from error
+
+    action_prefix = f"{action_repository}@"
+    action_uses: list[str] = []
+    for line in workflow_text.splitlines():
+        match = re.match(r"^-?\s*uses:\s*([^\s#]+)", line.strip())
+        if match:
+            value = match.group(1).strip("\"'")
+            if value.startswith(action_prefix):
+                action_uses.append(value)
+    expected_use = f"{action_repository}@{expected_tag}"
+    if action_uses != [expected_use]:
+        actual = ", ".join(action_uses) if action_uses else "missing"
+        raise ReleaseVerificationError(
+            f"external smoke workflow must use exactly {expected_use!r} at run commit {head_sha}; got {actual}"
+        )
 
 
 def _verify_github_run(
@@ -170,8 +245,25 @@ def _verify_github_run(
     expected_head_branch: str | None = None,
     label: str = "workflow",
 ) -> None:
-    payload = _gh_json(["run", "view", run_id, "--repo", repository, "--json", "status,conclusion,url,headBranch,event"])
+    payload = _github_run_payload(repository, run_id)
     _verify_run_payload(payload, expected_head_branch=expected_head_branch, label=label)
+
+
+def _github_run_payload(repository: str, run_id: str) -> dict[str, object]:
+    payload = _gh_json(
+        [
+            "run",
+            "view",
+            run_id,
+            "--repo",
+            repository,
+            "--json",
+            "status,conclusion,url,headBranch,headSha,event,workflowName",
+        ]
+    )
+    if not isinstance(payload, dict):
+        raise ReleaseVerificationError(f"unexpected GitHub run payload for {repository}: {payload!r}")
+    return payload
 
 
 def _verify_run_payload(

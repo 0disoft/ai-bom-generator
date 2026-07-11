@@ -186,7 +186,8 @@ Post-release verification:
 ```powershell
 $env:RELEASE_VERSION = "0.1.4"
 $env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
-uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID
+$env:SMOKE_RUN_ID = "<successful-immutable-action-smoke-run-id>"
+uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID --smoke-run-id $env:SMOKE_RUN_ID
 ```
 
 ## Project Docs
