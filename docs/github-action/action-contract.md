@@ -45,9 +45,9 @@ This repository type owns action inputs, outputs, permissions, token handling, a
 - GitHub Action validation evidence: workflow fixtures must cover clean output,
   warning output, failure output, and a clean hosted runner with no caller-side
   Python or uv setup step.
-- GitHub Action release or rollout policy: immutable version tag `v0.1.0` for
-  the first public MVP, immutable semver tags such as `v0.2.0`, and mutable
-  `v0` for the latest compatible 0.x action release after external smoke
+- GitHub Action release or rollout policy: exact semver tags for public
+  releases, GitHub-enforced immutable releases after `v0.2.0`, and mutable `v0`
+  for the latest compatible 0.x action release after external smoke
   verification; Marketplace registration is deferred.
 - GitHub Action compatibility and migration policy: compatible 0.x releases
   preserve the input/output contract; breaking action contract changes require

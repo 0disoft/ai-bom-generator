@@ -66,8 +66,10 @@ other runner results.
 
 `scripts/verify_release.py` verifies a published release by checking PyPI JSON,
 published wheel and source distribution entries, installed console-script help
-through `uv --with`, the immutable GitHub Release, the PyPI publish workflow
-run, and the external action smoke repository. The external smoke check reads
+through `uv --with`, GitHub-enforced release immutability for post-enforcement
+tags, the PyPI publish workflow run, and the external action smoke repository.
+Known releases through `v0.2.0` predate repository-level enforcement and remain
+an explicit verifier exception. The external smoke check reads
 the workflow at the successful run's exact `headSha` and requires one exact
 immutable `owner/repository@v<version>` Action reference.
 PyPI project-root metadata establishes package identity, while the exact-version

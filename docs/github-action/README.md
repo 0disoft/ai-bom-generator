@@ -35,8 +35,10 @@ state, registry publication, or compliance approval.
 ## Release Policy
 
 - Artifact upload behavior: UNDECIDED
-- First MVP action release: immutable `v0.1.0` tag.
-- Immutable semver tags are smoke-tested before the mutable `v0` tag moves.
+- First MVP action release: exact `v0.1.0` tag, published before GitHub
+  immutable-release enforcement was enabled.
+- Exact semver tags are smoke-tested before the mutable `v0` tag moves. Releases
+  after `v0.2.0` are also protected by GitHub release immutability.
 - Mutable major tag: `v0` tracks the latest compatible 0.x action release after
   external smoke verification.
 - Marketplace registration: deferred.

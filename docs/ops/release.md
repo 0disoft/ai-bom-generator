@@ -13,9 +13,12 @@ security policy, complete and sparse fixtures, secret-redaction fixtures,
 exporter validation, README non-goal language, and a rollback path for the
 CLI/action contract.
 
-The first public MVP release is `v0.1.0` as an immutable GitHub Release tag.
-Version releases such as `v0.2.0` remain immutable GitHub Release tags and may be
-used directly as exact GitHub Action refs. The mutable `v0` action tag may point
+The first public MVP release is `v0.1.0`. Releases through `v0.2.0` predate
+GitHub's repository-level immutable-release enforcement and are preserved by
+project policy. Repository-level enforcement is now enabled, so releases after
+`v0.2.0` must report `isImmutable: true` and receive GitHub's tag, asset, and
+attestation protections. Exact semver tags may be used directly as GitHub Action
+refs. The mutable `v0` action tag may point
 to the latest compatible 0.x action release after external smoke verification.
 GitHub Marketplace registration and generated artifact upload are deferred until
 explicitly approved.
@@ -63,13 +66,13 @@ external action smoke, and installed console script from the repository root:
 ```powershell
 $env:RELEASE_VERSION = "0.2.0"
 $env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
-$env:SMOKE_RUN_ID = "<successful-immutable-action-smoke-run-id>"
+$env:SMOKE_RUN_ID = "<successful-exact-version-action-smoke-run-id>"
 uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID --smoke-run-id $env:SMOKE_RUN_ID
 ```
 
 Set `PUBLISH_RUN_ID` to the successful `Publish PyPI` workflow run for the
-matching immutable release tag. Do not reuse an older release's run id.
-Set `SMOKE_RUN_ID` to the external smoke run that used that same immutable
+matching exact release tag. Do not reuse an older release's run id.
+Set `SMOKE_RUN_ID` to the external smoke run that used that same exact version
 Action tag. A successful run against `main`, mutable `v0`, another version, or
 multiple refs is rejected.
 
@@ -81,24 +84,26 @@ The script checks:
 - the published version includes both wheel and source distributions;
 - `uv run --python 3.12 --with ai-bom-generator==<version> ai-bom --help`
   succeeds outside the source tree;
-- the immutable GitHub Release for `v<version>` exists and is not draft or
-  prerelease;
+- the GitHub Release for `v<version>` exists and is not draft or prerelease;
+- releases after the explicit pre-enforcement set through `v0.2.0` report
+  GitHub-enforced immutability;
 - the provided PyPI publish workflow run completed successfully against the
   matching release tag;
 - the selected external smoke workflow in
   `0disoft/ai-bom-generator-action-smoke` completed successfully and its
-  workflow at the run's exact commit uses only the matching immutable Action
+  workflow at the run's exact commit uses only the matching exact-version Action
   ref.
 
 ## Mutable Action Tag
 
 `v0` is a convenience ref for users who want compatible 0.x updates without
-editing workflow files. Keep immutable version tags such as `v0.2.0` for exact
-release reproducibility.
+editing workflow files. Keep exact version tags for release reproducibility;
+GitHub enforces immutability for releases after `v0.2.0`.
 
 Only move `v0` after:
 
-- the target immutable version tag is published;
+- the target exact version tag is published and the corresponding release is
+  GitHub-immutable when it is newer than `v0.2.0`;
 - the repository CI and package release verification pass;
 - an external smoke repository passes against the new `v0` target.
 

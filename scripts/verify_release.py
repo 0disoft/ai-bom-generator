@@ -24,6 +24,9 @@ DEFAULT_SMOKE_WORKFLOW_PATH = ".github/workflows/ai-bom-smoke.yml"
 DEFAULT_PYTHON = "3.12"
 DEFAULT_CONSOLE = "ai-bom"
 REQUIRED_PACKAGE_TYPES = {"bdist_wheel", "sdist"}
+LEGACY_MUTABLE_RELEASE_TAGS = frozenset(
+    {"v0.1.0", "v0.1.1", "v0.1.2", "v0.1.4", "v0.2.0"}
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -39,7 +42,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--smoke-workflow-path",
         default=DEFAULT_SMOKE_WORKFLOW_PATH,
-        help="External smoke workflow path used to verify the immutable action ref.",
+        help="External smoke workflow path used to verify the exact version action ref.",
     )
     parser.add_argument("--smoke-run-id", help="External smoke workflow run id. Defaults to latest run.")
     parser.add_argument("--python", default=DEFAULT_PYTHON, help="Python version passed to uv for install smoke.")
@@ -152,7 +155,7 @@ def _verify_github_release(repository: str, tag: str) -> None:
             "--repo",
             repository,
             "--json",
-            "tagName,isDraft,isPrerelease,url,publishedAt",
+            "tagName,isDraft,isPrerelease,isImmutable,url,publishedAt",
         ]
     )
     if payload.get("tagName") != tag:
@@ -161,6 +164,8 @@ def _verify_github_release(repository: str, tag: str) -> None:
         raise ReleaseVerificationError(f"GitHub Release {tag} is still a draft")
     if payload.get("isPrerelease"):
         raise ReleaseVerificationError(f"GitHub Release {tag} is marked prerelease")
+    if not payload.get("isImmutable") and tag not in LEGACY_MUTABLE_RELEASE_TAGS:
+        raise ReleaseVerificationError(f"GitHub Release {tag} is not immutable")
 
 
 def _verify_external_smoke(

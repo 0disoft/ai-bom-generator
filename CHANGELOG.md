@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Enables GitHub immutable releases for future versions and makes release
+  verification reject non-immutable post-enforcement tags while retaining an
+  explicit legacy exception through `v0.2.0`.
 - Restores the canonical Apache License 2.0 text so repository and package
   metadata scanners can identify the declared SPDX license consistently.
 - Keeps GitHub Action setup dependencies exactly pinned without duplicating

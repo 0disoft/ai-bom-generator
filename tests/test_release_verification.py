@@ -16,6 +16,25 @@ HEAD_SHA = "a" * 40
 
 
 class ReleaseVerificationTests(unittest.TestCase):
+    def test_github_release_requires_platform_immutability_for_new_tags(self) -> None:
+        release = _github_release("v0.2.1", is_immutable=False)
+
+        with patch.object(verify_release, "_gh_json", return_value=release):
+            with self.assertRaisesRegex(verify_release.ReleaseVerificationError, "is not immutable"):
+                verify_release._verify_github_release(ACTION_REPOSITORY, "v0.2.1")
+
+    def test_github_release_accepts_platform_immutable_new_tag(self) -> None:
+        release = _github_release("v0.2.1", is_immutable=True)
+
+        with patch.object(verify_release, "_gh_json", return_value=release):
+            verify_release._verify_github_release(ACTION_REPOSITORY, "v0.2.1")
+
+    def test_github_release_accepts_known_pre_enforcement_tag(self) -> None:
+        release = _github_release("v0.2.0", is_immutable=False)
+
+        with patch.object(verify_release, "_gh_json", return_value=release):
+            verify_release._verify_github_release(ACTION_REPOSITORY, "v0.2.0")
+
     def test_pypi_verification_accepts_stale_project_latest_metadata(self) -> None:
         project_payload = {"info": {"name": "ai-bom-generator", "version": "0.1.4"}}
         version_payload = _pypi_version_payload("0.2.0")
@@ -52,7 +71,7 @@ class ReleaseVerificationTests(unittest.TestCase):
             with self.assertRaisesRegex(verify_release.ReleaseVerificationError, "missing package types: sdist"):
                 verify_release._verify_pypi("ai-bom-generator", "0.2.0")
 
-    def test_external_smoke_requires_exact_immutable_action_ref(self) -> None:
+    def test_external_smoke_requires_exact_version_action_ref(self) -> None:
         workflow = _workflow_with_action_ref("v0.2.0")
 
         with patch.object(
@@ -224,6 +243,17 @@ def _successful_run() -> dict[str, object]:
         "headSha": HEAD_SHA,
         "event": "push",
         "workflowName": SMOKE_WORKFLOW,
+    }
+
+
+def _github_release(tag: str, *, is_immutable: bool) -> dict[str, object]:
+    return {
+        "tagName": tag,
+        "isDraft": False,
+        "isPrerelease": False,
+        "isImmutable": is_immutable,
+        "url": f"https://github.com/{ACTION_REPOSITORY}/releases/tag/{tag}",
+        "publishedAt": "2026-07-11T12:00:00Z",
     }
 
 
