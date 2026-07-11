@@ -96,13 +96,23 @@ def _verify_pypi(package: str, version: str) -> None:
     if not isinstance(info, dict):
         raise ReleaseVerificationError("PyPI project JSON is missing info")
     actual_name = info.get("name")
-    actual_version = info.get("version")
     if _normalize_package_name(str(actual_name)) != _normalize_package_name(package):
         raise ReleaseVerificationError(f"PyPI project name mismatch: expected {package!r}, got {actual_name!r}")
-    if actual_version != version:
-        raise ReleaseVerificationError(f"PyPI latest version mismatch: expected {version!r}, got {actual_version!r}")
 
     version_payload = _fetch_json(f"https://pypi.org/pypi/{package}/{version}/json")
+    version_info = version_payload.get("info")
+    if not isinstance(version_info, dict):
+        raise ReleaseVerificationError(f"PyPI {package} {version} JSON is missing info")
+    version_name = version_info.get("name")
+    version_number = version_info.get("version")
+    if _normalize_package_name(str(version_name)) != _normalize_package_name(package):
+        raise ReleaseVerificationError(
+            f"PyPI version project name mismatch: expected {package!r}, got {version_name!r}"
+        )
+    if version_number != version:
+        raise ReleaseVerificationError(
+            f"PyPI version endpoint mismatch: expected {version!r}, got {version_number!r}"
+        )
     urls = version_payload.get("urls")
     if not isinstance(urls, list):
         raise ReleaseVerificationError(f"PyPI {package} {version} JSON is missing urls")

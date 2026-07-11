@@ -8,6 +8,8 @@
   Reporting, with supported-version and sensitive-reporting guidance.
 - Adds weekly and change-triggered Python CodeQL analysis with least-privilege
   result-upload permissions.
+- Prevents PyPI project-root `latest` propagation lag from failing exact-version
+  release verification while preserving artifact and version checks.
 
 ## v0.2.0
 

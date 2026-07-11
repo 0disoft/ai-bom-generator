@@ -64,6 +64,9 @@ through `uv --with`, the immutable GitHub Release, the PyPI publish workflow
 run, and the external action smoke repository. The external smoke check reads
 the workflow at the successful run's exact `headSha` and requires one exact
 immutable `owner/repository@v<version>` Action reference.
+PyPI project-root metadata establishes package identity, while the exact-version
+endpoint establishes the requested version and artifacts; a temporarily stale
+project-root `latest` value does not create a false release failure.
 
 ## Required Final Report
 

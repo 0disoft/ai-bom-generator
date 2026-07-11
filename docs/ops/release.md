@@ -75,7 +75,9 @@ multiple refs is rejected.
 
 The script checks:
 
-- PyPI project JSON and version JSON are live for `ai-bom-generator`;
+- PyPI project JSON identifies `ai-bom-generator`, and the exact-version JSON
+  identifies the requested release even if project-root `latest` metadata is
+  still propagating;
 - the published version includes both wheel and source distributions;
 - `uv run --python 3.12 --with ai-bom-generator==<version> ai-bom --help`
   succeeds outside the source tree;

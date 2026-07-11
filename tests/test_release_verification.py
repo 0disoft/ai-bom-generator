@@ -16,6 +16,42 @@ HEAD_SHA = "a" * 40
 
 
 class ReleaseVerificationTests(unittest.TestCase):
+    def test_pypi_verification_accepts_stale_project_latest_metadata(self) -> None:
+        project_payload = {"info": {"name": "ai-bom-generator", "version": "0.1.4"}}
+        version_payload = _pypi_version_payload("0.2.0")
+
+        with patch.object(
+            verify_release,
+            "_fetch_json",
+            side_effect=[project_payload, version_payload],
+        ):
+            verify_release._verify_pypi("ai-bom-generator", "0.2.0")
+
+    def test_pypi_verification_rejects_wrong_exact_version_metadata(self) -> None:
+        project_payload = {"info": {"name": "ai-bom-generator", "version": "0.2.0"}}
+        version_payload = _pypi_version_payload("0.1.4")
+
+        with patch.object(
+            verify_release,
+            "_fetch_json",
+            side_effect=[project_payload, version_payload],
+        ):
+            with self.assertRaisesRegex(verify_release.ReleaseVerificationError, "version endpoint mismatch"):
+                verify_release._verify_pypi("ai-bom-generator", "0.2.0")
+
+    def test_pypi_verification_requires_wheel_and_source_distribution(self) -> None:
+        project_payload = {"info": {"name": "ai-bom-generator", "version": "0.2.0"}}
+        version_payload = _pypi_version_payload("0.2.0")
+        version_payload["urls"] = [{"packagetype": "bdist_wheel"}]
+
+        with patch.object(
+            verify_release,
+            "_fetch_json",
+            side_effect=[project_payload, version_payload],
+        ):
+            with self.assertRaisesRegex(verify_release.ReleaseVerificationError, "missing package types: sdist"):
+                verify_release._verify_pypi("ai-bom-generator", "0.2.0")
+
     def test_external_smoke_requires_exact_immutable_action_ref(self) -> None:
         workflow = _workflow_with_action_ref("v0.2.0")
 
@@ -188,6 +224,16 @@ def _successful_run() -> dict[str, object]:
         "headSha": HEAD_SHA,
         "event": "push",
         "workflowName": SMOKE_WORKFLOW,
+    }
+
+
+def _pypi_version_payload(version: str) -> dict[str, object]:
+    return {
+        "info": {"name": "ai-bom-generator", "version": version},
+        "urls": [
+            {"packagetype": "bdist_wheel"},
+            {"packagetype": "sdist"},
+        ],
     }
 
 
