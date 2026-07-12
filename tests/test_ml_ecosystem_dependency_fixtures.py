@@ -35,6 +35,11 @@ class MlEcosystemDependencyFixtureTests(unittest.TestCase):
                 "transformers-lab": "editable",
             },
         )
+        tokenizers = next(package for package in result.packages if package.name == "tokenizers")
+        self.assertEqual(
+            tokenizers.source_locator,
+            "https://example.invalid/tokenizers.git?rev=fixture#0000000",
+        )
 
     def test_pytorch_requirements_preserve_cuda_versions_and_platform_markers(self) -> None:
         result = self._parse_requirements("pytorch-cu128.txt")
@@ -63,6 +68,10 @@ class MlEcosystemDependencyFixtureTests(unittest.TestCase):
         self.assertEqual(packages["llama-cpp-python"].extras, ("server",))
         self.assertEqual(packages["huggingface-hub"].extras, ("hf-transfer",))
         self.assertEqual(packages["gguf-toolkit"].source_type, "url")
+        self.assertEqual(
+            packages["gguf-toolkit"].source_locator,
+            "https://example.invalid/releases/gguf_toolkit-1.0.0-py3-none-any.whl#sha256=synthetic",
+        )
 
     def test_combined_fixture_exports_all_profiles_to_cyclonedx_and_spdx(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

@@ -184,6 +184,8 @@ def _dependency_package_element(
     }
     if package.marker:
         element["aiBom:marker"] = package.marker
+    if package.source_locator:
+        element["aiBom:sourceLocator"] = package.source_locator
     if package.extras:
         element["aiBom:extras"] = list(package.extras)
     return element

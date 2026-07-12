@@ -146,13 +146,15 @@ def _parse_uv_lock(payload: bytes, relative_path: str, redactor: Redactor) -> De
         requirement = canonical_name
         if normalized_version:
             requirement = f"{canonical_name}=={normalized_version}"
+        source_type, source_locator = _uv_source(item.get("source"), redactor)
         packages.append(
             DependencyPackage(
                 name=canonical_name,
                 version=normalized_version,
                 requirement=redactor.redact_text(requirement),
                 lockfile_format="uv",
-                source_type=_uv_source_type(item.get("source")),
+                source_type=source_type,
+                source_locator=source_locator,
                 marker=None,
                 extras=(),
                 source=SourceLocation(path=relative_path, field=location, collector="dependency"),
@@ -202,6 +204,7 @@ def _parse_requirements(payload: bytes, relative_path: str, redactor: Redactor) 
                 requirement=redactor.redact_text(str(parsed)),
                 lockfile_format="requirements",
                 source_type="url" if parsed.url else "requirement",
+                source_locator=redactor.redact_text(parsed.url) if parsed.url else None,
                 marker=redactor.redact_text(marker) if marker else None,
                 extras=tuple(sorted(parsed.extras)),
                 source=SourceLocation(path=relative_path, field=location, collector="dependency"),
@@ -245,13 +248,15 @@ def _exact_pinned_version(requirement: Requirement) -> str | None:
     return specifier.version
 
 
-def _uv_source_type(source: object) -> str:
+def _uv_source(source: object, redactor: Redactor) -> tuple[str, str | None]:
     if not isinstance(source, dict):
-        return "unknown"
+        return "unknown", None
     for key in _UV_SOURCE_KEYS:
         if key in source:
-            return key
-    return "unknown"
+            value = source.get(key)
+            locator = redactor.redact_text(str(value)) if isinstance(value, str) else None
+            return key, locator
+    return "unknown", None
 
 
 def _result(

@@ -12,6 +12,7 @@ class DependencyPackage:
     requirement: str
     lockfile_format: str
     source_type: str
+    source_locator: str | None
     marker: str | None
     extras: tuple[str, ...]
     source: SourceLocation
@@ -25,6 +26,7 @@ class DependencyPackage:
                 self.requirement,
                 self.lockfile_format,
                 self.source_type,
+                self.source_locator or "",
                 self.marker or "",
                 ",".join(self.extras),
             )

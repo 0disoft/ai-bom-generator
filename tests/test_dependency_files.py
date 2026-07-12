@@ -50,6 +50,10 @@ class DependencyFileTests(unittest.TestCase):
             self.assertEqual(ranged.extras, ("fast",))
             self.assertIn("python_version", ranged.marker or "")
             self.assertEqual(wheel.source_type, "url")
+            self.assertEqual(
+                wheel.source_locator,
+                "https://REDACTEDexample.invalid/wheel.whl?token=REDACTED",
+            )
             self.assertNotIn("password", wheel.requirement)
             self.assertNotIn("secret-value", wheel.requirement)
             self.assertEqual(result.skipped_entries, 2)
@@ -78,8 +82,39 @@ class DependencyFileTests(unittest.TestCase):
             workspace = next(package for package in result.packages if package.name == "workspace-model")
             self.assertEqual(locked.version, "4.5.6")
             self.assertEqual(locked.source_type, "registry")
+            self.assertEqual(locked.source_locator, "https://pypi.org/simple")
             self.assertIsNone(workspace.version)
             self.assertEqual(workspace.source_type, "editable")
+            self.assertEqual(workspace.source_locator, ".")
+
+    def test_uv_lock_keeps_same_package_from_distinct_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "uv.lock"
+            path.write_text(
+                "version = 1\n\n"
+                "[[package]]\n"
+                'name = "same-package"\n'
+                'version = "1.0.0"\n'
+                'source = { git = "https://example.invalid/a.git?rev=111" }\n\n'
+                "[[package]]\n"
+                'name = "same-package"\n'
+                'version = "1.0.0"\n'
+                'source = { git = "https://example.invalid/b.git?rev=222" }\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            result = parse_dependency_file(path, "uv.lock", "uv", Redactor("strict"))
+
+            self.assertEqual(len(result.packages), 2)
+            self.assertEqual(
+                {package.source_locator for package in result.packages},
+                {
+                    "https://example.invalid/a.git?rev=111",
+                    "https://example.invalid/b.git?rev=222",
+                },
+            )
+            self.assertEqual(len({package.identity_key() for package in result.packages}), 2)
 
     def test_dependency_file_read_limit_fails_without_partial_packages(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

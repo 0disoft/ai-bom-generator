@@ -99,6 +99,11 @@ followed. Unsupported or malformed entries produce warnings and no fabricated
 package components. Package-lock, Poetry, Conda, and other formats remain
 unsupported.
 
+Parsed package evidence preserves the source kind and a strict-redacted source
+locator when the lockfile or direct requirement declares one. Source locator is
+part of package identity, so equal names and versions from different Git URLs,
+registries, or direct URLs remain distinct BOM components.
+
 ## Review Blockers
 
 - Config accepts implicit secrets or network credentials without a redaction policy.

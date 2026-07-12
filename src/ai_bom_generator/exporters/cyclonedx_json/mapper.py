@@ -88,6 +88,8 @@ def _dependency_package_properties(package: DependencyPackage) -> list[dict[str,
     ]
     if package.marker:
         properties.append({"name": "ai-bom:dependency:marker", "value": package.marker})
+    if package.source_locator:
+        properties.append({"name": "ai-bom:dependency:source-locator", "value": package.source_locator})
     if package.extras:
         properties.append({"name": "ai-bom:dependency:extras", "value": ",".join(package.extras)})
     return sorted(properties, key=lambda item: item["name"])

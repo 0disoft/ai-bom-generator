@@ -5,6 +5,8 @@
 - Redacts userinfo credentials from non-HTTP hierarchical URIs, preserves
   declared model release time in SPDX AI preview output, and prevents failed
   Action runs from publishing status fields from an older verified output set.
+- Preserves strict-redacted dependency source locators and keeps equal package
+  names and versions from distinct uv sources as separate BOM components.
 
 ## v0.2.1
 
