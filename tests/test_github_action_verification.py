@@ -10,13 +10,16 @@ import unittest
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from verify_github_action import _require_exact_action_pin  # noqa: E402
+from verify_github_action import _require_exact_action_pin, _verify_external_action_pins  # noqa: E402
 import github_action_entrypoint  # noqa: E402
 
 from ai_bom_generator.reporting.json_writer import write_json_output_set  # noqa: E402
 
 
 class GitHubActionVerificationTests(unittest.TestCase):
+    def test_repository_external_actions_are_sha_pinned(self) -> None:
+        _verify_external_action_pins()
+
     def test_nonzero_exit_does_not_publish_verified_stale_summary_state(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
@@ -65,26 +68,33 @@ class GitHubActionVerificationTests(unittest.TestCase):
             self.assertNotIn("completeness-status<<", text)
             self.assertNotIn("format<<", text)
 
-    def test_exact_action_pin_accepts_updated_patch_version(self) -> None:
-        text = "  uses: astral-sh/setup-uv@v8.3.2\n"
+    def test_exact_action_pin_accepts_sha_with_version_comment(self) -> None:
+        sha = "11f9893b081a58869d3b5fccaea48c9e9e46f990"
+        text = f"  uses: astral-sh/setup-uv@{sha} # v8.3.2\n"
 
         ref = _require_exact_action_pin(text, "astral-sh/setup-uv")
 
-        self.assertEqual(ref, "v8.3.2")
+        self.assertEqual(ref, sha)
 
     def test_exact_action_pin_rejects_floating_major_tag(self) -> None:
         text = "  uses: astral-sh/setup-uv@v8\n"
 
-        with self.assertRaisesRegex(AssertionError, "exact vMAJOR.MINOR.PATCH"):
+        with self.assertRaisesRegex(AssertionError, "full commit SHA"):
+            _require_exact_action_pin(text, "astral-sh/setup-uv")
+
+    def test_exact_action_pin_rejects_sha_without_version_comment(self) -> None:
+        text = "  uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990\n"
+
+        with self.assertRaisesRegex(AssertionError, "semver comment"):
             _require_exact_action_pin(text, "astral-sh/setup-uv")
 
     def test_exact_action_pin_rejects_duplicate_uses(self) -> None:
         text = (
-            "  uses: astral-sh/setup-uv@v8.3.1\n"
-            "  uses: astral-sh/setup-uv@v8.3.2\n"
+            "  uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.1\n"
+            "  uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2\n"
         )
 
-        with self.assertRaisesRegex(AssertionError, "exactly once; found 2"):
+        with self.assertRaisesRegex(AssertionError, "found 2"):
             _require_exact_action_pin(text, "astral-sh/setup-uv")
 
 

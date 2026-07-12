@@ -16,12 +16,14 @@ import github_action_entrypoint
 ROOT = Path(__file__).resolve().parents[1]
 ACTION = ROOT / "action.yml"
 ENTRYPOINT = ROOT / "scripts" / "github_action_entrypoint.py"
+WORKFLOWS = ROOT / ".github" / "workflows"
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Verify the local GitHub Action wrapper.")
     parser.parse_args(argv)
     _verify_action_metadata()
+    _verify_external_action_pins()
     with tempfile.TemporaryDirectory() as temp:
         work = Path(temp)
         cases = [
@@ -171,17 +173,48 @@ def _verify_action_metadata() -> None:
 
 def _require_exact_action_pin(text: str, action: str) -> str:
     uses_pattern = re.compile(
-        rf"^\s*uses:\s*{re.escape(action)}@(?P<ref>[^\s#]+)\s*(?:#.*)?$",
+        rf"^\s*uses:\s*{re.escape(action)}@(?P<ref>[^\s#]+)\s+#\s+"
+        rf"(?P<version>v[0-9]+\.[0-9]+\.[0-9]+)\s*$",
         re.MULTILINE,
     )
-    refs = [match.group("ref") for match in uses_pattern.finditer(text)]
-    if len(refs) != 1:
-        raise AssertionError(f"action.yml must use {action} exactly once; found {len(refs)}")
+    matches = list(uses_pattern.finditer(text))
+    if len(matches) != 1:
+        raise AssertionError(
+            f"action.yml must use {action} exactly once with a full commit SHA "
+            f"and semver comment; found {len(matches)}"
+        )
 
-    ref = refs[0]
-    if re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", ref) is None:
-        raise AssertionError(f"action.yml must pin {action} to an exact vMAJOR.MINOR.PATCH ref; found {ref}")
+    ref = matches[0].group("ref")
+    if re.fullmatch(r"[0-9a-f]{40}", ref) is None:
+        raise AssertionError(f"action.yml must pin {action} to a full lowercase commit SHA; found {ref}")
     return ref
+
+
+def _verify_external_action_pins() -> None:
+    sources = [ACTION, *sorted(WORKFLOWS.glob("*.yml")), *sorted(WORKFLOWS.glob("*.yaml"))]
+    invalid: list[str] = []
+    pattern = re.compile(r"^\s*-?\s*uses:\s*(?P<target>[^\s#]+)(?:\s+#\s+(?P<comment>\S+))?\s*$")
+    for source in sources:
+        for line_number, line in enumerate(source.read_text(encoding="utf-8").splitlines(), start=1):
+            match = pattern.match(line)
+            if match is None:
+                continue
+            target = match.group("target")
+            if target.startswith("./"):
+                continue
+            action, separator, ref = target.rpartition("@")
+            comment = match.group("comment") or ""
+            if (
+                not separator
+                or re.fullmatch(r"[0-9a-f]{40}", ref) is None
+                or re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", comment) is None
+            ):
+                invalid.append(f"{source.relative_to(ROOT)}:{line_number} ({action or target})")
+    if invalid:
+        raise AssertionError(
+            "external GitHub Actions must use a full lowercase commit SHA and semver comment: "
+            + ", ".join(invalid)
+        )
 
 
 def _run_case(case: ActionCase, case_root: Path) -> None:

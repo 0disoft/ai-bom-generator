@@ -32,7 +32,7 @@ CI without requiring a hosted service.
 
 ## Approved Baseline
 
-- Runtime compatibility floor: Python 3.12.
+- Runtime compatibility: Python 3.12 through 3.14.
 - Binary name: `ai-bom`.
 - Explicit config filename: `aibom.toml`.
 - Config schema: AI-BOM config schema v1.

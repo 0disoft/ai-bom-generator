@@ -5,7 +5,7 @@
 [![Release](https://img.shields.io/github/v/release/0disoft/ai-bom-generator)](https://github.com/0disoft/ai-bom-generator/releases)
 [![License](https://img.shields.io/pypi/l/ai-bom-generator.svg)](LICENSE)
 
-AI-BOM Generator is a small Python 3.12 CLI and GitHub Action for producing an
+AI-BOM Generator is a small Python 3.12-3.14 CLI and GitHub Action for producing an
 AI/ML bill of materials from a local model project directory.
 
 It records declared model metadata, in-root `MODEL_CARD.md` paths, model or

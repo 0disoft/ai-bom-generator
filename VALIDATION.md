@@ -20,7 +20,10 @@ This document owns stable validation names for this scaffold.
 
 ## Current Local Validation Commands
 
-These commands mirror the hosted CI workflow for the current Python 3.12 CLI
+These commands mirror the hosted CI workflow. The hosted validation matrix runs
+the compile, lint, test, build, wheel, Action verifier, and CLI smoke gates on
+every supported Python version: 3.12, 3.13, and 3.14. The local commands below
+use the minimum supported runtime, Python 3.12,
 implementation.
 
 | Validation name | Command |

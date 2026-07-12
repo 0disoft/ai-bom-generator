@@ -21,7 +21,7 @@ This repository type owns command behavior, arguments, flags, config loading, ex
 - Config precedence and default behavior: explicit CLI flags override config;
   explicit `--config` paths override automatic config discovery; environment-variable
   config is out of MVP until redaction and precedence are designed.
-- Runtime compatibility floor: Python 3.12.
+- Runtime compatibility: Python 3.12 through 3.14.
 - CLI adapter boundary: `argparse` may own argument parsing and exit-code translation, but application and domain layers must not import it.
 
 ## Candidate CLI Shape

@@ -26,7 +26,8 @@ The repository CI workflow lives at `.github/workflows/ci.yml`.
 
 - Trigger: pull requests and pushes to `main`.
 - Runner: `ubuntu-latest`.
-- Runtime: Python 3.12.
+- Package runtime matrix: Python 3.12, 3.13, and 3.14. The published composite
+  Action intentionally provisions Python 3.12 as its managed runtime.
 - Environment manager: `uv`, locked by `uv.lock`.
 - Action dependencies use exact semantic-version pins. The current values are
   owned by `.github/workflows/*.yml` and `action.yml`.
@@ -126,6 +127,11 @@ New-Item -ItemType Directory -Path $out | Out-Null
 uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --format cyclonedx-json-1.7 --output $(Join-Path $out "bom.cdx.json") --warning-report $(Join-Path $out "warnings.json") --summary $(Join-Path $out "summary.json")
 git diff --check
 ```
+
+The Action verifier also rejects external `uses:` entries unless they use a
+full lowercase commit SHA followed by a human-readable semver comment. CI,
+release, CodeQL, and the published composite Action use uv `0.11.28`; the
+Dependabot GitHub Actions updater maintains SHA pins and version comments.
 
 ## Rollback
 

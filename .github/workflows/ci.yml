@@ -15,47 +15,57 @@ concurrency:
 
 jobs:
   validation:
-    name: Python 3.12 validation
+    name: Python ${{ matrix.python-version }} validation
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.12"
+          - "3.13"
+          - "3.14"
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set up Python
-        uses: actions/setup-python@v6.3.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v8.3.2
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          version: "0.11.28"
+          enable-cache: "false"
 
       - name: Install locked environment
         run: uv sync --locked
 
       - name: Compile sources
-        run: uv run --python 3.12 python -m compileall -q src tests scripts
+        run: uv run --python ${{ matrix.python-version }} python -m compileall -q src tests scripts
 
       - name: Lint sources
-        run: uv run --python 3.12 ruff check src tests scripts
+        run: uv run --python ${{ matrix.python-version }} ruff check src tests scripts
 
       - name: Run unit and contract tests
-        run: uv run --python 3.12 python -m unittest discover -s tests -v
+        run: uv run --python ${{ matrix.python-version }} python -m unittest discover -s tests -v
 
       - name: Build distributions
         run: uv build
 
       - name: Verify wheel contents
-        run: uv run --python 3.12 python scripts/verify_wheel.py dist
+        run: uv run --python ${{ matrix.python-version }} python scripts/verify_wheel.py dist
 
       - name: Verify GitHub Action wrapper
-        run: uv run --python 3.12 python scripts/verify_github_action.py
+        run: uv run --python ${{ matrix.python-version }} python scripts/verify_github_action.py
 
       - name: Smoke CLI fixture
         run: |
           set -euo pipefail
           out_dir="$(mktemp -d)"
-          uv run --python 3.12 ai-bom generate \
+          uv run --python ${{ matrix.python-version }} ai-bom generate \
             tests/fixtures/complete-project \
             --format cyclonedx-json-1.7 \
             --output "$out_dir/bom.cdx.json" \
@@ -81,7 +91,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - id: ai-bom
         name: Run action without caller runtime setup
