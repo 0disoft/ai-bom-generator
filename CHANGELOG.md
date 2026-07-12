@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.2.2
 
 - Redacts userinfo credentials from non-HTTP hierarchical URIs, preserves
   declared model release time in SPDX AI preview output, and prevents failed
