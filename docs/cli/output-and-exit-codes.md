@@ -47,10 +47,11 @@ process code when `--warnings allow` is active.
 When `--summary -` is used, the same JSON summary object is written to stdout
 while BOM and warning-report outputs are still written to their explicit paths.
 Requested JSON files are staged in destination-local temporary files before
-final replacement. If generation fails, stale files at the requested generated
-output destinations are removed. If final replacement fails after one output has
-already been replaced, the current run removes that partial final output and any
-remaining staged temporary files before returning an internal error.
+final replacement. Generation failures before commit preserve the previous
+output set. The commit phase is serialized by a stable manifest-adjacent lock;
+if final replacement raises a handled error, the writer restores the previous
+files and removes the current run's staged temporary files before returning an
+internal error.
 The generation manifest is replaced last. Consumers that need transaction-level
 confidence should treat BOM, warning-report, and summary files as current only
 when the manifest exists with `schema_version` `ai-bom-output-manifest/v1`,

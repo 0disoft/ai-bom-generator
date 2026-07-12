@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 import hashlib
 import json
 import os
@@ -11,6 +12,10 @@ import uuid
 
 JsonFilePayload = tuple[Path, Any]
 JsonOutputPayload = tuple[str, Path, Any]
+
+
+class OutputSetLockedError(RuntimeError):
+    pass
 
 
 def write_json_file(path: Path, payload: Any) -> None:
@@ -46,7 +51,6 @@ def write_json_files_atomically(items: Iterable[JsonFilePayload]) -> None:
 
 def write_json_output_set(items: Iterable[JsonOutputPayload], manifest_path: Path) -> None:
     staged: list[tuple[str, Path, Path]] = []
-    replaced: list[Path] = []
     try:
         for role, path, payload in items:
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -60,6 +64,28 @@ def write_json_output_set(items: Iterable[JsonOutputPayload], manifest_path: Pat
         staged.append(("manifest", manifest_temp_path, manifest_path))
         _write_temp_json_file(manifest_temp_path, manifest_payload)
 
+        with _output_set_lock(manifest_path):
+            _commit_staged_output_set(staged)
+    finally:
+        for _, temp_path, _ in staged:
+            try:
+                temp_path.unlink(missing_ok=True)
+            except OSError:
+                pass
+
+
+def _commit_staged_output_set(staged: list[tuple[str, Path, Path]]) -> None:
+    backups: list[tuple[Path, Path]] = []
+    replaced: list[Path] = []
+    try:
+        for _, _, path in staged:
+            if not path.exists():
+                continue
+            backup_path = _create_temp_path(path)
+            backup_path.unlink()
+            os.replace(path, backup_path)
+            backups.append((backup_path, path))
+
         for _, temp_path, path in staged:
             os.replace(temp_path, path)
             replaced.append(path)
@@ -69,13 +95,61 @@ def write_json_output_set(items: Iterable[JsonOutputPayload], manifest_path: Pat
                 path.unlink(missing_ok=True)
             except OSError:
                 pass
-        raise
-    finally:
-        for _, temp_path, _ in staged:
+        for backup_path, path in reversed(backups):
             try:
-                temp_path.unlink(missing_ok=True)
+                os.replace(backup_path, path)
             except OSError:
                 pass
+        raise
+    finally:
+        for backup_path, _ in backups:
+            try:
+                backup_path.unlink(missing_ok=True)
+            except OSError:
+                pass
+
+
+@contextmanager
+def _output_set_lock(manifest_path: Path):
+    lock_path = manifest_path.with_name(f".{manifest_path.name}.lock")
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    with lock_path.open("a+b") as handle:
+        handle.seek(0, os.SEEK_END)
+        if handle.tell() == 0:
+            handle.write(b"\0")
+            handle.flush()
+        handle.seek(0)
+        try:
+            _lock_file(handle)
+        except OSError as exc:
+            raise OutputSetLockedError(f"Output set is already being committed: {manifest_path}") from exc
+        try:
+            yield
+        finally:
+            _unlock_file(handle)
+
+
+def _lock_file(handle: Any) -> None:
+    if os.name == "nt":
+        import msvcrt
+
+        msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        return
+    import fcntl
+
+    fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+
+def _unlock_file(handle: Any) -> None:
+    handle.seek(0)
+    if os.name == "nt":
+        import msvcrt
+
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+        return
+    import fcntl
+
+    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 def write_json_stream(stream: TextIO, payload: Any) -> None:

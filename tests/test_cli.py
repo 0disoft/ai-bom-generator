@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 from ai_bom_generator import __version__
 from ai_bom_generator.cli import main
+from ai_bom_generator.collectors import collect_evidence
 from ai_bom_generator.errors import CollectorError, ExitCode, ExporterError, InvalidInputError
 
 
@@ -2458,7 +2459,7 @@ class CliTests(unittest.TestCase):
             self.assertFalse(warnings.exists())
             self.assertFalse(summary.exists())
 
-    def test_generation_failure_removes_stale_outputs(self) -> None:
+    def test_generation_failure_preserves_existing_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)
             project = work / "project"
@@ -2488,10 +2489,8 @@ class CliTests(unittest.TestCase):
             )
 
             self.assertEqual(code, ExitCode.EXPORTER_FAILURE)
-            self.assertFalse(bom.exists())
-            self.assertFalse(warnings.exists())
-            self.assertFalse(summary.exists())
-            self.assertFalse(manifest.exists())
+            for path in (bom, warnings, summary, manifest):
+                self.assertEqual(path.read_text(encoding="utf-8"), '{"stale":true}\n')
 
     def test_output_replace_failure_removes_partial_outputs_and_temp_files(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -2539,6 +2538,47 @@ class CliTests(unittest.TestCase):
             self.assertFalse(summary.exists())
             self.assertFalse(manifest.exists())
             self.assertEqual([], list(work.glob(".*.tmp")))
+
+    def test_output_parent_symlink_swap_uses_validated_resolved_destinations(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            outside = work / "outside"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            outside.mkdir()
+            output_link = work / "output-link"
+            try:
+                os.symlink(outside, output_link, target_is_directory=True)
+            except OSError as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+
+            def swap_then_collect(config, policy, redactor):
+                output_link.unlink()
+                os.symlink(project, output_link, target_is_directory=True)
+                return collect_evidence(config, policy, redactor)
+
+            with patch("ai_bom_generator.app.collect_evidence", side_effect=swap_then_collect):
+                code = main(
+                    [
+                        "generate",
+                        str(project),
+                        "--config",
+                        str(project / "aibom.toml"),
+                        "--output",
+                        str(output_link / "bom.json"),
+                        "--warning-report",
+                        str(output_link / "warnings.json"),
+                        "--summary",
+                        str(output_link / "summary.json"),
+                    ]
+                )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            self.assertEqual([], list(project.glob("*.json")))
+            self.assertTrue((outside / "bom.json").is_file())
+            self.assertTrue((outside / "warnings.json").is_file())
+            self.assertTrue((outside / "summary.json").is_file())
+            self.assertTrue((outside / "summary.json.manifest.json").is_file())
 
     def test_output_path_inside_target_root_is_rejected_before_writing(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

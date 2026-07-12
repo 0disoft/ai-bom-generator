@@ -44,8 +44,10 @@ and a warning report.
 11. Build a generation manifest from the staged file bytes, including a
    run-unique generation id plus role, path, size, and SHA-256 digest for every
    final output in the set.
-12. Replace final BOM, warning-report, and summary files, then replace the
-   manifest last as the commit marker for the output set.
+12. Acquire the manifest-adjacent output-set lock, preserve any previous
+   committed files as destination-local rollback copies, replace final BOM,
+   warning-report, and summary files, then replace the manifest last as the
+   commit marker. Restore the previous set on a handled replacement failure.
 13. Emit missing-metadata warnings and machine-readable summary output.
 
 Collectors must not know exporter-specific field names. Exporters must not read

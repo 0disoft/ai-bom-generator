@@ -35,7 +35,6 @@ def generate_bom(options: GenerateBomOptions) -> int:
     start = time.perf_counter()
     policy = PathPolicy(options.model_directory)
     output_destinations = _validate_output_destinations(options, policy)
-    _remove_existing_output_files(output_destinations)
     redactor = Redactor(options.redaction)
     config = load_config(options.config, policy)
     output_format = _resolve_output_format(options, config)
@@ -50,8 +49,8 @@ def generate_bom(options: GenerateBomOptions) -> int:
     elapsed_ms = int((time.perf_counter() - start) * 1000)
     summary = build_summary(
         evidence=evidence,
-        bom_path=options.output,
-        warning_report_path=options.warning_report,
+        bom_path=output_destinations["bom"],
+        warning_report_path=output_destinations["warning_report"],
         output_format=output_format,
         elapsed_ms=elapsed_ms,
         warning_policy_failed=warning_policy_failed,
@@ -59,12 +58,12 @@ def generate_bom(options: GenerateBomOptions) -> int:
     )
 
     output_items = [
-        ("bom", options.output, bom),
-        ("warning_report", options.warning_report, warning_report),
+        ("bom", output_destinations["bom"], bom),
+        ("warning_report", output_destinations["warning_report"], warning_report),
     ]
     if options.summary:
-        output_items.append(("summary", options.summary, summary))
-    write_json_output_set(output_items, options.manifest)
+        output_items.append(("summary", output_destinations["summary"], summary))
+    write_json_output_set(output_items, output_destinations["manifest"])
 
     if options.summary_stdout:
         import sys
@@ -137,16 +136,6 @@ def _validate_output_destinations(options: GenerateBomOptions, policy: PathPolic
                 )
         seen[path] = label
     return destinations
-
-
-def _remove_existing_output_files(destinations: dict[str, Path]) -> None:
-    for label, path in destinations.items():
-        try:
-            if path.exists():
-                path.unlink()
-        except OSError as exc:
-            message = f"Could not remove stale {label} output before generation: {path}: {exc}"
-            raise InvalidInputError(message, "input") from exc
 
 
 def _paths_overlap(left: Path, right: Path) -> bool:

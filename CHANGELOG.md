@@ -7,6 +7,9 @@
   Action runs from publishing status fields from an older verified output set.
 - Preserves strict-redacted dependency source locators and keeps equal package
   names and versions from distinct uv sources as separate BOM components.
+- Preserves previous outputs when generation fails, serializes output-set
+  commits with an OS-released lock, restores the previous committed set after
+  handled replacement failures, and writes only to validated resolved paths.
 
 ## v0.2.1
 
