@@ -12,6 +12,12 @@
   handled replacement failures, and writes only to validated resolved paths.
 - Opens config, dependency, artifact, and Git metadata through a shared
   no-follow descriptor boundary that rejects entry replacement before reads.
+- Pins every external GitHub Action to a reviewed commit SHA, aligns CI and
+  release jobs on uv 0.11.28, and pins the PEP 517 build backend.
+- Bounds package support to Python 3.12-3.14 and validates every supported
+  interpreter in the hosted CI matrix.
+- Rejects configs over 1 MiB, more than 1,000 declared references, or more than
+  256 artifact include/exclude patterns before expensive collection and export.
 
 ## v0.2.1
 

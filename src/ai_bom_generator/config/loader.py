@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from importlib import resources
+import os
 from pathlib import Path
 import tomllib
 from typing import Any
@@ -15,6 +16,9 @@ from ai_bom_generator.validation import SchemaValidationError, validate_with_sch
 CONFIG_SCHEMA_PACKAGE = "ai_bom_generator.config.schema"
 CONFIG_SCHEMA_NAME = "aibom-config-v1.schema.json"
 DISCOVERED_CONFIG_NAME = "aibom.toml"
+MAX_CONFIG_BYTES = 1024 * 1024
+MAX_REFERENCE_ENTRIES = 1000
+REFERENCE_SECTIONS = ("dependencies", "datasets", "prompts", "evals", "training")
 
 
 @dataclass(frozen=True)
@@ -55,8 +59,20 @@ def load_config(config_path: Path | None, policy: PathPolicy) -> LoadedConfig:
         raise InvalidInputError(f"Config path is not a file: {config_path}", "config")
     try:
         with open_binary_nofollow(resolved) as handle:
-            data = tomllib.load(handle)
-    except tomllib.TOMLDecodeError as exc:
+            size = os.fstat(handle.fileno()).st_size
+            if size > MAX_CONFIG_BYTES:
+                raise InvalidInputError(
+                    f"Config exceeds the {MAX_CONFIG_BYTES} byte read limit: {config_path}",
+                    "config",
+                )
+            payload = handle.read(MAX_CONFIG_BYTES + 1)
+            if len(payload) > MAX_CONFIG_BYTES:
+                raise InvalidInputError(
+                    f"Config exceeds the {MAX_CONFIG_BYTES} byte read limit: {config_path}",
+                    "config",
+                )
+            data = tomllib.loads(payload.decode("utf-8"))
+    except (tomllib.TOMLDecodeError, UnicodeDecodeError) as exc:
         raise InvalidInputError(f"Invalid TOML config at {config_path}: {exc}", "config") from exc
     except OSError as exc:
         raise InvalidInputError(f"Cannot read config at {config_path}: {exc}", "config") from exc
@@ -64,6 +80,7 @@ def load_config(config_path: Path | None, policy: PathPolicy) -> LoadedConfig:
     if not isinstance(data, dict):
         raise InvalidInputError("Config root must be a table.", "config")
     _validate_schema_version(data)
+    _validate_reference_budget(data)
     _validate_config_schema(data)
     return LoadedConfig(path=resolved, data=data)
 
@@ -81,6 +98,19 @@ def _validate_schema_version(data: dict[str, Any]) -> None:
         raise InvalidInputError("Config schema_version is required.", "config")
     if schema_version != "1":
         raise InvalidInputError("Config schema_version must be \"1\".", "config")
+
+
+def _validate_reference_budget(data: dict[str, Any]) -> None:
+    total = sum(
+        len(value)
+        for name in REFERENCE_SECTIONS
+        if isinstance((value := data.get(name)), list)
+    )
+    if total > MAX_REFERENCE_ENTRIES:
+        raise InvalidInputError(
+            f"Config declares {total} references; the limit is {MAX_REFERENCE_ENTRIES}.",
+            "config",
+        )
 
 
 def _validate_config_schema(data: dict[str, Any]) -> None:

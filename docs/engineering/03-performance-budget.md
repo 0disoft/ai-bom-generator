@@ -10,6 +10,10 @@ runtime.
 
 The MVP artifact collection budget is fixed rather than configurable:
 
+- 1 MiB maximum config-file read size.
+- 1,000 declared references across dependency, dataset, prompt, eval, and
+  training sections.
+- 256 artifact include patterns and 256 artifact exclude patterns.
 - 256 candidate paths per include pattern after excludes.
 - 16 GiB maximum single artifact size.
 - 25 GiB maximum selected artifact bytes per run.

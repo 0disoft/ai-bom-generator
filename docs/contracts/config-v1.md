@@ -39,6 +39,13 @@ the CLI uses inline defaults and reports missing optional metadata as warnings.
 - `evals`: declared eval artifact references.
 - `training`: declared training-code or pipeline references.
 
+The config file is limited to 1 MiB. `artifacts.include` and
+`artifacts.exclude` accept at most 256 patterns each. The five reference
+sections (`dependencies`, `datasets`, `prompts`, `evals`, and `training`) accept
+at most 1,000 entries in total; each individual section is also schema-bounded
+to 1,000 entries. Inputs over these budgets fail before collection or output
+writes.
+
 ## Supported Field Values
 
 The executable implementation collects scalar string, number, and boolean values
