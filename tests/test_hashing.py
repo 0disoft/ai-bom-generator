@@ -39,11 +39,14 @@ class HashingTests(unittest.TestCase):
         self.assertIn("chunk_size must be positive", error.exception.message)
 
     def test_sha256_file_wraps_read_failures_as_collector_errors(self) -> None:
-        with self.assertRaises(CollectorError) as error:
-            sha256_file(FailingPath("model.safetensors"))
+        with tempfile.TemporaryDirectory() as temp:
+            missing = Path(temp) / "model.safetensors"
+            with self.assertRaises(CollectorError) as error:
+                sha256_file(missing)
 
         self.assertEqual(error.exception.stage, "hash")
-        self.assertIn("Failed to hash artifact model.safetensors", error.exception.message)
+        self.assertIn("Failed to hash artifact", error.exception.message)
+        self.assertIn("model.safetensors", error.exception.message)
 
     def test_sha256_file_snapshot_rejects_file_changes_during_hashing(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -53,24 +56,13 @@ class HashingTests(unittest.TestCase):
             after = FakeStat(size=len(b"changed-after-open"), modified_ns=200, changed_ns=200)
 
             with (
-                patch("ai_bom_generator.hashing.sha256.os.fstat", side_effect=[before, after]),
+                patch("ai_bom_generator.hashing.sha256._snapshot_stat", side_effect=[before, after]),
                 self.assertRaises(CollectorError) as error,
             ):
                 sha256_file_snapshot(artifact)
 
         self.assertEqual(error.exception.stage, "hash")
         self.assertIn("Artifact changed while hashing", error.exception.message)
-
-
-class FailingPath:
-    def __init__(self, name: str) -> None:
-        self.name = name
-
-    def open(self, mode: str) -> None:
-        raise OSError("synthetic read failure")
-
-    def __str__(self) -> str:
-        return self.name
 
 
 class FakeStat:

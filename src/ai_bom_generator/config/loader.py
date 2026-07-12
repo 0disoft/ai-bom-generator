@@ -7,6 +7,7 @@ import tomllib
 from typing import Any
 
 from ai_bom_generator.errors import InvalidInputError
+from ai_bom_generator.security.file_io import open_binary_nofollow
 from ai_bom_generator.security.path_policy import PathPolicy
 from ai_bom_generator.validation import SchemaValidationError, validate_with_schema
 
@@ -53,7 +54,7 @@ def load_config(config_path: Path | None, policy: PathPolicy) -> LoadedConfig:
     if not resolved.is_file():
         raise InvalidInputError(f"Config path is not a file: {config_path}", "config")
     try:
-        with resolved.open("rb") as handle:
+        with open_binary_nofollow(resolved) as handle:
             data = tomllib.load(handle)
     except tomllib.TOMLDecodeError as exc:
         raise InvalidInputError(f"Invalid TOML config at {config_path}: {exc}", "config") from exc

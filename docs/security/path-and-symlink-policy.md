@@ -15,6 +15,9 @@ intended project boundary by default.
 - Treat all user-provided paths and globs as untrusted.
 - Block target-root escape by default.
 - Do not follow symlinks by default.
+- Open config, dependency, artifact, and Git metadata files through one
+  no-follow descriptor boundary. Compare `lstat` identity with the opened
+  descriptor before reading, then use descriptor metadata for stability checks.
 - Do not read hidden, ignored, cache, dependency, or build-output paths as source
   truth unless explicitly configured.
 - Use explicit artifact include and exclude patterns for large model files.
@@ -59,3 +62,5 @@ intended project boundary by default.
 - A collector resolves paths independently of the shared path policy.
 - A glob can escape the target root.
 - A symlink can make the tool read private files outside the target project.
+- A collector validates one path identity and then reads a different file after
+  an entry swap.

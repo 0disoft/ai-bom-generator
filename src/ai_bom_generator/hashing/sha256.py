@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 from ai_bom_generator.errors import CollectorError
+from ai_bom_generator.security.file_io import open_binary_nofollow
 
 
 @dataclass(frozen=True)
@@ -25,7 +26,7 @@ def sha256_file_snapshot(path: Path, chunk_size: int = 1024 * 1024) -> FileHashS
 
     digest = hashlib.sha256()
     try:
-        with path.open("rb") as handle:
+        with open_binary_nofollow(path) as handle:
             before = _snapshot_stat(handle.fileno())
             while True:
                 chunk = handle.read(chunk_size)

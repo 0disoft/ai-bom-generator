@@ -10,6 +10,8 @@
 - Preserves previous outputs when generation fails, serializes output-set
   commits with an OS-released lock, restores the previous committed set after
   handled replacement failures, and writes only to validated resolved paths.
+- Opens config, dependency, artifact, and Git metadata through a shared
+  no-follow descriptor boundary that rejects entry replacement before reads.
 
 ## v0.2.1
 

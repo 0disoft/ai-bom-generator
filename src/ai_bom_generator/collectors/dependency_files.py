@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from pathlib import Path
 import re
 import tomllib
@@ -11,7 +12,7 @@ from packaging.utils import InvalidName, canonicalize_name
 
 from ai_bom_generator.domain.dependency import DependencyPackage
 from ai_bom_generator.domain.source_location import SourceLocation
-from ai_bom_generator.security import Redactor
+from ai_bom_generator.security import Redactor, open_binary_nofollow
 
 
 MAX_DEPENDENCY_FILE_BYTES = 4 * 1024 * 1024
@@ -83,14 +84,14 @@ def parse_dependency_file(
 
 def _read_bounded_snapshot(path: Path) -> bytes:
     try:
-        before = path.stat()
-        if before.st_size > MAX_DEPENDENCY_FILE_BYTES:
-            raise DependencyFileLimitError(
-                f"dependency file exceeds the {MAX_DEPENDENCY_FILE_BYTES} byte read limit"
-            )
-        with path.open("rb") as handle:
+        with open_binary_nofollow(path) as handle:
+            before = os.fstat(handle.fileno())
+            if before.st_size > MAX_DEPENDENCY_FILE_BYTES:
+                raise DependencyFileLimitError(
+                    f"dependency file exceeds the {MAX_DEPENDENCY_FILE_BYTES} byte read limit"
+                )
             payload = handle.read(MAX_DEPENDENCY_FILE_BYTES + 1)
-        after = path.stat()
+            after = os.fstat(handle.fileno())
     except DependencyFileLimitError:
         raise
     except OSError as exc:

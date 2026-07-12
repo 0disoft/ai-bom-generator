@@ -1814,7 +1814,7 @@ class CliTests(unittest.TestCase):
             after = _FakeStat(size=12, modified_ns=200, changed_ns=200)
 
             with (
-                patch("ai_bom_generator.hashing.sha256.os.fstat", side_effect=[before, after]),
+                patch("ai_bom_generator.hashing.sha256._snapshot_stat", side_effect=[before, after]),
                 redirect_stderr(stderr),
             ):
                 code = main(

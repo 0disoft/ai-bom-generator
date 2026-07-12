@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import fnmatch
+import os
 from pathlib import Path
 import re
 from typing import Any, Iterator
@@ -20,7 +21,7 @@ from ai_bom_generator.domain.source_location import SourceLocation
 from ai_bom_generator.domain.warning import Warning
 from ai_bom_generator.errors import CollectorError, InvalidInputError
 from ai_bom_generator.hashing import sha256_file_snapshot
-from ai_bom_generator.security import PathPolicy, Redactor
+from ai_bom_generator.security import PathPolicy, Redactor, open_binary_nofollow
 
 
 _GIT_SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
@@ -762,21 +763,16 @@ def _resolve_git_ref(git_dir: Path, ref_name: str) -> str | None:
 
 
 def _read_git_text_file(path: Path) -> str:
-    if path.is_symlink():
-        raise OSError("symlink Git metadata is not allowed")
-    if path.stat().st_size > _MAX_GIT_METADATA_BYTES:
-        raise OSError("Git metadata file exceeds the 1 MiB read limit")
-    return path.read_text(encoding="utf-8")
+    with open_binary_nofollow(path) as handle:
+        if os.fstat(handle.fileno()).st_size > _MAX_GIT_METADATA_BYTES:
+            raise OSError("Git metadata file exceeds the 1 MiB read limit")
+        return handle.read(_MAX_GIT_METADATA_BYTES + 1).decode("utf-8")
 
 
 def _iter_git_text_lines(path: Path) -> Iterator[str]:
-    if path.is_symlink():
-        raise OSError("symlink Git metadata is not allowed")
-    if path.stat().st_size > _MAX_GIT_METADATA_BYTES:
-        raise OSError("Git metadata file exceeds the 1 MiB read limit")
-    with path.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            yield line.rstrip("\r\n")
+    text = _read_git_text_file(path)
+    for line in text.splitlines():
+        yield line
 
 
 def _string_pairs(
