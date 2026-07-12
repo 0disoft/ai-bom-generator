@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Redacts userinfo credentials from non-HTTP hierarchical URIs, preserves
+  declared model release time in SPDX AI preview output, and prevents failed
+  Action runs from publishing status fields from an older verified output set.
+
 ## v0.2.1
 
 - Separates mutable-channel and exact-release consumer smoke workflows so

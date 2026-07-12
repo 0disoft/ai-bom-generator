@@ -45,6 +45,7 @@ and contract update.
 | Model `version` | `ai_AIPackage.packageVersion`; `NOASSERTION` when absent |
 | Model `model_card` | `aiBom:modelCard` extension field |
 | Model `license_declared` | `aiBom:licenseDeclared` extension field |
+| Model `release_time` or `release_date` | `aiBom:releaseTime` extension field; preserved as declared evidence |
 | Artifact paths and SHA-256 digests | `software_File` elements with `verifiedUsing` |
 | Parsed Python dependency packages | `software_Package` elements; `packageVersion` is `NOASSERTION` when no exact version is evidenced |
 | Dependency, dataset, prompt, eval, training, and Git references | `aiBom_Reference` extension elements |

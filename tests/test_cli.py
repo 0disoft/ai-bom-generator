@@ -718,6 +718,45 @@ class CliTests(unittest.TestCase):
             )
             self.assertIn("MISSING_ARTIFACT_SELECTION", _warning_codes(summary))
 
+    def test_spdx_ai_preserves_declared_model_release_time(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            project = work / "project"
+            shutil.copytree(FIXTURES / "complete-project", project)
+            config = project / "aibom.toml"
+            config.write_text(
+                config.read_text(encoding="utf-8").replace(
+                    'version = "0.1.0"',
+                    'version = "0.1.0"\nrelease_time = "2026-07-01T00:00:00Z"',
+                    1,
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            bom = work / "bom.spdx.json"
+
+            code = main(
+                [
+                    "generate",
+                    str(project),
+                    "--config",
+                    str(config),
+                    "--format",
+                    "spdx-ai",
+                    "--output",
+                    str(bom),
+                    "--warning-report",
+                    str(work / "warnings.json"),
+                    "--summary",
+                    str(work / "summary.json"),
+                ]
+            )
+
+            self.assertEqual(code, ExitCode.SUCCESS)
+            model = _spdx_graph_by_type(_read_json(bom))["ai_AIPackage"][0]
+            self.assertEqual(model["aiBom:releaseTime"], "2026-07-01T00:00:00Z")
+            self.assertNotIn("releaseTime", model["aiBom:unavailableSpdxAiFields"])
+
     def test_cli_output_format_overrides_config_output_format(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             work = Path(temp)

@@ -41,6 +41,25 @@ class RedactionTests(unittest.TestCase):
         self.assertNotIn("plain-value", redacted)
         self.assertIn("REDACTED", redacted)
 
+    def test_strict_redaction_masks_userinfo_for_hierarchical_uris(self) -> None:
+        redactor = Redactor("strict")
+
+        for value in (
+            "postgresql://alice:supersecret@db.internal/app",
+            "mysql://user:p%40ss@db.internal/app",
+            "redis://default:short@cache.internal/0",
+            "ssh://git:credential@[2001:db8::1]/repo",
+        ):
+            with self.subTest(value=value):
+                redacted = redactor.redact_text(value)
+                self.assertNotIn(value.split("://", 1)[1].split("@", 1)[0], redacted)
+                self.assertIn("://REDACTED", redacted)
+
+        self.assertEqual(
+            redactor.redact_text("postgresql://db.internal/app"),
+            "postgresql://db.internal/app",
+        )
+
     def test_redaction_off_preserves_sensitive_key_values(self) -> None:
         redactor = Redactor("off")
 

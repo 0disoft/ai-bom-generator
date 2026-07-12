@@ -148,6 +148,8 @@ def _model_package(evidence: NormalizedEvidence, creation_info_id: str, model_id
         package["suppliedBy"] = supplied_by
     if download_location := _first_present(values, ("download_location", "download_url", "uri")):
         package["downloadLocation"] = download_location
+    if release_time := _first_present(values, ("release_time", "release_date")):
+        package["aiBom:releaseTime"] = release_time
     return package
 
 

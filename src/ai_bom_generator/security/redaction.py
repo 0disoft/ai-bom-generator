@@ -5,7 +5,7 @@ from typing import Any
 
 
 SECRET_PATTERNS = [
-    re.compile(r"(?i)(https?://)[^/\s:@]+:[^/\s@]+@"),
+    re.compile(r"(?i)([a-z][a-z0-9+.-]*://)[^/\s:@]+:[^/\s@]+@"),
     re.compile(r"(?i)([?&](?:token|access_token|api_key|key|secret|password|credential|authorization)=)[^&\s]+"),
     re.compile(r"(?i)\b((?:token|access_token|api_key|key|secret|password|credential|authorization)=)[^&\s]+"),
     re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----", re.DOTALL),

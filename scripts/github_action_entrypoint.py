@@ -109,7 +109,11 @@ def _write_outputs(output: Path, warning_report: Path, summary: Path, manifest: 
         "manifest-path": manifest.as_posix(),
         "exit-code": str(exit_code),
     }
-    payload = _read_verified_summary(output, warning_report, summary, manifest)
+    payload = (
+        _read_verified_summary(output, warning_report, summary, manifest)
+        if exit_code in {0, 10}
+        else {}
+    )
     if payload:
         pairs.update(
             {

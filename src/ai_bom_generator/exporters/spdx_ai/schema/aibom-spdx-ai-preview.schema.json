@@ -74,6 +74,7 @@
         },
         "aiBom:completenessStatus": { "type": "string" },
         "aiBom:warningCount": { "type": "integer", "minimum": 0 },
+        "aiBom:releaseTime": { "type": "string", "minLength": 1 },
         "aiBom:unavailableSpdxAiFields": {
           "type": "array",
           "items": { "type": "string" }

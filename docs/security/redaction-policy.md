@@ -20,6 +20,8 @@ when generated artifacts are requested with redaction disabled.
 
 The redaction layer should detect obvious credential forms before output:
 
+- userinfo credentials in any hierarchical `scheme://user:password@host` URI;
+
 - Token-bearing URLs.
 - Basic-auth URLs.
 - Private key blocks.
