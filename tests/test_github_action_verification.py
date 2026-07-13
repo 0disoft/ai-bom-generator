@@ -27,6 +27,7 @@ class GitHubActionVerificationTests(unittest.TestCase):
             warning_report = work / "warnings.json"
             summary = work / "summary.json"
             manifest = work / "manifest.json"
+            error_report = work / "error.json"
             github_output = work / "github-output.txt"
             write_json_output_set(
                 [
@@ -53,6 +54,7 @@ class GitHubActionVerificationTests(unittest.TestCase):
                     warning_report,
                     summary,
                     manifest,
+                    error_report,
                     exit_code=40,
                 )
             finally:

@@ -142,9 +142,13 @@ def _verify_action_metadata() -> None:
         "working-directory: ${{ github.action_path }}",
         "INPUT_MODEL_DIRECTORY",
         "INPUT_MANIFEST",
+        "INPUT_ERROR_REPORT",
         "scripts/github_action_entrypoint.py",
         "steps.generate.outputs['bom-path']",
         "steps.generate.outputs['manifest-path']",
+        "steps.generate.outputs['error-report-path']",
+        "steps.generate.outputs['error-code']",
+        "steps.generate.outputs['error-stage']",
         "steps.generate.outputs['warning-count']",
         "steps.generate.outputs.status",
         "steps.generate.outputs['completeness-status']",
@@ -254,6 +258,7 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
             "INPUT_WARNING_REPORT": str(warning_report) if warning_report else "",
             "INPUT_SUMMARY": str(summary) if summary else "",
             "INPUT_MANIFEST": str(manifest) if manifest else "",
+            "INPUT_ERROR_REPORT": "",
             "INPUT_WARNINGS": case.warnings or "",
             "INPUT_REDACTION": "strict",
         }
@@ -300,6 +305,12 @@ def _run_case(case: ActionCase, case_root: Path) -> None:
         raise AssertionError(f"{case.name} output summary-path mismatch: {outputs.get('summary-path')}")
     if outputs.get("manifest-path") != manifest.as_posix():
         raise AssertionError(f"{case.name} output manifest-path mismatch: {outputs.get('manifest-path')}")
+    error_report = Path(outputs.get("error-report-path", ""))
+    if not error_report.as_posix() or error_report.exists():
+        raise AssertionError(f"{case.name} left an unexpected success-path error report: {error_report}")
+    for key in ("error-code", "error-stage"):
+        if key in outputs:
+            raise AssertionError(f"{case.name} published failure output on success: {key}")
     if not case.explicit_output_paths and output.parent == runner_temp / "ai-bom-generator":
         raise AssertionError(f"{case.name} default output path did not include a run-unique directory")
 
@@ -354,7 +365,8 @@ def _run_stale_summary_failure_case(case_root: Path) -> None:
     warning_report = case_root / "warnings.json"
     summary = case_root / "summary.json"
     manifest = case_root / "output-manifest.json"
-    for path in (output, warning_report, summary, manifest):
+    error_report = case_root / "error.json"
+    for path in (output, warning_report, summary, manifest, error_report):
         path.write_text('{"status":"stale","warning_count":999}\n', encoding="utf-8", newline="\n")
     env = os.environ.copy()
     env.update(
@@ -370,6 +382,7 @@ def _run_stale_summary_failure_case(case_root: Path) -> None:
             "INPUT_WARNING_REPORT": str(warning_report),
             "INPUT_SUMMARY": str(summary),
             "INPUT_MANIFEST": str(manifest),
+            "INPUT_ERROR_REPORT": str(error_report),
             "INPUT_WARNINGS": "allow",
             "INPUT_REDACTION": "strict",
         }
@@ -396,6 +409,13 @@ def _run_stale_summary_failure_case(case_root: Path) -> None:
     for path in (output, warning_report, summary, manifest):
         if path.exists():
             raise AssertionError(f"stale-summary-failure left stale file: {path}")
+    payload = json.loads(error_report.read_text(encoding="utf-8"))
+    if payload.get("schema_version") != "ai-bom-error-report/v1":
+        raise AssertionError("stale-summary-failure did not replace the stale error report")
+    if outputs.get("error-report-path") != error_report.as_posix():
+        raise AssertionError("stale-summary-failure error-report-path mismatch")
+    if outputs.get("error-code") != "EXPORTER_FAILURE" or outputs.get("error-stage") != "exporter":
+        raise AssertionError("stale-summary-failure did not publish verified error metadata")
 
 
 def _verify_github_output_escaping(case_root: Path) -> None:

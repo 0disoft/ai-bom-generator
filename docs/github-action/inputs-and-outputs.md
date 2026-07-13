@@ -28,6 +28,8 @@ behavior stay comparable.
 - `summary`: output path for JSON summary. Empty defaults under `RUNNER_TEMP`.
 - `manifest`: output path for the generation manifest. Empty defaults under
   `RUNNER_TEMP`.
+- `error-report`: output path for the optional hard-failure report. Empty
+  defaults under the same run-unique `RUNNER_TEMP` directory.
 - `warnings`: warning policy. The Action wrapper must mirror the CLI's accepted
   values: `allow` and `fail`.
 - `redaction`: redaction mode. The Action wrapper must mirror the CLI's accepted
@@ -42,6 +44,9 @@ that diverge from the CLI contract.
 - `warning-report-path`
 - `summary-path`
 - `manifest-path`
+- `error-report-path`
+- `error-code`: stable code from a schema-checked current-run failure report.
+- `error-stage`: stage from a schema-checked current-run failure report.
 - `warning-count`
 - `status`: JSON summary run status, such as `success`, `success-with-warnings`,
   or `failed`.
@@ -55,6 +60,9 @@ path-like values remain output data even when they contain line breaks.
 The wrapper publishes summary-derived outputs only after the generation manifest
 exists and its path, size, and SHA-256 entries match the BOM, warning-report,
 and summary files from the same run.
+Failure-derived outputs are published only when the error report has
+`schema_version` `ai-bom-error-report/v1`, status `failed`, and an `exit_code`
+matching the CLI process status.
 
 ## Review Blockers
 

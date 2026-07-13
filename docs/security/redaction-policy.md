@@ -5,8 +5,8 @@ Owner: UNASSIGNED
 
 ## Purpose
 
-The tool writes BOMs, warning reports, and JSON summaries. Anything copied from a
-caller project can become a disclosure, so redaction is part of the product
+The tool writes BOMs, warning reports, JSON summaries, and optional hard-failure
+reports. Anything copied from a caller project can become a disclosure, so redaction is part of the product
 contract, not just terminal polish.
 
 ## Default
@@ -42,6 +42,8 @@ The redaction layer should detect obvious credential forms before output:
 - BOM file.
 - Warning report.
 - JSON summary.
+- Hard-failure report. It always uses strict redaction, including when
+  `--redaction off` was requested for generated evidence.
 - Terminal output. Error messages are safety-redacted even when generated
   artifacts are requested with `--redaction off`, because failures may occur
   before a warning report can be written.

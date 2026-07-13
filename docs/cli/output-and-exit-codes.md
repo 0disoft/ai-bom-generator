@@ -87,6 +87,26 @@ is JSON-LD-shaped and validates against the local
 - `files[].sha256`
 - `files[].size_bytes`
 
+## Hard-Failure Report Fields
+
+When `--error-report <path>` is provided, exit codes `20`, `30`, `40`, and `70`
+write a separate JSON object validated by
+`schemas/aibom-error-report-v1.schema.json`:
+
+- `schema_version`: `ai-bom-error-report/v1`
+- `tool.name`
+- `tool.version`
+- `status`: `failed`
+- `error.code`: `INVALID_INPUT`, `COLLECTOR_FAILURE`, `EXPORTER_FAILURE`, or
+  `INTERNAL_ERROR`
+- `error.stage`
+- `error.message`
+- `exit_code`
+
+Every field is strict-redacted even when `--redaction off` was requested.
+Success and warning-policy exit code `10` do not fabricate failure reports and
+remove a stale requested report before generation.
+
 ## Review Blockers
 
 - A command changes without updating help, examples, output, and exit-code expectations.

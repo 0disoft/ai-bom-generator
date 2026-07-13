@@ -31,6 +31,10 @@ inputs:
     description: Output path for the generation manifest. Defaults under RUNNER_TEMP.
     required: false
     default: ""
+  error-report:
+    description: Output path for the hard-failure JSON report. Defaults under RUNNER_TEMP.
+    required: false
+    default: ""
   warnings:
     description: Optional warning policy override passed to ai-bom. Leave empty to use config or CLI defaults.
     required: false
@@ -53,6 +57,15 @@ outputs:
   manifest-path:
     description: Path to the generated output manifest.
     value: ${{ steps.generate.outputs['manifest-path'] }}
+  error-report-path:
+    description: Path reserved for the hard-failure JSON report.
+    value: ${{ steps.generate.outputs['error-report-path'] }}
+  error-code:
+    description: Stable error code from a verified hard-failure report when available.
+    value: ${{ steps.generate.outputs['error-code'] }}
+  error-stage:
+    description: Failure stage from a verified hard-failure report when available.
+    value: ${{ steps.generate.outputs['error-stage'] }}
   warning-count:
     description: Warning count reported by the JSON summary when available.
     value: ${{ steps.generate.outputs['warning-count'] }}
@@ -95,6 +108,7 @@ runs:
         INPUT_WARNING_REPORT: ${{ inputs.warning-report }}
         INPUT_SUMMARY: ${{ inputs.summary }}
         INPUT_MANIFEST: ${{ inputs.manifest }}
+        INPUT_ERROR_REPORT: ${{ inputs.error-report }}
         INPUT_WARNINGS: ${{ inputs.warnings }}
         INPUT_REDACTION: ${{ inputs.redaction }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}

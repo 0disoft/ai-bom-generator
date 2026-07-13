@@ -36,6 +36,7 @@ ai-bom generate <model-directory>
   --warning-report <path>
   --summary <path|->
   --manifest <path>
+  [--error-report <path>]
   --warnings <allow|fail>
   --redaction <strict|off>
 ```
@@ -48,6 +49,13 @@ silently writing into the target model directory. Generated output paths must
 resolve outside the target model directory and must not overlap each other.
 Overlapping output paths include identical resolved paths and parent-child
 resolved paths.
+When `--error-report` is provided, hard failures atomically replace that path
+with an `ai-bom-error-report/v1` JSON envelope. The path must remain outside the
+target model directory and must not overlap generated output paths. Successful
+and warning-only generation removes any stale file at the requested path.
+Argument parsing failures can emit the same envelope when a usable
+`--error-report` value was supplied. The report does not join the successful
+output manifest and does not replace the summary or warning report.
 The CLI writes a generation manifest for each successful output set. When
 `--manifest` is omitted, the manifest defaults to `<summary>.manifest.json` for
 file summaries and `<output>.manifest.json` when `--summary -` writes the summary

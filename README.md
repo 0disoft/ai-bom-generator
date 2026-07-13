@@ -114,12 +114,15 @@ deferred.
 
 ```text
 ai-bom --version
-ai-bom generate <model-directory> [--config <path>] --format <cyclonedx-json-1.7|spdx-ai> --output <bom.json> --warning-report <warnings.json> --summary <summary.json> [--manifest <manifest.json>]
+ai-bom generate <model-directory> [--config <path>] --format <cyclonedx-json-1.7|spdx-ai> --output <bom.json> --warning-report <warnings.json> --summary <summary.json> [--manifest <manifest.json>] [--error-report <error.json>]
 ```
 
 Missing optional metadata is reported as warnings without pretending the BOM is
 complete. Unreadable required files, invalid config, unsupported exporters,
 unsafe paths, and invalid generated BOM output fail with non-zero exit codes.
+Add `--error-report <path>` when CI needs a strict-redacted, versioned JSON
+failure envelope instead of parsing terminal output. Successful runs remove a
+stale report at that requested path.
 
 ## GitHub Action
 
@@ -127,7 +130,7 @@ unsafe paths, and invalid generated BOM output fail with non-zero exit codes.
 - uses: actions/checkout@v7
 
 - id: ai-bom
-  uses: 0disoft/ai-bom-generator@v0.3.0
+  uses: 0disoft/ai-bom-generator@v0.3.1
   with:
     model-directory: .
     warnings: allow
@@ -154,7 +157,7 @@ written to explicit paths when provided, or to a run-unique directory under
 Summary-derived action outputs are published only when the generation manifest
 matches the BOM, warning report, and summary files from the current run.
 
-Use `@v0` for compatible 0.x updates, or pin the exact `@v0.3.0` tag when a
+Use `@v0` for compatible 0.x updates, or pin the exact `@v0.3.1` tag when a
 workflow needs release reproducibility. GitHub-enforced immutable releases
 apply to versions published after `v0.2.0`.
 
@@ -175,7 +178,7 @@ uv run --python 3.12 python scripts/verify_github_action.py
 Post-release verification:
 
 ```powershell
-$env:RELEASE_VERSION = "0.3.0"
+$env:RELEASE_VERSION = "0.3.1"
 $env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
 $env:SMOKE_RUN_ID = "<successful-exact-version-action-smoke-run-id>"
 uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID --smoke-run-id $env:SMOKE_RUN_ID

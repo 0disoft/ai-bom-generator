@@ -20,11 +20,13 @@ def main() -> int:
     warning_report = _input_path("INPUT_WARNING_REPORT", default_output_dir / "warnings.json")
     summary = _input_path("INPUT_SUMMARY", default_output_dir / "summary.json")
     manifest = _input_path("INPUT_MANIFEST", default_output_dir / "output-manifest.json")
+    error_report = _input_path("INPUT_ERROR_REPORT", default_output_dir / "error.json")
     output.parent.mkdir(parents=True, exist_ok=True)
     warning_report.parent.mkdir(parents=True, exist_ok=True)
     summary.parent.mkdir(parents=True, exist_ok=True)
     manifest.parent.mkdir(parents=True, exist_ok=True)
-    _remove_stale_action_outputs((output, warning_report, summary, manifest))
+    error_report.parent.mkdir(parents=True, exist_ok=True)
+    _remove_stale_action_outputs((output, warning_report, summary, manifest, error_report))
 
     args = [
         "uv",
@@ -54,6 +56,8 @@ def main() -> int:
             str(summary),
             "--manifest",
             str(manifest),
+            "--error-report",
+            str(error_report),
         ]
     )
     warnings = os.environ.get("INPUT_WARNINGS", "").strip()
@@ -65,7 +69,7 @@ def main() -> int:
     env["UV_PROJECT_ENVIRONMENT"] = str(runner_temp / "ai-bom-generator-venv")
     env["UV_CACHE_DIR"] = str(runner_temp / "ai-bom-generator-uv-cache")
     result = subprocess.run(args, cwd=workspace, env=env)
-    _write_outputs(output, warning_report, summary, manifest, result.returncode)
+    _write_outputs(output, warning_report, summary, manifest, error_report, result.returncode)
     return result.returncode
 
 
@@ -101,12 +105,20 @@ def _remove_stale_action_outputs(paths: tuple[Path, ...]) -> None:
             pass
 
 
-def _write_outputs(output: Path, warning_report: Path, summary: Path, manifest: Path, exit_code: int) -> None:
+def _write_outputs(
+    output: Path,
+    warning_report: Path,
+    summary: Path,
+    manifest: Path,
+    error_report: Path,
+    exit_code: int,
+) -> None:
     pairs = {
         "bom-path": output.as_posix(),
         "warning-report-path": warning_report.as_posix(),
         "summary-path": summary.as_posix(),
         "manifest-path": manifest.as_posix(),
+        "error-report-path": error_report.as_posix(),
         "exit-code": str(exit_code),
     }
     payload = (
@@ -123,7 +135,33 @@ def _write_outputs(output: Path, warning_report: Path, summary: Path, manifest: 
                 "format": str(payload.get("format", "")),
             }
         )
+    error_payload = _read_verified_error_report(error_report, exit_code)
+    if error_payload:
+        error = error_payload.get("error")
+        if isinstance(error, dict):
+            pairs.update(
+                {
+                    "error-code": str(error.get("code", "")),
+                    "error-stage": str(error.get("stage", "")),
+                }
+            )
     _append_github_outputs(pairs)
+
+
+def _read_verified_error_report(path: Path, exit_code: int) -> dict[str, object]:
+    if exit_code in {0, 10}:
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if not isinstance(payload, dict):
+        return {}
+    if payload.get("schema_version") != "ai-bom-error-report/v1":
+        return {}
+    if payload.get("status") != "failed" or payload.get("exit_code") != exit_code:
+        return {}
+    return payload
 
 
 def _read_verified_summary(

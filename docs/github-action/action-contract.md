@@ -19,21 +19,24 @@ This repository type owns action inputs, outputs, permissions, token handling, a
   action checkout, expose outputs, and do not perform registry publication or
   compliance approval.
 - GitHub Action public contract: inputs cover model directory, config path,
-  output format, output paths, generation manifest path, warning policy, and
-  redaction mode.
+  output format, output paths, generation manifest path, optional hard-failure
+  report path, warning policy, and redaction mode.
 - GitHub Action config precedence: `format` and `warnings` inputs are optional
   overrides. When omitted, the action must not pass the corresponding CLI flag,
   so the CLI uses discovered or explicit config values and executable defaults.
   When `config` is omitted, the action must not pass `--config`, so CLI
   target-root config discovery remains in one place.
 - GitHub Action default output paths: when output paths are omitted, the action
-  writes BOM, warning report, summary, and generation manifest files under a
-  run-unique directory in `RUNNER_TEMP` and exposes those paths as action
+  writes BOM, warning report, summary, generation manifest, and reserved error
+  report paths under a run-unique directory in `RUNNER_TEMP` and exposes those paths as action
   outputs.
 - GitHub Action summary output safety: the action must remove stale generated
   output files before invoking the CLI and must publish summary-derived outputs
   only when the generation manifest matches the current BOM, warning-report, and
   summary files by path, size, and SHA-256 digest.
+- GitHub Action failure output safety: the action publishes `error-code` and
+  `error-stage` only from a current-run error report whose schema, failed
+  status, and exit code match the CLI process result.
 - GitHub Action runtime setup: the composite action prepares Python 3.12 and
   pinned uv `0.11.28`, with setup-uv's GitHub cache disabled. It runs the
   action checkout through `uv run --project --locked` and forces both the

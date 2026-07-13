@@ -40,6 +40,8 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 - One primary BOM file in a standards-backed format.
 - A warning report for missing or ambiguous metadata.
 - Stable JSON output for automation.
+- An optional versioned hard-failure report for CI consumers that cannot parse
+  terminal prose.
 - Non-zero exit code for invalid input, unreadable required files, digest failures, or invalid exporter output.
 
 ## Initial Collector Boundaries
