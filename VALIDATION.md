@@ -23,8 +23,7 @@ This document owns stable validation names for this scaffold.
 These commands mirror the hosted CI workflow. The hosted validation matrix runs
 the compile, lint, test, build, wheel, Action verifier, and CLI smoke gates on
 every supported Python version: 3.12, 3.13, and 3.14. The local commands below
-use the minimum supported runtime, Python 3.12,
-implementation.
+use the minimum supported runtime, Python 3.12.
 
 | Validation name | Command |
 | --- | --- |
@@ -60,9 +59,9 @@ discovery while using the locked validation environment for dependencies.
 
 `scripts/verify_github_action.py` verifies the local composite `action.yml` and
 runs clean, warning-only, fail-on-warning, stale-output, and manifest-gated
-action wrapper smoke cases. Setup actions must use one exact semantic-version
-pin, while Dependabot may update that pin without requiring a duplicate verifier
-constant change. Hosted CI separately invokes the local action on a
+action wrapper smoke cases. External actions must use a full commit SHA with a
+human-readable semantic-version comment, while Dependabot maintains both values.
+Hosted CI separately invokes the local action on a
 clean Ubuntu, macOS, and Windows runner matrix without caller-side Python or uv
 setup. Matrix fail-fast is disabled so one platform failure does not hide the
 other runner results.

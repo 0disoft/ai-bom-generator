@@ -46,6 +46,25 @@ later exporter and CI integrations.
 - Deterministic output compatibility tests cover both exporter paths.
 - Consider bridges to registry, release, or provenance tooling only after local generation is solid.
 
+## v0.2.x Hardening
+
+- Define a producer-owned generation marker contract for multi-file model
+  snapshots. Do not claim cross-file generation consistency until collection
+  verifies the same marker before and after all selected reads.
+- Add bounded performance regression evidence for 100, 500, and 1,000 declared
+  components. Record time and memory budgets before optimizing schema validation.
+- Add an optional machine-readable hard-failure report without changing the
+  existing exit-code contract or default terminal behavior.
+
+## v0.3.0 Dependency Expansion
+
+- Introduce a parser boundary that preserves package source, channel, platform,
+  revision, and artifact hash evidence across lockfile formats.
+- Add bounded `conda-lock` support first, then evaluate Poetry and Pipenv from
+  real fixtures instead of filename-only detection.
+- Keep dependency discovery explicit and config-driven. Unsupported or malformed
+  files must continue to warn without fabricating package components.
+
 ## Deferred
 
 - Hosted registry.

@@ -25,7 +25,7 @@ choices from plausible candidates that still need approval.
 | CLI command | `ai-bom generate` | Approved for MVP on 2026-07-07 |
 | First exporter | CycloneDX JSON 1.7 | Approved by implementation kickoff on 2026-07-06 |
 | Second exporter | `spdx-ai` SPDX 3.0.1 AI Profile preview with partial conformance contract | Approved for MVP polish on 2026-07-09 |
-| Runtime | Python 3.12 | Approved by owner on 2026-07-06 |
+| Runtime compatibility | Python 3.12 floor, bounded to and validated through Python 3.14 | Python 3.12 floor approved on 2026-07-06; upper bound and CI matrix shipped in v0.2.2 |
 | CLI adapter | `argparse` | Approved by owner on 2026-07-06 |
 | Package metadata | `pyproject.toml` with setuptools build backend | Approved by implementation kickoff on 2026-07-06 |
 | Schema validation dependency | `jsonschema>=4.25,<5` | Approved by implementation kickoff on 2026-07-06 |

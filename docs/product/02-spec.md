@@ -65,7 +65,9 @@ metadata.
 
 ## Required Decisions Before Implementation
 
-- Runtime: Python 3.12 is approved.
+- Runtime: Python 3.12 is the compatibility floor. Package metadata and hosted
+  CI currently support Python 3.12, 3.13, and 3.14; future interpreters require
+  an explicit compatibility update.
 - CLI adapter: `argparse` is approved, with application and domain layers kept framework-independent.
 - Repository license: Apache-2.0 is approved.
 - Package metadata: `pyproject.toml` with setuptools build backend is approved.
