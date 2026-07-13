@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.1
+
+- Adds an optional strict-redacted `ai-bom-error-report/v1` hard-failure report
+  for CLI and GitHub Action automation without changing existing exit codes or
+  successful output manifests.
+- Removes stale requested error reports on successful and warning-only runs and
+  publishes Action error metadata only after matching the current process exit.
+- Adds a low-noise CI regression gate for median runtime and Python allocation
+  peaks at 100, 500, and 1,000 explicit components.
+
 ## v0.3.0
 
 - Adds an optional producer-owned generation marker protocol that rejects
