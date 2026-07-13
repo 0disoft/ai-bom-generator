@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.4.0 (Unreleased)
+## v0.4.0
 
 - Introduces one normalized dependency source boundary for lockfile parsers,
   preserving source locators, package indexes, revisions, and artifact hashes
