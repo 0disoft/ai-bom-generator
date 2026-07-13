@@ -48,12 +48,17 @@ and contract update.
 | Model `release_time` or `release_date` | `aiBom:releaseTime` extension field; preserved as declared evidence |
 | Producer generation marker | `aiBom:generationMarkerPath` and `aiBom:generationMarkerSha256`; raw generation omitted |
 | Artifact paths and SHA-256 digests | `software_File` elements with `verifiedUsing` |
-| Parsed Python dependency packages | `software_Package` elements; `packageVersion` is `NOASSERTION` when no exact version is evidenced |
+| Parsed dependency packages | `software_Package` elements; `packageVersion` is `NOASSERTION` when no exact version is evidenced, while normalized source fields and artifact hashes use `aiBom:*` extension fields |
 | Dependency, dataset, prompt, eval, training, and Git references | `aiBom_Reference` extension elements |
 | Evidence containment | One `Relationship` from the model to collected evidence elements |
 | Warning and completeness state | `aiBom:warningCount` and `aiBom:completenessStatus` |
 
 All generated SPDX ids use the stable `urn:ai-bom-generator:spdx-ai:` namespace.
+Dependency package source evidence is emitted as `aiBom:sourceType`, optional
+`aiBom:sourceLocator`, `aiBom:sourceChannel`, `aiBom:sourceIndex`,
+`aiBom:sourcePlatform`, and `aiBom:sourceRevision` fields. Bounded artifact hash
+evidence is emitted as `aiBom:artifactHashes` objects with `algorithm`,
+`hashValue`, and an optional strict-redacted `locator`.
 
 ## Explicit Gaps
 

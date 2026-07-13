@@ -5,12 +5,17 @@ import os
 from pathlib import Path
 import re
 import tomllib
-from urllib.parse import urlsplit
+from typing import Callable
+from urllib.parse import parse_qs, urlsplit
 
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import InvalidName, canonicalize_name
 
-from ai_bom_generator.domain.dependency import DependencyPackage
+from ai_bom_generator.domain.dependency import (
+    DependencyArtifactHash,
+    DependencyPackage,
+    DependencySourceEvidence,
+)
 from ai_bom_generator.domain.source_location import SourceLocation
 from ai_bom_generator.security import Redactor, open_binary_nofollow
 
@@ -18,6 +23,7 @@ from ai_bom_generator.security import Redactor, open_binary_nofollow
 MAX_DEPENDENCY_FILE_BYTES = 4 * 1024 * 1024
 MAX_DEPENDENCY_PACKAGES = 5_000
 MAX_REQUIREMENT_LINES = 10_000
+MAX_ARTIFACT_HASH_RECORDS_PER_PACKAGE = 256
 
 _FORMAT_ALIASES = {
     "pip": "requirements",
@@ -30,7 +36,10 @@ _FORMAT_ALIASES = {
 }
 _UV_SOURCE_KEYS = ("registry", "git", "url", "path", "editable", "virtual")
 _INLINE_COMMENT_RE = re.compile(r"\s+#.*$")
-_HASH_OPTION_RE = re.compile(r"\s+--hash(?:=|\s+)\S+")
+_HASH_OPTION_RE = re.compile(r"(?:^|\s)--hash(?:=|\s+)(\S+)")
+_HASH_VALUE_RE = re.compile(r"^([A-Za-z][A-Za-z0-9_-]*):([^\s:]+)$")
+_URL_HASH_RE = re.compile(r"(?:^|&)([A-Za-z][A-Za-z0-9_-]*)=([^&]+)")
+_URL_HASH_ALGORITHMS = frozenset({"blake2b", "blake2s", "md5", "sha1", "sha256", "sha384", "sha512"})
 
 
 @dataclass(frozen=True)
@@ -75,11 +84,10 @@ def parse_dependency_file(
     redactor: Redactor,
 ) -> DependencyParseResult:
     payload = _read_bounded_snapshot(path)
-    if dependency_format == "uv":
-        return _parse_uv_lock(payload, relative_path, redactor)
-    if dependency_format == "requirements":
-        return _parse_requirements(payload, relative_path, redactor)
-    raise DependencyParseError(f"Unsupported dependency format: {dependency_format}")
+    parser = _DEPENDENCY_PARSERS.get(dependency_format)
+    if parser is None:
+        raise DependencyParseError(f"Unsupported dependency format: {dependency_format}")
+    return parser(payload, relative_path, redactor)
 
 
 def _read_bounded_snapshot(path: Path) -> bytes:
@@ -147,15 +155,23 @@ def _parse_uv_lock(payload: bytes, relative_path: str, redactor: Redactor) -> De
         requirement = canonical_name
         if normalized_version:
             requirement = f"{canonical_name}=={normalized_version}"
-        source_type, source_locator = _uv_source(item.get("source"), redactor)
+        package_source = _uv_source(item.get("source"), location, redactor, issues)
+        package_source = DependencySourceEvidence(
+            source_type=package_source.source_type,
+            locator=package_source.locator,
+            channel=package_source.channel,
+            index=package_source.index,
+            platform=package_source.platform,
+            revision=package_source.revision,
+            artifact_hashes=_uv_artifact_hashes(item, location, redactor, issues),
+        )
         packages.append(
             DependencyPackage(
                 name=canonical_name,
                 version=normalized_version,
                 requirement=redactor.redact_text(requirement),
                 lockfile_format="uv",
-                source_type=source_type,
-                source_locator=source_locator,
+                package_source=package_source,
                 marker=None,
                 extras=(),
                 source=SourceLocation(path=relative_path, field=location, collector="dependency"),
@@ -181,6 +197,7 @@ def _parse_requirements(payload: bytes, relative_path: str, redactor: Redactor) 
     for line_number, raw_requirement in logical_lines:
         location = f"line:{line_number}"
         requirement_text = _INLINE_COMMENT_RE.sub("", raw_requirement).strip()
+        raw_hashes = _HASH_OPTION_RE.findall(requirement_text)
         requirement_text = _HASH_OPTION_RE.sub("", requirement_text).strip()
         if not requirement_text:
             continue
@@ -198,14 +215,21 @@ def _parse_requirements(payload: bytes, relative_path: str, redactor: Redactor) 
 
         version = _exact_pinned_version(parsed)
         marker = str(parsed.marker) if parsed.marker is not None else None
+        artifact_hashes = _requirement_artifact_hashes(raw_hashes, parsed.url, location, redactor, issues)
+        source_locator = redactor.redact_text(parsed.url) if parsed.url else None
+        source_revision = _source_revision(parsed.url) if parsed.url else None
         packages.append(
             DependencyPackage(
                 name=canonicalize_name(parsed.name),
                 version=version,
                 requirement=redactor.redact_text(str(parsed)),
                 lockfile_format="requirements",
-                source_type="url" if parsed.url else "requirement",
-                source_locator=redactor.redact_text(parsed.url) if parsed.url else None,
+                package_source=DependencySourceEvidence(
+                    source_type="url" if parsed.url else "requirement",
+                    locator=source_locator,
+                    revision=redactor.redact_text(source_revision) if source_revision else None,
+                    artifact_hashes=artifact_hashes,
+                ),
                 marker=redactor.redact_text(marker) if marker else None,
                 extras=tuple(sorted(parsed.extras)),
                 source=SourceLocation(path=relative_path, field=location, collector="dependency"),
@@ -249,15 +273,139 @@ def _exact_pinned_version(requirement: Requirement) -> str | None:
     return specifier.version
 
 
-def _uv_source(source: object, redactor: Redactor) -> tuple[str, str | None]:
+def _uv_source(
+    source: object,
+    location: str,
+    redactor: Redactor,
+    issues: list[DependencyParseIssue],
+) -> DependencySourceEvidence:
+    if source is None:
+        return DependencySourceEvidence(source_type="unknown")
     if not isinstance(source, dict):
-        return "unknown", None
+        issues.append(DependencyParseIssue(f"{location}.source", "package source is not a table"))
+        return DependencySourceEvidence(source_type="unknown")
     for key in _UV_SOURCE_KEYS:
         if key in source:
             value = source.get(key)
-            locator = redactor.redact_text(str(value)) if isinstance(value, str) else None
-            return key, locator
-    return "unknown", None
+            if not isinstance(value, str):
+                issues.append(DependencyParseIssue(f"{location}.source.{key}", "source locator is not a string"))
+                return DependencySourceEvidence(source_type=key)
+            locator = redactor.redact_text(value)
+            source_revision = _source_revision(value) if key == "git" else None
+            return DependencySourceEvidence(
+                source_type=key,
+                locator=locator,
+                index=locator if key == "registry" else None,
+                revision=redactor.redact_text(source_revision) if source_revision else None,
+            )
+    issues.append(DependencyParseIssue(f"{location}.source", "package source type is unsupported"))
+    return DependencySourceEvidence(source_type="unknown")
+
+
+def _uv_artifact_hashes(
+    package: dict[str, object],
+    location: str,
+    redactor: Redactor,
+    issues: list[DependencyParseIssue],
+) -> tuple[DependencyArtifactHash, ...]:
+    artifacts: list[tuple[str, object]] = []
+    if "sdist" in package:
+        artifacts.append((f"{location}.sdist", package.get("sdist")))
+    if "wheels" in package:
+        wheels = package.get("wheels")
+        if isinstance(wheels, list):
+            artifacts.extend((f"{location}.wheels[{index}]", item) for index, item in enumerate(wheels))
+        else:
+            issues.append(DependencyParseIssue(f"{location}.wheels", "wheels is not an array"))
+
+    hashes: list[DependencyArtifactHash] = []
+    for artifact_location, artifact in artifacts:
+        if not isinstance(artifact, dict):
+            issues.append(DependencyParseIssue(artifact_location, "artifact entry is not a table"))
+            continue
+        raw_hash = artifact.get("hash")
+        if raw_hash is None:
+            continue
+        locator = artifact.get("url")
+        if locator is not None and not isinstance(locator, str):
+            issues.append(DependencyParseIssue(f"{artifact_location}.url", "artifact URL is not a string"))
+            locator = None
+        parsed_hash = _parse_artifact_hash(raw_hash, locator, redactor)
+        if parsed_hash is None:
+            issues.append(DependencyParseIssue(f"{artifact_location}.hash", "artifact hash is invalid"))
+            continue
+        hashes.append(parsed_hash)
+    return _bounded_artifact_hashes(hashes)
+
+
+def _requirement_artifact_hashes(
+    raw_hashes: list[str],
+    direct_url: str | None,
+    location: str,
+    redactor: Redactor,
+    issues: list[DependencyParseIssue],
+) -> tuple[DependencyArtifactHash, ...]:
+    candidates: list[tuple[str, str | None]] = [(raw_hash, None) for raw_hash in raw_hashes]
+    if direct_url:
+        fragment = urlsplit(direct_url).fragment
+        candidates.extend(
+            (f"{algorithm}:{value}", direct_url)
+            for algorithm, value in _URL_HASH_RE.findall(fragment)
+            if algorithm.lower() in _URL_HASH_ALGORITHMS
+        )
+
+    hashes: list[DependencyArtifactHash] = []
+    for raw_hash, locator in candidates:
+        parsed_hash = _parse_artifact_hash(raw_hash, locator, redactor)
+        if parsed_hash is None:
+            issues.append(DependencyParseIssue(location, "artifact hash is invalid"))
+            continue
+        hashes.append(parsed_hash)
+    return _bounded_artifact_hashes(hashes)
+
+
+def _parse_artifact_hash(
+    raw_hash: object,
+    locator: str | None,
+    redactor: Redactor,
+) -> DependencyArtifactHash | None:
+    if not isinstance(raw_hash, str):
+        return None
+    match = _HASH_VALUE_RE.fullmatch(raw_hash.strip())
+    if match is None:
+        return None
+    return DependencyArtifactHash(
+        algorithm=match.group(1).lower(),
+        value=redactor.redact_text(match.group(2)),
+        locator=redactor.redact_text(locator) if locator else None,
+    )
+
+
+def _bounded_artifact_hashes(
+    hashes: list[DependencyArtifactHash],
+) -> tuple[DependencyArtifactHash, ...]:
+    unique = {artifact.identity_key(): artifact for artifact in hashes}
+    if len(unique) > MAX_ARTIFACT_HASH_RECORDS_PER_PACKAGE:
+        raise DependencyFileLimitError(
+            "dependency package contains more than "
+            f"{MAX_ARTIFACT_HASH_RECORDS_PER_PACKAGE} artifact hash records"
+        )
+    return tuple(sorted(unique.values(), key=lambda item: item.identity_key()))
+
+
+def _source_revision(locator: str) -> str | None:
+    parsed = urlsplit(locator)
+    if parsed.fragment and "=" not in parsed.fragment:
+        return parsed.fragment
+    query = parse_qs(parsed.query, keep_blank_values=False)
+    for key in ("rev", "tag", "branch", "revision"):
+        values = query.get(key)
+        if values and values[0]:
+            return values[0]
+    if parsed.scheme.startswith("git+") and "@" in parsed.path:
+        revision = parsed.path.rsplit("@", 1)[1]
+        return revision or None
+    return None
 
 
 def _result(
@@ -283,3 +431,11 @@ def _result(
         skipped_entries=len(issues),
         first_issue=issues[0] if issues else None,
     )
+
+
+DependencyPayloadParser = Callable[[bytes, str, Redactor], DependencyParseResult]
+
+_DEPENDENCY_PARSERS: dict[str, DependencyPayloadParser] = {
+    "uv": _parse_uv_lock,
+    "requirements": _parse_requirements,
+}

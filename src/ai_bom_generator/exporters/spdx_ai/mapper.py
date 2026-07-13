@@ -189,6 +189,23 @@ def _dependency_package_element(
         element["aiBom:marker"] = package.marker
     if package.source_locator:
         element["aiBom:sourceLocator"] = package.source_locator
+    if package.package_source.channel:
+        element["aiBom:sourceChannel"] = package.package_source.channel
+    if package.package_source.index:
+        element["aiBom:sourceIndex"] = package.package_source.index
+    if package.package_source.platform:
+        element["aiBom:sourcePlatform"] = package.package_source.platform
+    if package.package_source.revision:
+        element["aiBom:sourceRevision"] = package.package_source.revision
+    if package.package_source.artifact_hashes:
+        element["aiBom:artifactHashes"] = [
+            {
+                "algorithm": artifact_hash.algorithm,
+                "hashValue": artifact_hash.value,
+                **({"locator": artifact_hash.locator} if artifact_hash.locator else {}),
+            }
+            for artifact_hash in package.package_source.artifact_hashes
+        ]
     if package.extras:
         element["aiBom:extras"] = list(package.extras)
     return element

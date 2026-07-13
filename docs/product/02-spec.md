@@ -83,7 +83,9 @@ metadata.
   preview contract validation and explicit unsupported-field notes.
 - Lockfile support set: explicit config-declared dependency file references,
   with bounded local parsing for `uv.lock` and requirements files. Parsing may
-  be disabled per reference with `parse = false`.
+  be disabled per reference with `parse = false`. Supported parsers share one
+  normalized source-evidence boundary that preserves directly evidenced
+  locator, channel or index, platform, revision, and artifact hash fields.
 - Model artifact discovery defaults: config opt-in discovery is approved.
 - Redaction default: strict redaction is approved for CLI and terminal output.
 - GitHub Action runtime: the composite action prepares Python 3.12 and pinned

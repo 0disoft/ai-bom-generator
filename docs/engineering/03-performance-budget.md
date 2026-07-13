@@ -31,10 +31,12 @@ Explicit dependency-file parsing has separate fixed limits:
 - 4 MiB maximum dependency-file read size.
 - 10,000 logical lines per requirements file.
 - 5,000 parsed packages per dependency file.
+- 256 distinct artifact hash records per parsed package.
 
 When a dependency limit is hit, the original file reference remains in the BOM,
 no package components are emitted for that file, and the collector emits
-`DEPENDENCY_FILE_LIMIT_EXCEEDED`.
+`DEPENDENCY_FILE_LIMIT_EXCEEDED`. Artifact hash deduplication occurs before the
+per-package limit is checked.
 
 ## Required Evidence
 

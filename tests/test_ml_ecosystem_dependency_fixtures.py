@@ -36,9 +36,16 @@ class MlEcosystemDependencyFixtureTests(unittest.TestCase):
             },
         )
         tokenizers = next(package for package in result.packages if package.name == "tokenizers")
+        huggingface_hub = next(package for package in result.packages if package.name == "huggingface-hub")
         self.assertEqual(
             tokenizers.source_locator,
             "https://example.invalid/tokenizers.git?rev=fixture#0000000",
+        )
+        self.assertEqual(tokenizers.package_source.revision, "0000000")
+        self.assertEqual(huggingface_hub.package_source.index, "https://pypi.org/simple")
+        self.assertEqual(
+            {(item.algorithm, item.value) for item in huggingface_hub.package_source.artifact_hashes},
+            {("sha256", "synthetic")},
         )
 
     def test_pytorch_requirements_preserve_cuda_versions_and_platform_markers(self) -> None:
@@ -72,6 +79,10 @@ class MlEcosystemDependencyFixtureTests(unittest.TestCase):
             packages["gguf-toolkit"].source_locator,
             "https://example.invalid/releases/gguf_toolkit-1.0.0-py3-none-any.whl#sha256=synthetic",
         )
+        self.assertEqual(
+            [(item.algorithm, item.value) for item in packages["gguf-toolkit"].package_source.artifact_hashes],
+            [("sha256", "synthetic")],
+        )
 
     def test_combined_fixture_exports_all_profiles_to_cyclonedx_and_spdx(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -88,6 +99,20 @@ class MlEcosystemDependencyFixtureTests(unittest.TestCase):
             self.assertEqual(len(spdx_packages), 14)
             self.assertEqual(Counter(item["name"] for item in cyclonedx_libraries)["torch"], 2)
             self.assertEqual(Counter(item["name"] for item in spdx_packages)["torch"], 2)
+            cyclonedx_properties = next(
+                properties
+                for item in cyclonedx_libraries
+                if item["name"] == "huggingface-hub"
+                for properties in ({entry["name"]: entry["value"] for entry in item["properties"]},)
+                if "ai-bom:dependency:source-index" in properties
+            )
+            self.assertEqual(
+                cyclonedx_properties["ai-bom:dependency:source-index"],
+                "https://pypi.org/simple",
+            )
+            self.assertEqual(cyclonedx_properties["ai-bom:dependency:artifact:0:hash"], "sha256:synthetic")
+            spdx_tokenizers = next(item for item in spdx_packages if item["name"] == "tokenizers")
+            self.assertEqual(spdx_tokenizers["aiBom:sourceRevision"], "0000000")
             self.assertEqual(_warning_codes(cyclonedx_summary), {"DEPENDENCY_PARSE_PARTIAL"})
             self.assertEqual(_warning_codes(spdx_summary), {"DEPENDENCY_PARSE_PARTIAL"})
 

@@ -90,6 +90,24 @@ def _dependency_package_properties(package: DependencyPackage) -> list[dict[str,
         properties.append({"name": "ai-bom:dependency:marker", "value": package.marker})
     if package.source_locator:
         properties.append({"name": "ai-bom:dependency:source-locator", "value": package.source_locator})
+    if package.package_source.channel:
+        properties.append({"name": "ai-bom:dependency:source-channel", "value": package.package_source.channel})
+    if package.package_source.index:
+        properties.append({"name": "ai-bom:dependency:source-index", "value": package.package_source.index})
+    if package.package_source.platform:
+        properties.append({"name": "ai-bom:dependency:source-platform", "value": package.package_source.platform})
+    if package.package_source.revision:
+        properties.append({"name": "ai-bom:dependency:source-revision", "value": package.package_source.revision})
+    for index, artifact_hash in enumerate(package.package_source.artifact_hashes):
+        prefix = f"ai-bom:dependency:artifact:{index}"
+        properties.append(
+            {
+                "name": f"{prefix}:hash",
+                "value": f"{artifact_hash.algorithm}:{artifact_hash.value}",
+            }
+        )
+        if artifact_hash.locator:
+            properties.append({"name": f"{prefix}:locator", "value": artifact_hash.locator})
     if package.extras:
         properties.append({"name": "ai-bom:dependency:extras", "value": ",".join(package.extras)})
     return sorted(properties, key=lambda item: item["name"])

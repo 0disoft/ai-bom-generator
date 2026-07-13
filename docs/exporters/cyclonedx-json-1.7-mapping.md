@@ -24,8 +24,10 @@ mapping constraints that must stay true as the exporter matures.
   generation value.
 - Map parsed Python dependency packages to `library` components. Emit `version`
   only for exact pins or lockfile versions, and preserve requirement, marker,
-  extras, source path, source type, and lockfile format as
-  `ai-bom:dependency:*` properties.
+  extras, source path, source type, locator, channel, index, platform, revision,
+  artifact hashes, and lockfile format as `ai-bom:dependency:*` properties.
+  Artifact evidence uses deterministic indexed property names such as
+  `ai-bom:dependency:artifact:0:hash` and the matching optional `:locator`.
 
 ## Required Fixtures
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.4.0 (Unreleased)
+
+- Introduces one normalized dependency source boundary for lockfile parsers,
+  preserving source locators, package indexes, revisions, and artifact hashes
+  without changing explicit config-driven dependency selection.
+- Preserves requirements `--hash` and direct-URL fragment hashes plus uv sdist
+  and wheel hashes, while malformed evidence fields warn instead of producing
+  invented hash claims.
+- Bounds artifact hash evidence to 256 distinct records per package.
+
 ## v0.3.1
 
 - Adds an optional strict-redacted `ai-bom-error-report/v1` hard-failure report

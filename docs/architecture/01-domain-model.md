@@ -14,9 +14,13 @@ observed files, derived hashes, missing metadata warnings, and generated output.
 - Model metadata: model card or manifest fields discovered from supported files.
 - Model artifact: checkpoint, weight, or related file selected for digesting.
 - Dependency evidence: explicit lockfile or dependency manifest reference.
-- Dependency package: normalized Python package name, evidenced exact version or
-  requirement expression, source format/type, marker, extras, and source
-  location parsed from a supported dependency file.
+- Dependency package: normalized package name, evidenced exact version or
+  requirement expression, source format, marker, extras, source location, and
+  one parser-neutral package-source evidence value parsed from a supported
+  dependency file.
+- Dependency source evidence: source type and optional locator, channel, index,
+  platform, revision, and bounded artifact hashes. Missing fields stay absent;
+  parsers do not infer them from package names or platform markers.
 - Training reference: script path, commit reference, or declared training pipeline reference.
 - Dataset reference: declared source, version, license, or provenance pointer; not dataset contents.
 - Prompt reference: declared prompt template or prompt artifact pointer.

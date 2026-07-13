@@ -121,10 +121,21 @@ followed. Unsupported or malformed entries produce warnings and no fabricated
 package components. Package-lock, Poetry, Conda, and other formats remain
 unsupported.
 
-Parsed package evidence preserves the source kind and a strict-redacted source
-locator when the lockfile or direct requirement declares one. Source locator is
-part of package identity, so equal names and versions from different Git URLs,
-registries, or direct URLs remain distinct BOM components.
+Parsed package evidence uses one normalized source contract. It preserves the
+source kind plus strict-redacted locator, channel, index, platform, revision,
+and artifact hashes when the selected parser has direct evidence for those
+fields. uv registry sources populate the source index, uv Git sources preserve
+their resolved fragment or declared revision, uv sdist and wheel entries retain
+their hashes and locators, and requirements retain `--hash` plus recognized
+direct-URL fragment hashes. Platform markers remain marker expressions; they
+are not flattened into an invented platform value.
+
+All normalized source fields and artifact hashes participate in package
+identity, so equal names and versions backed by different sources or artifacts
+remain distinct BOM components. Each package is limited to 256 distinct
+artifact hash records, where equal digests from different artifact locators
+remain separate evidence. Unsupported or malformed source evidence warns and remains
+absent rather than being fabricated.
 
 ## Review Blockers
 

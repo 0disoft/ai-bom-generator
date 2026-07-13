@@ -47,6 +47,10 @@ class DependencyFileTests(unittest.TestCase):
             ranged = next(package for package in result.packages if package.name == "example-range")
             wheel = next(package for package in result.packages if package.name == "example-wheel")
             self.assertEqual(pinned.version, "1.2.3")
+            self.assertEqual(
+                [(item.algorithm, item.value, item.locator) for item in pinned.package_source.artifact_hashes],
+                [("sha256", "abc123", None)],
+            )
             self.assertEqual(ranged.extras, ("fast",))
             self.assertIn("python_version", ranged.marker or "")
             self.assertEqual(wheel.source_type, "url")
@@ -83,6 +87,7 @@ class DependencyFileTests(unittest.TestCase):
             self.assertEqual(locked.version, "4.5.6")
             self.assertEqual(locked.source_type, "registry")
             self.assertEqual(locked.source_locator, "https://pypi.org/simple")
+            self.assertEqual(locked.package_source.index, "https://pypi.org/simple")
             self.assertIsNone(workspace.version)
             self.assertEqual(workspace.source_type, "editable")
             self.assertEqual(workspace.source_locator, ".")
@@ -115,6 +120,105 @@ class DependencyFileTests(unittest.TestCase):
                 },
             )
             self.assertEqual(len({package.identity_key() for package in result.packages}), 2)
+
+    def test_uv_lock_preserves_revision_and_artifact_hash_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "uv.lock"
+            path.write_text(
+                "version = 1\n\n"
+                "[[package]]\n"
+                'name = "registry-package"\n'
+                'version = "1.0.0"\n'
+                'source = { registry = "https://pypi.org/simple" }\n'
+                'sdist = { url = "https://example.invalid/package.tar.gz", hash = "sha256:sdist" }\n'
+                'wheels = [{ url = "https://example.invalid/package.whl", hash = "sha256:wheel" }]\n\n'
+                "[[package]]\n"
+                'name = "git-package"\n'
+                'source = { git = "https://example.invalid/package.git?rev=v1.2.3#deadbeef" }\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            result = parse_dependency_file(path, "uv.lock", "uv", Redactor("strict"))
+
+            registry = next(package for package in result.packages if package.name == "registry-package")
+            git = next(package for package in result.packages if package.name == "git-package")
+            self.assertEqual(registry.package_source.index, "https://pypi.org/simple")
+            self.assertEqual(
+                {(item.value, item.locator) for item in registry.package_source.artifact_hashes},
+                {
+                    ("sdist", "https://example.invalid/package.tar.gz"),
+                    ("wheel", "https://example.invalid/package.whl"),
+                },
+            )
+            self.assertEqual(git.package_source.revision, "deadbeef")
+
+    def test_malformed_artifact_hash_warns_without_fabricating_hash_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "uv.lock"
+            path.write_text(
+                "version = 1\n\n"
+                "[[package]]\n"
+                'name = "valid-package"\n'
+                'version = "1.0.0"\n'
+                'source = { registry = "https://pypi.org/simple" }\n'
+                'wheels = [{ url = "https://example.invalid/package.whl", hash = "not-a-hash" }]\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            result = parse_dependency_file(path, "uv.lock", "uv", Redactor("strict"))
+
+            self.assertEqual([package.name for package in result.packages], ["valid-package"])
+            self.assertEqual(result.packages[0].package_source.artifact_hashes, ())
+            self.assertEqual(result.skipped_entries, 1)
+            self.assertEqual(
+                result.first_issue.location if result.first_issue else None,
+                "package[0].wheels[0].hash",
+            )
+
+    def test_artifact_hash_limit_fails_without_partial_packages(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "uv.lock"
+            path.write_text(
+                "version = 1\n\n"
+                "[[package]]\n"
+                'name = "bounded-package"\n'
+                'source = { registry = "https://pypi.org/simple" }\n'
+                'wheels = [\n'
+                '  { url = "https://example.invalid/a.whl", hash = "sha256:a" },\n'
+                '  { url = "https://example.invalid/b.whl", hash = "sha256:b" },\n'
+                "]\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            with patch.object(dependency_files, "MAX_ARTIFACT_HASH_RECORDS_PER_PACKAGE", 1):
+                with self.assertRaises(DependencyFileLimitError):
+                    parse_dependency_file(path, "uv.lock", "uv", Redactor("strict"))
+
+    def test_malformed_uv_source_warns_without_fabricating_locator(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "uv.lock"
+            path.write_text(
+                "version = 1\n\n"
+                "[[package]]\n"
+                'name = "malformed-source"\n'
+                'source = { registry = 42 }\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            result = parse_dependency_file(path, "uv.lock", "uv", Redactor("strict"))
+
+            self.assertEqual([package.name for package in result.packages], ["malformed-source"])
+            self.assertEqual(result.packages[0].source_type, "registry")
+            self.assertIsNone(result.packages[0].source_locator)
+            self.assertEqual(result.skipped_entries, 1)
+            self.assertEqual(
+                result.first_issue.location if result.first_issue else None,
+                "package[0].source.registry",
+            )
 
     def test_dependency_file_read_limit_fails_without_partial_packages(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

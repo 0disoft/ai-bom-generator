@@ -27,8 +27,11 @@ and a warning report.
 5. Collect model card paths, training-code references, dependency-file
    references, dataset references, prompt references, eval references, and
    local Git commit references when in-root Git metadata is available. Parse
-   explicitly declared `uv.lock` and requirements files into bounded normalized
-   Python package evidence unless parsing is disabled for that reference.
+   explicitly declared `uv.lock` and requirements files through one bounded
+   parser boundary into normalized package and package-source evidence unless
+   parsing is disabled for that reference. The boundary preserves source
+   locator, channel, index, platform, revision, and artifact hash fields when a
+   supported parser has direct evidence for them.
 6. Select artifacts from explicit include patterns and, only when
    `[artifacts].discovery = true`, bounded default model artifact patterns for
    `.safetensors`, `.gguf`, `.bin`, `.pt`, `.pth`, `.ckpt`, and `.onnx` files.
@@ -56,6 +59,10 @@ and a warning report.
 
 Collectors must not know exporter-specific field names. Exporters must not read
 the filesystem directly. Reporters must not mutate normalized evidence.
+Dependency parsers must return the shared package-source evidence contract and
+must leave unavailable provenance fields absent. A malformed nested provenance
+field may be skipped with `DEPENDENCY_PARSE_PARTIAL`; it must not be replaced by
+an inferred value.
 Overlapping artifact include patterns must normalize to one artifact evidence
 record per resolved target-root-relative file path.
 Declared dependency, dataset, prompt, eval, and training references must have a

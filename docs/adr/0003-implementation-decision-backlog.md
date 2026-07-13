@@ -32,6 +32,7 @@ choices from plausible candidates that still need approval.
 | Python requirement parser dependency | `packaging>=24,<27` | Approved for Python-first dependency parsing on 2026-07-10 |
 | Project lockfile | `uv.lock` | Approved by uv adoption on 2026-07-06 |
 | Dependency lockfile intake | Explicit config-declared file references plus bounded parsing for `uv.lock` and requirements files | Approved for Python-first expansion on 2026-07-10 |
+| Dependency parser boundary | Parser-neutral package source evidence preserving optional locator, channel, index, platform, revision, and artifact hashes | Approved for v0.4.0 dependency expansion on 2026-07-13 |
 | Artifact discovery opt-in | `[artifacts].discovery = true` adds bounded default model artifact patterns in config only | Approved for MVP polish on 2026-07-09 |
 | Artifact discovery CLI flag | CLI override for artifact discovery | Deferred |
 | Action wrapper | Composite GitHub Action invoking `uv run --project` | Approved for MVP on 2026-07-07 |
@@ -68,7 +69,9 @@ choices from plausible candidates that still need approval.
   unavailable or unsupported AI fields instead of fabricating evidence.
 - Dependency lockfile support remains config-driven and never discovers files
   implicitly. Explicit `uv.lock` and requirements-file references may produce
-  normalized Python package evidence through bounded local parsing. Recursive
+  normalized package evidence through bounded local parsing. Every parser must
+  map directly evidenced source fields into the shared source contract without
+  flattening or inferring unavailable provenance. Recursive
   requirement includes, constraints, editable installs, package downloads, and
   completeness claims remain unsupported; skipped or malformed entries must
   produce warnings instead of fabricated package components.

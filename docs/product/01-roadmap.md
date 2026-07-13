@@ -57,8 +57,8 @@ later exporter and CI integrations.
 
 ## v0.4.0 Dependency Expansion
 
-- Introduce a parser boundary that preserves package source, channel, platform,
-  revision, and artifact hash evidence across lockfile formats.
+- The parser boundary now preserves package source, channel or index, platform,
+  revision, and artifact hash evidence without flattening unavailable fields.
 - Add bounded `conda-lock` support first, then evaluate Poetry and Pipenv from
   real fixtures instead of filename-only detection.
 - Keep dependency discovery explicit and config-driven. Unsupported or malformed

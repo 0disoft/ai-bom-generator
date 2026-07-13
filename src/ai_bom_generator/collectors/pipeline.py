@@ -595,7 +595,8 @@ def _collect_dependencies(
                     object_kind="dependency",
                     object_id=relative_path,
                     message=(
-                        f"Skipped {result.skipped_entries} unsupported or malformed dependency entries in "
+                        f"Skipped {result.skipped_entries} unsupported or malformed dependency entries or "
+                        "evidence fields in "
                         f"{relative_path}; first issue at {result.first_issue.location}: "
                         f"{result.first_issue.reason}."
                     ),
