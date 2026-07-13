@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.0 (Unreleased)
+## v0.3.0
 
 - Adds an optional producer-owned generation marker protocol that rejects
   active or changed multi-file generations and preserves the previous committed
