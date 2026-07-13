@@ -50,7 +50,8 @@ later exporter and CI integrations.
 
 - Define a producer-owned generation marker contract for multi-file model
   snapshots. Do not claim cross-file generation consistency until collection
-  verifies the same marker before and after all selected reads.
+  verifies the approved protocol before and after all selected reads. The
+  proposed contract is recorded in `docs/adr/0004-producer-generation-marker.md`.
 - Add bounded performance regression evidence for 100, 500, and 1,000 declared
   components. Record time and memory budgets before optimizing schema validation.
 - Add an optional machine-readable hard-failure report without changing the

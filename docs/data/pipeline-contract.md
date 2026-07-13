@@ -94,13 +94,14 @@ component `bom-ref` values are derived from that identity.
   fabricating artifact evidence.
 - Artifact discovery enabled but no default patterns match: warning without
   fabricating artifact evidence.
-- Stale generated output from a previous run: removed after output-path
-  validation and before collection or export starts, so a failed run does not
-  leave old BOM, warning-report, summary, or manifest files at the requested
-  destinations.
-- Output write failure: temporary files are removed, and any final files already
-  replaced by the current output staging attempt are removed before the failure
-  is surfaced.
+- Collection or export failure: preserve the previous committed BOM,
+  warning-report, summary, and manifest set. A failed run must not rewrite old
+  outputs as if they came from the failed attempt.
+- Output write failure: remove the current temporary files and restore the
+  previous committed output set after handled replacement failures.
+- Concurrent writers: serialize the final replacement phase through the
+  manifest-adjacent OS-released lock. Staging may occur concurrently, but final
+  files and the manifest must come from one lock owner.
 - Interrupted output replacement: if the process stops after one final output is
   replaced but before the manifest is replaced, consumers can reject the output
   set because the current run has no committed manifest with matching digests.
