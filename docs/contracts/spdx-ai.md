@@ -59,6 +59,10 @@ Dependency package source evidence is emitted as `aiBom:sourceType`, optional
 `aiBom:sourcePlatform`, and `aiBom:sourceRevision` fields. Bounded artifact hash
 evidence is emitted as `aiBom:artifactHashes` objects with `algorithm`,
 `hashValue`, and an optional strict-redacted `locator`.
+Unified conda-lock package entries use the same fields: their declared platform
+maps to `aiBom:sourcePlatform`, a metadata channel maps to
+`aiBom:sourceChannel` only when it matches the package URL, and lockfile hashes
+remain bounded `aiBom:artifactHashes` evidence.
 
 ## Explicit Gaps
 

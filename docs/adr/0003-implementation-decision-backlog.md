@@ -30,8 +30,9 @@ choices from plausible candidates that still need approval.
 | Package metadata | `pyproject.toml` with setuptools build backend | Approved by implementation kickoff on 2026-07-06 |
 | Schema validation dependency | `jsonschema>=4.25,<5` | Approved by implementation kickoff on 2026-07-06 |
 | Python requirement parser dependency | `packaging>=24,<27` | Approved for Python-first dependency parsing on 2026-07-10 |
+| YAML parser dependency | `pyyaml>=6.0.3,<7` with a restricted safe loader | Approved for bounded conda-lock v1 parsing on 2026-07-13 |
 | Project lockfile | `uv.lock` | Approved by uv adoption on 2026-07-06 |
-| Dependency lockfile intake | Explicit config-declared file references plus bounded parsing for `uv.lock` and requirements files | Approved for Python-first expansion on 2026-07-10 |
+| Dependency lockfile intake | Explicit config-declared file references plus bounded parsing for `uv.lock`, requirements files, and unified conda-lock v1 YAML | Python-first expansion approved on 2026-07-10; conda-lock approved on 2026-07-13 |
 | Dependency parser boundary | Parser-neutral package source evidence preserving optional locator, channel, index, platform, revision, and artifact hashes | Approved for v0.4.0 dependency expansion on 2026-07-13 |
 | Artifact discovery opt-in | `[artifacts].discovery = true` adds bounded default model artifact patterns in config only | Approved for MVP polish on 2026-07-09 |
 | Artifact discovery CLI flag | CLI override for artifact discovery | Deferred |
@@ -61,6 +62,13 @@ choices from plausible candidates that still need approval.
 ## Guardrails
 
 - Approved decisions may be used by implementation and release docs.
+- PyYAML is used instead of an ad hoc YAML parser because conda-lock v1 is a
+  structured YAML contract. It is MIT-licensed, actively released, supports the
+  repository's Python range, and is isolated behind the dependency parser
+  boundary. The loader uses safe constructors, rejects aliases and duplicate
+  keys, and is bounded by file size and nesting depth. Removal requires replacing
+  only the conda-lock adapter; it does not affect the normalized domain model or
+  exporters.
 - Proposed and deferred decisions must not be implemented as final choices until
   the matching ADR or source-of-truth doc moves them out of proposed status.
 - Do not let exporter-specific fields leak into the normalized evidence model.
@@ -68,13 +76,15 @@ choices from plausible candidates that still need approval.
   mark conformance as partial, validate the local preview schema, and list
   unavailable or unsupported AI fields instead of fabricating evidence.
 - Dependency lockfile support remains config-driven and never discovers files
-  implicitly. Explicit `uv.lock` and requirements-file references may produce
-  normalized package evidence through bounded local parsing. Every parser must
+  implicitly. Explicit `uv.lock`, requirements-file, and unified conda-lock v1
+  references may produce normalized package evidence through bounded local
+  parsing. Every parser must
   map directly evidenced source fields into the shared source contract without
   flattening or inferring unavailable provenance. Recursive
-  requirement includes, constraints, editable installs, package downloads, and
-  completeness claims remain unsupported; skipped or malformed entries must
-  produce warnings instead of fabricated package components.
+  requirement includes, constraints, editable installs, Conda environment
+  solving, package downloads, and completeness claims remain unsupported;
+  skipped or malformed entries must produce warnings instead of fabricated
+  package components. Poetry and Pipenv parsing remain deferred.
 - Artifact discovery is config-driven opt-in only. It must not run when
   `[artifacts].discovery` is absent or false, and it must reuse artifact budget,
   symlink, target-root, and no-fabrication warning policies.

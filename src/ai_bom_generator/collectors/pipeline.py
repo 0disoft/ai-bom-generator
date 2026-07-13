@@ -550,7 +550,8 @@ def _collect_dependencies(
                     source=warning_source,
                     remediation=(
                         "Use type = \"uv\" for uv.lock, type = \"pip\" or \"requirements\" "
-                        "for requirements files, or set parse = false."
+                        "for requirements files, type = \"conda-lock\" for unified conda-lock "
+                        "YAML files, or set parse = false."
                     ),
                 )
             )

@@ -81,9 +81,13 @@ and 25 GiB total selected artifact bytes per run. A budget hit is reported in
 the warning report and JSON summary, and the over-budget pattern or artifact is
 skipped.
 
+Dependency parsing supports explicitly selected `uv.lock`, requirements files,
+and unified conda-lock v1 YAML. It does not auto-discover lockfiles, solve Conda
+environments, or support Conda explicit/environment lock formats. Poetry and
+Pipenv parsing remain deferred pending fixture-backed design.
+
 ## Still UNDECIDED
 
-- Support for dependency formats beyond `uv.lock` and requirements files.
 - CLI override for artifact discovery.
 - Configurable artifact budget overrides.
 

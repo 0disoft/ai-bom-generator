@@ -14,7 +14,7 @@ honestly. They should be synthetic and safe to publish.
 | --- | --- |
 | `complete-project` | Full metadata, artifact digest, dependencies, dataset, prompt, eval, and training references. Covered by CLI smoke, schema, and deterministic-output tests. |
 | `dependency-lockfiles` | Explicit requirements and `uv.lock` files map to CycloneDX library and SPDX software package elements without resolution or downloads, while requirements hash options remain package-source evidence. Covered by parser and CLI integration tests. |
-| `ml-ecosystem-dependencies` | Synthetic Transformers, PyTorch CUDA, ONNX Runtime, and GGUF dependency shapes preserve source types, indexes, revisions, artifact hashes, local versions, markers, ranges, extras, and remote direct references. Covered by parser-profile and combined CycloneDX/SPDX integration tests. |
+| `ml-ecosystem-dependencies` | Synthetic Transformers, PyTorch CUDA, ONNX Runtime, GGUF, and unified conda-lock v1 shapes preserve source types, indexes or channels, platforms, revisions, artifact hashes, local versions, markers, ranges, extras, and remote direct references. The conda-lock fixture covers Conda and pip managers plus duplicate name/version identities across platforms. Covered by parser-profile and combined CycloneDX/SPDX integration tests. |
 | `sparse-project` | Missing optional metadata appears as warnings, not inferred facts. Covered by CLI warning tests. |
 | `invalid-config` | Invalid config fails with actionable location. Covered by CLI invalid-input tests. |
 | `missing-artifact` | Unmatched artifact include patterns warn without fabricating artifact evidence. Covered by CLI warning tests. |

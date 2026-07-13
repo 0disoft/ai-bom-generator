@@ -9,6 +9,13 @@
   and wheel hashes, while malformed evidence fields warn instead of producing
   invented hash claims.
 - Bounds artifact hash evidence to 256 distinct records per package.
+- Adds bounded, config-explicit conda-lock v1 YAML parsing for Conda and pip
+  package entries, preserving declared platforms, matched channels, remote
+  locators, and MD5 or SHA-256 artifact hashes without solving environments or
+  accessing the network.
+- Rejects conda-lock aliases, duplicate mapping keys, excessive nesting,
+  oversized files, excessive package arrays, and malformed package evidence
+  without fabricating components.
 
 ## v0.3.1
 

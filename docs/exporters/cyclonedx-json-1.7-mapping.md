@@ -22,7 +22,7 @@ mapping constraints that must stay true as the exporter matures.
   `ai-bom:generation-marker:path` and
   `ai-bom:generation-marker:sha-256` model properties without exposing the raw
   generation value.
-- Map parsed Python dependency packages to `library` components. Emit `version`
+- Map parsed dependency packages to `library` components. Emit `version`
   only for exact pins or lockfile versions, and preserve requirement, marker,
   extras, source path, source type, locator, channel, index, platform, revision,
   artifact hashes, and lockfile format as `ai-bom:dependency:*` properties.

@@ -14,6 +14,11 @@ path = "lockfiles/transformers/uv.lock"
 type = "uv"
 
 [[dependencies]]
+name = "conda-ai-stack"
+path = "lockfiles/conda/conda-lock.yml"
+type = "conda-lock"
+
+[[dependencies]]
 name = "pytorch-cuda"
 path = "requirements/pytorch-cu128.txt"
 type = "pip"

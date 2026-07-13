@@ -47,8 +47,8 @@ The executable warning-report schema lives at
 | `ARTIFACT_SIZE_LIMIT_EXCEEDED` | Selected artifact exceeded the fixed MVP single-file byte budget. | CLI artifact budget tests |
 | `ARTIFACT_TOTAL_SIZE_LIMIT_EXCEEDED` | Selected artifact would exceed the fixed MVP total artifact byte budget. | CLI artifact budget tests |
 | `UNSUPPORTED_DEPENDENCY_FORMAT` | Explicit dependency file uses a format that is not supported for package parsing. | CLI dependency format warning test |
-| `DEPENDENCY_PARSE_FAILED` | Supported dependency file is unreadable as its declared UTF-8/TOML format. | CLI invalid uv.lock test |
-| `DEPENDENCY_PARSE_PARTIAL` | Supported dependency file contains skipped directives or malformed entries while retaining valid packages. | CLI malformed requirements test |
+| `DEPENDENCY_PARSE_FAILED` | Supported dependency file is unreadable or invalid as its declared UTF-8, TOML, or bounded YAML format. | CLI invalid uv.lock and conda-lock parser tests |
+| `DEPENDENCY_PARSE_PARTIAL` | Supported dependency file contains skipped directives or malformed entries while retaining valid packages. | CLI malformed requirements and conda-lock parser tests |
 | `DEPENDENCY_FILE_LIMIT_EXCEEDED` | Dependency file exceeds a fixed byte, logical-line, or package-count safety limit. | Dependency parser and CLI limit tests |
 | `SKIPPED_SYMLINK` | Symlink artifact or metadata file skipped. | `symlink-escape` fixture family and CLI model-card symlink tests |
 | `MISSING_PROMPTS_REFERENCE_FILE` | Optional prompt file reference could not be read. | `symlink-escape` CLI tests |

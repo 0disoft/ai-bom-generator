@@ -1,0 +1,77 @@
+version: 1
+metadata:
+  content_hash:
+    linux-64: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    osx-arm64: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  channels:
+    - url: conda-forge
+      used_env_vars: []
+    - url: https://conda.anaconda.org/pytorch
+      used_env_vars: []
+  platforms:
+    - linux-64
+    - osx-arm64
+  sources:
+    - environment.yml
+package:
+  - name: pytorch
+    version: "2.7.1"
+    manager: conda
+    platform: linux-64
+    dependencies:
+      python: ">=3.12,<3.13"
+    url: https://conda.anaconda.org/pytorch/linux-64/pytorch-2.7.1-py3.12_cuda12.8_0.conda
+    hash:
+      md5: "11111111111111111111111111111111"
+      sha256: "1111111111111111111111111111111111111111111111111111111111111111"
+    build: py3.12_cuda12.8_0
+    category: main
+    optional: false
+  - name: numpy
+    version: "2.2.6"
+    manager: conda
+    platform: linux-64
+    dependencies:
+      python: ">=3.12"
+    url: https://conda.anaconda.org/conda-forge/linux-64/numpy-2.2.6-py312h72c5963_0.conda
+    hash:
+      md5: "22222222222222222222222222222222"
+      sha256: "2222222222222222222222222222222222222222222222222222222222222222"
+    build: py312h72c5963_0
+    category: main
+    optional: false
+  - name: numpy
+    version: "2.2.6"
+    manager: conda
+    platform: osx-arm64
+    dependencies:
+      python: ">=3.12"
+    url: https://conda.anaconda.org/conda-forge/osx-arm64/numpy-2.2.6-py312hcb1e3ce_0.conda
+    hash:
+      md5: "33333333333333333333333333333333"
+      sha256: "3333333333333333333333333333333333333333333333333333333333333333"
+    build: py312hcb1e3ce_0
+    category: main
+    optional: false
+  - name: onnxruntime-gpu
+    version: "1.22.0"
+    manager: pip
+    platform: linux-64
+    dependencies:
+      numpy: ">=1.21.6"
+    url: https://files.pythonhosted.org/packages/synthetic/onnxruntime_gpu-1.22.0-manylinux.whl
+    hash:
+      sha256: "4444444444444444444444444444444444444444444444444444444444444444"
+    category: main
+    optional: false
+  - name: onnxruntime-gpu
+    version: "1.22.0"
+    manager: pip
+    platform: osx-arm64
+    dependencies:
+      numpy: ">=1.21.6"
+    url: https://files.pythonhosted.org/packages/synthetic/onnxruntime_gpu-1.22.0-macosx.whl
+    hash:
+      sha256: "5555555555555555555555555555555555555555555555555555555555555555"
+    category: main
+    optional: false

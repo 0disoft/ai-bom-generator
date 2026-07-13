@@ -96,15 +96,16 @@ name = "minimal-example-dataset"
 license_declared = "NOASSERTION"
 ```
 
-Explicit `uv.lock` and requirements-file references are parsed locally into
-package components by default. Set `parse = false` on a dependency reference
-to keep file-level evidence only. Includes, constraints, editable requirement
-directives, resolution, downloads, and automatic lockfile discovery are not
-performed.
+Explicit `uv.lock`, requirements-file, and unified conda-lock v1 YAML references
+are parsed locally into package components by default. Use `type = "conda-lock"`
+for a conda lockfile whose name is not `conda-lock.yml` or `*.conda-lock.yml`.
+Set `parse = false` on a dependency reference to keep file-level evidence only.
+Includes, constraints, editable requirement directives, environment solving,
+resolution, downloads, and automatic lockfile discovery are not performed.
 
 Parsed package components preserve directly evidenced source locators, indexes,
-revisions, and artifact hashes. Missing provenance stays absent, and malformed
-source fields produce warnings instead of invented values.
+channels, platforms, revisions, and artifact hashes. Missing provenance stays
+absent, and malformed source fields produce warnings instead of invented values.
 
 When `--config` is omitted, the CLI reads `aibom.toml` from the target model
 directory if that file exists. It does not search parent directories or alternate

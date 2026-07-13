@@ -29,6 +29,7 @@ REQUIRED_WHEEL_FILES = {
 REQUIRED_SDIST_FILES = {
     "tests/fixtures/ml-ecosystem-dependencies/MODEL_CARD.md",
     "tests/fixtures/ml-ecosystem-dependencies/aibom.toml",
+    "tests/fixtures/ml-ecosystem-dependencies/lockfiles/conda/conda-lock.yml",
     "tests/fixtures/ml-ecosystem-dependencies/lockfiles/transformers/uv.lock",
     "tests/fixtures/ml-ecosystem-dependencies/models/model.onnx",
     "tests/fixtures/ml-ecosystem-dependencies/requirements/gguf.txt",
@@ -41,6 +42,7 @@ ENTRY_POINT_NAME = "ai-bom"
 ENTRY_POINT_TARGET = "ai_bom_generator.cli:main"
 REQUIRED_RUNTIME_REQUIREMENTS = {
     "packaging": "<27,>=24",
+    "pyyaml": "<7,>=6.0.3",
 }
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -302,7 +304,7 @@ def _runtime_env_with_locked_dependencies() -> dict[str, str]:
 
 def _locked_dependency_roots() -> list[Path]:
     roots: set[Path] = set()
-    for module_name in ("attrs", "jsonschema", "jsonschema_specifications", "packaging", "referencing", "rpds"):
+    for module_name in ("attrs", "jsonschema", "jsonschema_specifications", "packaging", "referencing", "rpds", "yaml"):
         module = importlib.import_module(module_name)
         module_file = getattr(module, "__file__", None)
         if module_file is None:

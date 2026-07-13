@@ -27,9 +27,10 @@ and a warning report.
 5. Collect model card paths, training-code references, dependency-file
    references, dataset references, prompt references, eval references, and
    local Git commit references when in-root Git metadata is available. Parse
-   explicitly declared `uv.lock` and requirements files through one bounded
-   parser boundary into normalized package and package-source evidence unless
-   parsing is disabled for that reference. The boundary preserves source
+   explicitly declared `uv.lock`, requirements files, and unified conda-lock v1
+   YAML through one bounded parser boundary into normalized package and
+   package-source evidence unless parsing is disabled for that reference. The
+   boundary preserves source
    locator, channel, index, platform, revision, and artifact hash fields when a
    supported parser has direct evidence for them.
 6. Select artifacts from explicit include patterns and, only when

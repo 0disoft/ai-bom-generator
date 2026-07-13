@@ -59,8 +59,9 @@ later exporter and CI integrations.
 
 - The parser boundary now preserves package source, channel or index, platform,
   revision, and artifact hash evidence without flattening unavailable fields.
-- Add bounded `conda-lock` support first, then evaluate Poetry and Pipenv from
-  real fixtures instead of filename-only detection.
+- Bounded unified conda-lock v1 support is implemented with realistic Conda and
+  pip package fixtures. Evaluate Poetry and Pipenv only after this boundary is
+  stable, using real fixtures instead of filename-only detection.
 - Keep dependency discovery explicit and config-driven. Unsupported or malformed
   files must continue to warn without fabricating package components.
 

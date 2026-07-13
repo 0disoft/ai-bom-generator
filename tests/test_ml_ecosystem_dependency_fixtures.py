@@ -95,8 +95,8 @@ class MlEcosystemDependencyFixtureTests(unittest.TestCase):
 
             cyclonedx_libraries = [item for item in cyclonedx["components"] if item["type"] == "library"]
             spdx_packages = [item for item in spdx["@graph"] if item["type"] == "software_Package"]
-            self.assertEqual(len(cyclonedx_libraries), 14)
-            self.assertEqual(len(spdx_packages), 14)
+            self.assertEqual(len(cyclonedx_libraries), 19)
+            self.assertEqual(len(spdx_packages), 19)
             self.assertEqual(Counter(item["name"] for item in cyclonedx_libraries)["torch"], 2)
             self.assertEqual(Counter(item["name"] for item in spdx_packages)["torch"], 2)
             cyclonedx_properties = next(
@@ -113,6 +113,22 @@ class MlEcosystemDependencyFixtureTests(unittest.TestCase):
             self.assertEqual(cyclonedx_properties["ai-bom:dependency:artifact:0:hash"], "sha256:synthetic")
             spdx_tokenizers = next(item for item in spdx_packages if item["name"] == "tokenizers")
             self.assertEqual(spdx_tokenizers["aiBom:sourceRevision"], "0000000")
+            cyclonedx_pytorch = next(item for item in cyclonedx_libraries if item["name"] == "pytorch")
+            pytorch_properties = {item["name"]: item["value"] for item in cyclonedx_pytorch["properties"]}
+            self.assertEqual(pytorch_properties["ai-bom:dependency:lockfile-format"], "conda-lock")
+            self.assertEqual(
+                pytorch_properties["ai-bom:dependency:source-channel"],
+                "https://conda.anaconda.org/pytorch",
+            )
+            self.assertEqual(pytorch_properties["ai-bom:dependency:source-platform"], "linux-64")
+            self.assertEqual(pytorch_properties["ai-bom:dependency:artifact:0:hash"], "md5:11111111111111111111111111111111")
+            spdx_numpy = [
+                item
+                for item in spdx_packages
+                if item["name"] == "numpy" and item["aiBom:lockfileFormat"] == "conda-lock"
+            ]
+            self.assertEqual({item["aiBom:sourcePlatform"] for item in spdx_numpy}, {"linux-64", "osx-arm64"})
+            self.assertTrue(all(item["aiBom:sourceChannel"] == "conda-forge" for item in spdx_numpy))
             self.assertEqual(_warning_codes(cyclonedx_summary), {"DEPENDENCY_PARSE_PARTIAL"})
             self.assertEqual(_warning_codes(spdx_summary), {"DEPENDENCY_PARSE_PARTIAL"})
 

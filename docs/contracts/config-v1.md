@@ -112,14 +112,19 @@ are also parsed unless `parse = false`:
 - `type = "pip"` or `type = "requirements"` parses PEP 508 requirement lines,
   including exact pins, ranges, markers, extras, direct URLs, continuations,
   and hash options.
+- `type = "conda-lock"` parses the unified conda-lock v1 YAML package array,
+  including Conda and pip managers, declared platforms, remote package URLs,
+  matched metadata channels, and MD5 or SHA-256 artifact hashes.
 - When `type` is absent, `requirements*.txt` and `requirements.lock` paths use
-  the requirements parser.
+  the requirements parser. `conda-lock.yml`, `conda-lock.yaml`, and
+  `*.conda-lock.yml|yaml` paths use the conda-lock parser.
 
 Requirements-file includes, constraints, editable installs, local paths,
-dependency resolution, package downloads, and automatic discovery are not
-followed. Unsupported or malformed entries produce warnings and no fabricated
-package components. Package-lock, Poetry, Conda, and other formats remain
-unsupported.
+dependency or Conda environment solving, package downloads, and automatic
+discovery are not followed. Conda explicit and environment lock formats are not
+treated as unified conda-lock YAML. Unsupported or malformed entries produce
+warnings and no fabricated package components. Package-lock, Poetry, Pipenv,
+and other formats remain unsupported.
 
 Parsed package evidence uses one normalized source contract. It preserves the
 source kind plus strict-redacted locator, channel, index, platform, revision,
@@ -128,7 +133,9 @@ fields. uv registry sources populate the source index, uv Git sources preserve
 their resolved fragment or declared revision, uv sdist and wheel entries retain
 their hashes and locators, and requirements retain `--hash` plus recognized
 direct-URL fragment hashes. Platform markers remain marker expressions; they
-are not flattened into an invented platform value.
+are not flattened into an invented platform value. Conda-lock package platforms
+must appear in `metadata.platforms`; package URLs are preserved as locators, and
+channels are emitted only when a declared metadata channel matches that URL.
 
 All normalized source fields and artifact hashes participate in package
 identity, so equal names and versions backed by different sources or artifacts
