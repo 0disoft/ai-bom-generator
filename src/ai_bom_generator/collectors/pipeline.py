@@ -12,6 +12,10 @@ from ai_bom_generator.collectors.dependency_files import (
     detect_dependency_format,
     parse_dependency_file,
 )
+from ai_bom_generator.collectors.generation_marker import (
+    collect_initial_generation_marker,
+    verify_final_generation_marker,
+)
 from ai_bom_generator.config import LoadedConfig
 from ai_bom_generator.domain.artifact import ModelArtifact
 from ai_bom_generator.domain.dependency import DependencyPackage
@@ -56,6 +60,7 @@ _KNOWN_MODEL_CARD = "MODEL_CARD.md"
 
 
 def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redactor) -> NormalizedEvidence:
+    initial_generation_marker = collect_initial_generation_marker(config, policy)
     warnings: list[Warning] = []
     if redactor.mode == "off":
         warnings.append(
@@ -77,10 +82,12 @@ def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redacto
     training = _collect_path_references("training", config, policy, warnings, redactor, optional_paths=True)
     _ensure_unique_reference_ids([*dependencies, *datasets, *prompts, *evals, *training])
     git = _collect_git(policy, warnings)
+    generation_marker = verify_final_generation_marker(config, policy, initial_generation_marker)
 
     unique_dependency_packages = {package.identity_key(): package for package in dependency_packages}
     return NormalizedEvidence(
         target_root=policy.root.as_posix(),
+        generation_marker=generation_marker,
         model_metadata=tuple(sorted(model_metadata)),
         artifacts=tuple(sorted(artifacts)),
         dependencies=tuple(sorted(dependencies)),

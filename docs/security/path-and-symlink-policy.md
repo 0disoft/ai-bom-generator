@@ -15,7 +15,7 @@ intended project boundary by default.
 - Treat all user-provided paths and globs as untrusted.
 - Block target-root escape by default.
 - Do not follow symlinks by default.
-- Open config, dependency, artifact, and Git metadata files through one
+- Open config, generation marker, dependency, artifact, and Git metadata files through one
   no-follow descriptor boundary. Compare `lstat` identity with the opened
   descriptor before reading, then use descriptor metadata for stability checks.
 - Do not read hidden, ignored, cache, dependency, or build-output paths as source
@@ -48,6 +48,8 @@ intended project boundary by default.
 - Required artifact inaccessible: collector failure.
 - Required artifact changes while hashing: collector failure without emitting
   BOM evidence for a mixed size and digest snapshot.
+- Unsafe, active, or changed generation marker: fail without replacing the
+  previous committed output set or exposing the raw producer generation.
 - Artifact pattern or byte budget hit: machine-readable warning without emitting
   the skipped artifact as collected BOM evidence.
 - Unsafe artifact include or exclude glob: invalid-input failure before

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.0 (Unreleased)
+
+- Adds an optional producer-owned generation marker protocol that rejects
+  active or changed multi-file generations and preserves the previous committed
+  output set on failure.
+- Exports only the marker's target-root-relative path and SHA-256 digest; the
+  opaque producer generation value is never copied into BOM output.
+
 ## v0.2.2
 
 - Redacts userinfo credentials from non-HTTP hierarchical URIs, preserves

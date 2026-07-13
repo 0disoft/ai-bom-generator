@@ -26,6 +26,8 @@ collect. It must make explicit references easy and avoid broad hidden discovery.
 - Declare training-code references.
 - Choose exporter and output path when not supplied by CLI flags.
 - Configure warning policy.
+- Optionally declare a producer-owned generation marker for cross-file snapshot
+  consistency.
 
 ## Precedence
 
@@ -48,6 +50,19 @@ artifact include and exclude patterns, artifact discovery opt-in, dependency
 references, dataset references, prompt references, eval references, and training
 references. The runtime validates discovered and explicit config files against
 the packaged schema before output files are written.
+
+An optional marker uses this shape:
+
+```toml
+[generation]
+marker = ".aibom-generation.json"
+```
+
+The marker file follows `docs/adr/0004-producer-generation-marker.md`. It must
+be a complete, target-root-local, non-symlink JSON file no larger than 4 KiB.
+The producer enters `writing` before governed file changes and publishes a new
+complete generation afterward. Unconfigured projects retain file-by-file
+stability checks but do not claim cross-file generation consistency.
 
 `[output].format` may be `cyclonedx-json-1.7` or `spdx-ai`. The SPDX option is a
 preview mapping to SPDX 3.0.1 AI Profile terms and marks conformance as

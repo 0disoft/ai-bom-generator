@@ -150,6 +150,9 @@ def _model_package(evidence: NormalizedEvidence, creation_info_id: str, model_id
         package["downloadLocation"] = download_location
     if release_time := _first_present(values, ("release_time", "release_date")):
         package["aiBom:releaseTime"] = release_time
+    if evidence.generation_marker:
+        package["aiBom:generationMarkerPath"] = evidence.generation_marker.path
+        package["aiBom:generationMarkerSha256"] = evidence.generation_marker.digest
     return package
 
 

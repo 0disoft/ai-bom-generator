@@ -19,36 +19,40 @@ and a warning report.
 1. Resolve the target model directory.
 2. Load explicit AI-BOM config when provided, otherwise discover
    `<model-directory>/aibom.toml` when present.
-3. Discover known metadata files without reading arbitrary generated output as truth.
+3. When `[generation].marker` is configured, read and validate one complete
+   producer generation before any governed evidence collection.
+4. Discover known metadata files without reading arbitrary generated output as truth.
    MVP discovers the in-root `MODEL_CARD.md` path only; it does not copy or
    parse model-card contents.
-4. Collect model card paths, training-code references, dependency-file
+5. Collect model card paths, training-code references, dependency-file
    references, dataset references, prompt references, eval references, and
    local Git commit references when in-root Git metadata is available. Parse
    explicitly declared `uv.lock` and requirements files into bounded normalized
    Python package evidence unless parsing is disabled for that reference.
-5. Select artifacts from explicit include patterns and, only when
+6. Select artifacts from explicit include patterns and, only when
    `[artifacts].discovery = true`, bounded default model artifact patterns for
    `.safetensors`, `.gguf`, `.bin`, `.pt`, `.pth`, `.ckpt`, and `.onnx` files.
-6. Apply fixed MVP artifact budgets before hashing: at most 256 candidate paths
+7. Apply fixed MVP artifact budgets before hashing: at most 256 candidate paths
    per include pattern after excludes, at most 16 GiB for one artifact, and at
    most 25 GiB of selected artifacts per run. Budget hits are machine-readable
    warnings and the over-budget pattern or artifact is skipped.
-7. Hash selected model artifacts and checkpoints through one open file
+8. Hash selected model artifacts and checkpoints through one open file
    descriptor. The recorded size and SHA-256 digest must come from the same
    stable file snapshot, verified by comparing file metadata before and after
    hashing.
-8. Normalize collected evidence into an internal BOM model.
-9. Export to the selected standards-backed BOM format.
-10. Stage requested JSON outputs in destination-local temporary files.
-11. Build a generation manifest from the staged file bytes, including a
+9. Reopen the configured generation marker after all governed reads and require
+   byte-equivalence with the initial complete marker.
+10. Normalize collected evidence into an internal BOM model.
+11. Export to the selected standards-backed BOM format.
+12. Stage requested JSON outputs in destination-local temporary files.
+13. Build a generation manifest from the staged file bytes, including a
    run-unique generation id plus role, path, size, and SHA-256 digest for every
    final output in the set.
-12. Acquire the manifest-adjacent output-set lock, preserve any previous
+14. Acquire the manifest-adjacent output-set lock, preserve any previous
    committed files as destination-local rollback copies, replace final BOM,
    warning-report, and summary files, then replace the manifest last as the
    commit marker. Restore the previous set on a handled replacement failure.
-13. Emit missing-metadata warnings and machine-readable summary output.
+15. Emit missing-metadata warnings and machine-readable summary output.
 
 Collectors must not know exporter-specific field names. Exporters must not read
 the filesystem directly. Reporters must not mutate normalized evidence.
@@ -78,6 +82,10 @@ component `bom-ref` values are derived from that identity.
 - Artifact changed while hashing: collector failure before writing generated
   output. The caller must retry after checkpoint writes finish or point the
   config at an immutable or staged artifact copy.
+- Initial generation marker missing, unsafe, oversized, malformed, duplicated,
+  or not complete: invalid-input failure before governed collection.
+- Final generation marker missing, unsafe, malformed, not complete, or changed:
+  collector failure while preserving the previous committed output set.
 - Artifact include pattern exceeds the match-count budget: warning, skip that
   pattern, and continue with other patterns.
 - Artifact exceeds the single-file byte budget: warning, skip that artifact, and

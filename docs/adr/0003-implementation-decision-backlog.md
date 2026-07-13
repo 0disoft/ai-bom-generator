@@ -48,7 +48,7 @@ choices from plausible candidates that still need approval.
 | Staged output writes | Destination-local temp-file writes, stale-output cleanup, and partial-output cleanup | Approved for MVP hardening on 2026-07-08 |
 | Generation manifest | Manifest-backed run identity and output-set verification | Approved for MVP hardening on 2026-07-08 |
 | Artifact snapshot consistency | Single-descriptor stat/hash/stat validation with conservative failure on mutation | Approved for MVP hardening on 2026-07-08 |
-| Cross-file generation consistency | Config-declared producer seqlock marker from ADR 0004 | Proposed; implementation requires owner approval |
+| Cross-file generation consistency | Optional `[generation].marker` producer seqlock marker from ADR 0004 | Approved by owner on 2026-07-13 for v0.3.0 |
 | Artifact immutable staging | Tool-managed immutable artifact copy before hashing | Deferred |
 | Artifact glob budgets | Fixed MVP match-count, single-file byte, and total-byte budgets with warning skips | Approved for MVP hardening on 2026-07-09 |
 | Configurable artifact budgets | Config or CLI overrides for artifact match-count and byte budgets | Deferred |

@@ -100,6 +100,16 @@ def _model_properties(evidence: NormalizedEvidence) -> list[dict[str, str]]:
         {"name": "ai-bom:completeness-status", "value": evidence.completeness_status},
         {"name": "ai-bom:warning-count", "value": str(evidence.warning_count)},
     ]
+    if evidence.generation_marker:
+        properties.extend(
+            [
+                {"name": "ai-bom:generation-marker:path", "value": evidence.generation_marker.path},
+                {
+                    "name": "ai-bom:generation-marker:sha-256",
+                    "value": evidence.generation_marker.digest,
+                },
+            ]
+        )
     for reference in evidence.model_metadata:
         for key, value in reference.values:
             properties.append({"name": f"ai-bom:model:{key}", "value": value})

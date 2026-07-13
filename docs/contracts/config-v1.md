@@ -28,6 +28,8 @@ the CLI uses inline defaults and reports missing optional metadata as warnings.
 ## Candidate Sections
 
 - `warning_policy`: missing metadata and unsupported field behavior.
+- `generation.marker`: optional target-root-relative producer generation marker
+  path governed by ADR 0004.
 - `output.format`: `cyclonedx-json-1.7` or `spdx-ai`.
 - `model`: declared model metadata and model-card path.
 - `artifacts`: include and exclude patterns for model artifacts and checkpoints,
@@ -73,6 +75,19 @@ Discovery applies built-in excludes for hidden, cache, dependency, virtualenv,
 build, and Git metadata paths before hashing. Discovery still uses the artifact
 match-count, single-file byte, total-byte, target-root, symlink, and
 no-fabrication warning policies.
+
+## Producer Generation Marker
+
+`[generation].marker` optionally points to a caller-owned JSON file inside the
+target root. The file is limited to 4 KiB, may not be a symlink, and must contain
+only `schema_version`, `generation`, and `state`. Collection starts only from a
+`complete` marker and succeeds only when the same complete marker bytes remain
+after all governed reads.
+
+The producer must atomically publish `state = "writing"` before changing any
+governed input, then atomically publish a new generation with
+`state = "complete"` after finalizing every input. The CLI never creates or
+repairs the marker and never copies the raw generation value into output.
 
 ## Precedence
 

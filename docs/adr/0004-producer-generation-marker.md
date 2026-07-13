@@ -1,6 +1,6 @@
 # Producer Generation Marker Contract
 
-Status: Proposed
+Status: Accepted on 2026-07-13
 Owner: UNASSIGNED
 
 ## Context
@@ -14,7 +14,7 @@ end of its write.
 
 ## Decision
 
-Add an optional, config-declared producer generation marker after owner approval.
+Add an optional `[generation].marker` producer generation marker.
 The marker is caller-owned input inside the target root. The CLI never creates,
 updates, or repairs it.
 
@@ -103,7 +103,9 @@ proposal is approved and implemented.
 - CLI and GitHub Action tests proving previous outputs are preserved on marker
   failure.
 
-## Approval Gate
+## Approval Record
 
-Implementation is blocked until the owner approves the marker config key, JSON
-shape, 4 KiB limit, failure classification, and exported digest properties.
+The owner approved implementation on 2026-07-13 with `[generation].marker`, the
+documented JSON shape, the 4 KiB limit, invalid-input classification for the
+initial read, collector-failure classification for the final read, and digest-
+only exporter properties.

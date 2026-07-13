@@ -18,6 +18,10 @@ mapping constraints that must stay true as the exporter matures.
 - Keep prompt, dataset, eval, and model-card contents out of generated summaries.
 - Map collected local Git HEAD/ref/commit evidence into `ai-bom:git:*`
   properties without reading Git metadata from the exporter.
+- Map configured producer generation provenance to
+  `ai-bom:generation-marker:path` and
+  `ai-bom:generation-marker:sha-256` model properties without exposing the raw
+  generation value.
 - Map parsed Python dependency packages to `library` components. Emit `version`
   only for exact pins or lockfile versions, and preserve requirement, marker,
   extras, source path, source type, and lockfile format as

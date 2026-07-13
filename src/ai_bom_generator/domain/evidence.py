@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from ai_bom_generator.domain.artifact import ModelArtifact
 from ai_bom_generator.domain.dependency import DependencyPackage
+from ai_bom_generator.domain.generation import GenerationMarkerEvidence
 from ai_bom_generator.domain.reference import DeclaredReference
 from ai_bom_generator.domain.warning import Warning
 
@@ -11,6 +12,7 @@ from ai_bom_generator.domain.warning import Warning
 @dataclass(frozen=True)
 class NormalizedEvidence:
     target_root: str
+    generation_marker: GenerationMarkerEvidence | None
     model_metadata: tuple[DeclaredReference, ...]
     artifacts: tuple[ModelArtifact, ...]
     dependencies: tuple[DeclaredReference, ...]

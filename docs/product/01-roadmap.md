@@ -46,7 +46,7 @@ later exporter and CI integrations.
 - Deterministic output compatibility tests cover both exporter paths.
 - Consider bridges to registry, release, or provenance tooling only after local generation is solid.
 
-## v0.2.x Hardening
+## v0.3.0 Hardening
 
 - Define a producer-owned generation marker contract for multi-file model
   snapshots. Do not claim cross-file generation consistency until collection
@@ -57,7 +57,7 @@ later exporter and CI integrations.
 - Add an optional machine-readable hard-failure report without changing the
   existing exit-code contract or default terminal behavior.
 
-## v0.3.0 Dependency Expansion
+## v0.4.0 Dependency Expansion
 
 - Introduce a parser boundary that preserves package source, channel, platform,
   revision, and artifact hash evidence across lockfile formats.
