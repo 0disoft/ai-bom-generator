@@ -52,6 +52,10 @@ jobs:
       - name: Run unit and contract tests
         run: uv run --python ${{ matrix.python-version }} python -m unittest discover -s tests -v
 
+      - name: Check bounded component performance
+        if: matrix.python-version == '3.12'
+        run: uv run --python 3.12 python scripts/benchmark_components.py --check --json
+
       - name: Build distributions
         run: uv build
 

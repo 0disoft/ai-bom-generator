@@ -38,6 +38,25 @@ no package components are emitted for that file, and the collector emits
 
 ## Required Evidence
 
+The component-generation regression gate exercises 100, 500, and 1,000
+explicit dataset components through config validation, collection, CycloneDX
+mapping, schema validation, and committed JSON output. Each size uses three
+uninstrumented runs for median wall-clock time and one separate traced run for
+Python allocation peak, so memory instrumentation does not pollute latency.
+The gate uses these intentionally low-noise ceilings:
+
+| Components | Median time | Allocation peak |
+| ---: | ---: | ---: |
+| 100 | 2 seconds | 16 MiB |
+| 500 | 4 seconds | 32 MiB |
+| 1,000 | 8 seconds | 64 MiB |
+
+These are regression tripwires, not throughput promises. CI runs the gate once
+on Python 3.12; the existing test matrix continues to cover Python 3.13 and
+3.14 compatibility. Tightening a ceiling requires repeated hosted evidence.
+Optimization or validator caching requires a measured breach or a separately
+recorded performance decision.
+
 - Source of truth: docs/architecture/03-quality-attributes.md
 - Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md

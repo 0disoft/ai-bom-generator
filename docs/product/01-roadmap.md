@@ -46,12 +46,10 @@ later exporter and CI integrations.
 - Deterministic output compatibility tests cover both exporter paths.
 - Consider bridges to registry, release, or provenance tooling only after local generation is solid.
 
-## v0.3.0 Hardening
+## v0.3.1 Hardening
 
-- Define a producer-owned generation marker contract for multi-file model
-  snapshots. Do not claim cross-file generation consistency until collection
-  verifies the approved protocol before and after all selected reads. The
-  proposed contract is recorded in `docs/adr/0004-producer-generation-marker.md`.
+- The producer-owned generation marker contract for multi-file model snapshots
+  shipped in v0.3.0 and remains the baseline for cross-file consistency claims.
 - Add bounded performance regression evidence for 100, 500, and 1,000 declared
   components. Record time and memory budgets before optimizing schema validation.
 - Add an optional machine-readable hard-failure report without changing the

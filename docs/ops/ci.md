@@ -28,6 +28,9 @@ The repository CI workflow lives at `.github/workflows/ci.yml`.
 - Runner: `ubuntu-latest`.
 - Package runtime matrix: Python 3.12, 3.13, and 3.14. The published composite
   Action intentionally provisions Python 3.12 as its managed runtime.
+- Component performance: Python 3.12 runs the documented 100, 500, and 1,000
+  component median-runtime and traced-allocation regression gate once per CI
+  workflow to avoid tripling the benchmark cost across the compatibility matrix.
 - Environment manager: `uv`, locked by `uv.lock`.
 - Action dependencies use exact semantic-version pins. The current values are
   owned by `.github/workflows/*.yml` and `action.yml`.
