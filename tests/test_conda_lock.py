@@ -25,9 +25,48 @@ FIXTURE = (
     / "conda"
     / "conda-lock.yml"
 )
+CORPUS_FIXTURE = Path(__file__).parent / "fixtures" / "conda-lock-corpus" / "official-shapes-v1.yml"
 
 
 class CondaLockTests(unittest.TestCase):
+    def test_official_shape_corpus_preserves_legacy_ordering_and_platform_evidence(self) -> None:
+        result = parse_dependency_file(
+            CORPUS_FIXTURE,
+            "fixtures/conda-lock-corpus/official-shapes-v1.yml",
+            "conda-lock",
+            Redactor("strict"),
+        )
+
+        self.assertEqual(result.skipped_entries, 0)
+        self.assertEqual(len(result.packages), 6)
+
+        noarch = [package for package in result.packages if package.name == "synthetic-noarch"]
+        self.assertEqual({package.package_source.platform for package in noarch}, {"linux-64", "osx-64"})
+        self.assertEqual({package.package_source.channel for package in noarch}, {"conda-forge"})
+        self.assertEqual(len({package.identity_key() for package in noarch}), 2)
+        self.assertTrue(
+            all(
+                {item.algorithm for item in package.package_source.artifact_hashes} == {"md5"}
+                for package in noarch
+            )
+        )
+
+        private = next(package for package in result.packages if package.name == "synthetic-private")
+        self.assertEqual(
+            private.package_source.channel,
+            "https://packages.example.invalid/t/$PRIVATE_CHANNEL_TOKEN/ml",
+        )
+        self.assertEqual(private.package_source.platform, "linux-64")
+
+        defaults = next(package for package in result.packages if package.name == "synthetic-defaults")
+        self.assertIsNone(defaults.package_source.channel)
+        self.assertEqual(defaults.package_source.platform, "win-64")
+
+        pip_packages = [package for package in result.packages if package.source_type == "pip"]
+        self.assertEqual({package.name for package in pip_packages}, {"synthetic-sdist", "synthetic-wheel"})
+        self.assertEqual({package.package_source.platform for package in pip_packages}, {"osx-64", "win-64"})
+        self.assertTrue(all(package.package_source.channel is None for package in pip_packages))
+
     def test_detect_dependency_format_accepts_only_unified_conda_lock_names(self) -> None:
         self.assertEqual(detect_dependency_format("custom.yml", "conda-lock"), "conda-lock")
         self.assertEqual(detect_dependency_format("conda-lock.yml", None), "conda-lock")

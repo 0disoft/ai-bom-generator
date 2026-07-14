@@ -65,6 +65,16 @@ later exporter and CI integrations.
 - Keep dependency discovery explicit and config-driven. Unsupported or malformed
   files must continue to warn without fabricating package components.
 
+## v0.4.1 Compatibility Hardening
+
+- Add a publication-safe conda-lock corpus whose field ordering and combinations
+  mirror public upstream v1 fixtures across Linux, macOS, Windows, noarch Conda,
+  private-channel placeholders, MD5-only records, and pip wheel/sdist entries.
+- Keep the corpus offline and synthetic while recording which upstream shapes
+  each fixture protects.
+- Defer new dependency formats until the existing conda-lock boundary has
+  fixture-backed compatibility evidence.
+
 ## Deferred
 
 - Hosted registry.

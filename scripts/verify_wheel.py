@@ -27,6 +27,7 @@ REQUIRED_WHEEL_FILES = {
     "ai_bom_generator/exporters/spdx_ai/schema/__init__.py",
 }
 REQUIRED_SDIST_FILES = {
+    "tests/fixtures/conda-lock-corpus/official-shapes-v1.yml",
     "tests/fixtures/ml-ecosystem-dependencies/MODEL_CARD.md",
     "tests/fixtures/ml-ecosystem-dependencies/aibom.toml",
     "tests/fixtures/ml-ecosystem-dependencies/lockfiles/conda/conda-lock.yml",

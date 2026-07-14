@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.4.1 (Unreleased)
+
+- Adds a publication-safe compatibility corpus modeled on public conda-lock v1
+  fixture shapes, covering legacy field ordering, scalar and environment-variable
+  channels, MD5-only and noarch records, multiple target platforms, optional
+  categories, and pip wheel or source-distribution entries.
+- Requires the compatibility corpus in source distributions so release packaging
+  cannot silently drop the evidence used to validate conda-lock support.
+
 ## v0.4.0
 
 - Introduces one normalized dependency source boundary for lockfile parsers,

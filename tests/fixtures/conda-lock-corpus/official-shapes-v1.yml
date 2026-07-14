@@ -1,0 +1,88 @@
+# Field ordering and combinations mirror public conda-lock v1 fixtures.
+# Package names, versions, URLs, and hashes are synthetic publication-safe evidence.
+metadata:
+  channels:
+    - conda-forge
+    - url: https://packages.example.invalid/t/$PRIVATE_CHANNEL_TOKEN/ml
+      used_env_vars:
+        - PRIVATE_CHANNEL_TOKEN
+    - url: defaults
+      used_env_vars: []
+  content_hash:
+    linux-64: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    osx-64: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    win-64: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+  platforms:
+    - linux-64
+    - osx-64
+    - win-64
+  sources:
+    - environment.yml
+    - dev-environment.yml
+package:
+  - category: main
+    dependencies:
+      python: ">=3.12"
+    hash:
+      md5: "11111111111111111111111111111111"
+    manager: conda
+    name: synthetic-noarch
+    optional: false
+    platform: linux-64
+    url: https://conda.anaconda.org/conda-forge/noarch/synthetic-noarch-1.0-py_0.tar.bz2
+    version: "1.0"
+  - category: main
+    dependencies:
+      python: ">=3.12"
+    hash:
+      md5: "11111111111111111111111111111111"
+    manager: conda
+    name: synthetic-noarch
+    optional: false
+    platform: osx-64
+    url: https://conda.anaconda.org/conda-forge/noarch/synthetic-noarch-1.0-py_0.tar.bz2
+    version: "1.0"
+  - category: dev
+    dependencies: {}
+    hash:
+      md5: "22222222222222222222222222222222"
+      sha256: "2222222222222222222222222222222222222222222222222222222222222222"
+    manager: conda
+    name: synthetic-private
+    optional: true
+    platform: linux-64
+    url: https://packages.example.invalid/t/$PRIVATE_CHANNEL_TOKEN/ml/linux-64/synthetic-private-2.0-0.conda
+    version: "2.0"
+  - category: main
+    dependencies: {}
+    hash:
+      md5: "33333333333333333333333333333333"
+    manager: conda
+    name: synthetic-defaults
+    optional: false
+    platform: win-64
+    url: https://repo.anaconda.com/pkgs/main/win-64/synthetic-defaults-3.0-0.conda
+    version: "3.0"
+  - category: main
+    dependencies: {}
+    hash:
+      sha256: "4444444444444444444444444444444444444444444444444444444444444444"
+    manager: pip
+    name: Synthetic_Wheel
+    optional: false
+    platform: win-64
+    source: null
+    url: https://files.pythonhosted.org/packages/synthetic/synthetic_wheel-4.0-py3-none-any.whl
+    version: "4.0"
+  - category: main
+    dependencies: {}
+    hash:
+      sha256: "5555555555555555555555555555555555555555555555555555555555555555"
+    manager: pip
+    name: synthetic-sdist
+    optional: false
+    platform: osx-64
+    source: null
+    url: https://files.pythonhosted.org/packages/synthetic/synthetic-sdist-5.0.tar.gz
+    version: "5.0"
+version: 1
