@@ -2,6 +2,9 @@
 
 ## v0.4.1 (Unreleased)
 
+- Splits requirements, uv, and conda-lock parsing into format-owned modules
+  behind the existing dependency-file facade without changing CLI behavior,
+  parser budgets, warning semantics, or exported result types.
 - Adds a publication-safe compatibility corpus modeled on public conda-lock v1
   fixture shapes, covering legacy field ordering, scalar and environment-variable
   channels, MD5-only and noarch records, multiple target platforms, optional
