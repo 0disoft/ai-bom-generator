@@ -1,0 +1,11 @@
+schema_version = "1"
+
+[output]
+format = "cyclonedx-json-1.7"
+
+[model]
+name = "poetry-lock-fixture"
+
+[[dependencies]]
+name = "poetry-environment"
+path = "poetry.lock"

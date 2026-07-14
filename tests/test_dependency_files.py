@@ -20,7 +20,7 @@ class DependencyFileTests(unittest.TestCase):
         self.assertEqual(detect_dependency_format("custom.lock", "uv"), "uv")
         self.assertEqual(detect_dependency_format("uv.lock", None), "uv")
         self.assertEqual(detect_dependency_format("requirements-dev.txt", None), "requirements")
-        self.assertIsNone(detect_dependency_format("poetry.lock", None))
+        self.assertEqual(detect_dependency_format("poetry.lock", None), "poetry")
 
     def test_requirements_parser_handles_pep508_hashes_and_skips_directives(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

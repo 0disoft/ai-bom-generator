@@ -1,0 +1,81 @@
+# This file uses publication-safe values shaped like Poetry 2.x lock data.
+
+[[package]]
+name = "Synthetic_Array"
+version = "2.2.0"
+description = "Synthetic registry package"
+optional = false
+python-versions = ">=3.10"
+groups = ["main", "test"]
+markers = "python_version >= \"3.10\""
+files = [
+    {file = "synthetic_array-2.2.0-py3-none-any.whl", hash = "sha256:1111111111111111111111111111111111111111111111111111111111111111"},
+    {file = "synthetic_array-2.2.0.tar.gz", hash = "sha256:2222222222222222222222222222222222222222222222222222222222222222"},
+]
+
+[[package]]
+name = "synthetic-git"
+version = "1.4.0"
+description = "Synthetic Git package"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = []
+
+[package.source]
+type = "git"
+url = "https://example.invalid/synthetic-git.git"
+reference = "main"
+resolved_reference = "0000000000000000000000000000000000000000"
+
+[[package]]
+name = "synthetic-private"
+version = "3.0.0"
+description = "Synthetic private-index package"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+markers = {main = "python_version >= '3.10'", audit = "sys_platform == 'linux'"}
+files = [
+    {file = "synthetic_private-3.0.0-py3-none-any.whl", hash = "sha256:3333333333333333333333333333333333333333333333333333333333333333"},
+]
+
+[package.source]
+type = "legacy"
+url = "https://packages.example.invalid/$PRIVATE_INDEX_TOKEN/simple"
+reference = "private"
+
+[[package]]
+name = "synthetic-local"
+version = "0.1.0"
+description = "Synthetic local directory package"
+optional = false
+python-versions = ">=3.10"
+groups = ["dev"]
+files = []
+develop = true
+
+[package.source]
+type = "directory"
+url = "packages/synthetic-local"
+
+[[package]]
+name = "synthetic-direct"
+version = "5.0.0"
+description = "Synthetic direct URL package"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "sys_platform == \"win32\""
+files = [
+    {file = "synthetic_direct-5.0.0-py3-none-any.whl", hash = "sha256:4444444444444444444444444444444444444444444444444444444444444444"},
+]
+
+[package.source]
+type = "url"
+url = "https://files.example.invalid/synthetic_direct-5.0.0-py3-none-any.whl"
+
+[metadata]
+lock-version = "2.1"
+python-versions = ">=3.10"
+content-hash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"

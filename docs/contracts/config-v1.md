@@ -115,16 +115,22 @@ are also parsed unless `parse = false`:
 - `type = "conda-lock"` parses the unified conda-lock v1 YAML package array,
   including Conda and pip managers, declared platforms, remote package URLs,
   matched metadata channels, and MD5 or SHA-256 artifact hashes.
+- `type = "poetry"` parses Poetry 2.x TOML package arrays, including exact
+  versions, package markers, per-file artifact hashes, package source locators
+  or indexes, and resolved Git revisions.
 - When `type` is absent, `requirements*.txt` and `requirements.lock` paths use
-  the requirements parser. `conda-lock.yml`, `conda-lock.yaml`, and
-  `*.conda-lock.yml|yaml` paths use the conda-lock parser.
+  the requirements parser. The exact filename `poetry.lock` uses the Poetry
+  parser. `conda-lock.yml`, `conda-lock.yaml`, and `*.conda-lock.yml|yaml` paths
+  use the conda-lock parser.
 
 Requirements-file includes, constraints, editable installs, local paths,
 dependency or Conda environment solving, package downloads, and automatic
 discovery are not followed. Conda explicit and environment lock formats are not
-treated as unified conda-lock YAML. Unsupported or malformed entries produce
-warnings and no fabricated package components. Package-lock, Poetry, Pipenv,
-and other formats remain unsupported.
+treated as unified conda-lock YAML. Poetry 1.x metadata hash layouts, project
+dependency resolution, selected dependency-group inference, and local source
+reads are not performed. Unsupported or malformed entries produce warnings and
+no fabricated package components. Package-lock, Pipenv, and other formats
+remain unsupported.
 
 Parsed package evidence uses one normalized source contract. It preserves the
 source kind plus strict-redacted locator, channel, index, platform, revision,
@@ -136,6 +142,14 @@ direct-URL fragment hashes. Platform markers remain marker expressions; they
 are not flattened into an invented platform value. Conda-lock package platforms
 must appear in `metadata.platforms`; package URLs are preserved as locators, and
 channels are emitted only when a declared metadata channel matches that URL.
+Poetry registry packages remain source type `registry`; legacy source URLs map
+to source indexes, Git sources preserve their resolved reference when present,
+and file hashes retain their declared artifact filename as locator evidence.
+Poetry package groups and package extras are not converted into selected extras
+because the lockfile does not prove which installation selection the caller used.
+One marker shared by every group is preserved. Differing group-specific markers
+produce a partial warning and remain absent because one flat marker would
+misrepresent the unresolved group selection.
 
 All normalized source fields and artifact hashes participate in package
 identity, so equal names and versions backed by different sources or artifacts

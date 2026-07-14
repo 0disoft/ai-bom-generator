@@ -65,7 +65,7 @@ later exporter and CI integrations.
 - Keep dependency discovery explicit and config-driven. Unsupported or malformed
   files must continue to warn without fabricating package components.
 
-## v0.4.1 Compatibility Hardening
+## v0.5.0 Dependency Compatibility
 
 - Add a publication-safe conda-lock corpus whose field ordering and combinations
   mirror public upstream v1 fixtures across Linux, macOS, Windows, noarch Conda,
@@ -74,6 +74,9 @@ later exporter and CI integrations.
   each fixture protects.
 - Defer new dependency formats until the existing conda-lock boundary has
   fixture-backed compatibility evidence.
+- Add bounded Poetry 2.x lockfile support only after the parser boundary is
+  format-owned, preserving sources, revisions, markers, and artifact hashes
+  without inferring selected dependency groups or resolving the environment.
 
 ## Deferred
 

@@ -15,8 +15,9 @@ model serving.
 3. Validate config shape and warning policy.
 4. Collect declared model metadata, dependency file references, prompt, dataset,
    eval, and training-code references from discovered or explicit config. Parse
-   explicitly declared supported Python and conda-lock dependency files into
-   package evidence without resolving dependencies or solving environments.
+   explicitly declared supported Python, Poetry 2.x, and conda-lock dependency
+   files into package evidence without resolving dependencies or solving
+   environments.
    Select model artifacts from explicit include/exclude patterns and
    config-enabled artifact discovery defaults.
 5. Apply fixed dependency-file and artifact collection budgets.

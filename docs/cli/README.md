@@ -38,10 +38,10 @@ CI without requiring a hosted service.
 - Config schema: AI-BOM config schema v1.
 - CLI adapter: `argparse`, isolated from application and domain layers.
 - First exporter: CycloneDX JSON 1.7.
-- Explicit dependency parsing: `uv.lock`, requirements files, and unified
-  conda-lock v1 YAML selected through `[[dependencies]]`; automatic discovery,
-  recursive includes, dependency resolution, and environment solving remain out
-  of scope.
+- Explicit dependency parsing: `uv.lock`, Poetry 2.x `poetry.lock`, requirements
+  files, and unified conda-lock v1 YAML selected through `[[dependencies]]`;
+  automatic discovery, recursive includes, dependency resolution, and
+  environment solving remain out of scope.
 
 ## Review Blockers
 

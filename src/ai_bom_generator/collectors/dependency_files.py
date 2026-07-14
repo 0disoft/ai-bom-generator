@@ -11,6 +11,7 @@ from ai_bom_generator.collectors.dependency_parsers import (
     DependencyParseResult,
     ParserLimits,
     parse_conda_lock,
+    parse_poetry_lock,
     parse_requirements,
     parse_uv_lock,
 )
@@ -33,6 +34,9 @@ _FORMAT_ALIASES = {
     "conda-lock": "conda-lock",
     "conda-lock.yml": "conda-lock",
     "conda-lock.yaml": "conda-lock",
+    "poetry": "poetry",
+    "poetry-lock": "poetry",
+    "poetry.lock": "poetry",
     "uv": "uv",
     "uv-lock": "uv",
     "uv.lock": "uv",
@@ -48,6 +52,8 @@ def detect_dependency_format(relative_path: str, declared_type: object) -> str |
     name = Path(relative_path).name.lower()
     if name == "uv.lock":
         return "uv"
+    if name == "poetry.lock":
+        return "poetry"
     if name in {"conda-lock.yml", "conda-lock.yaml"} or name.endswith(
         (".conda-lock.yml", ".conda-lock.yaml")
     ):
@@ -111,6 +117,7 @@ DependencyPayloadParser = Callable[[bytes, str, Redactor, ParserLimits], Depende
 
 _DEPENDENCY_PARSERS: dict[str, DependencyPayloadParser] = {
     "conda-lock": parse_conda_lock,
+    "poetry": parse_poetry_lock,
     "uv": parse_uv_lock,
     "requirements": parse_requirements,
 }

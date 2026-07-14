@@ -1,7 +1,10 @@
 # Changelog
 
-## v0.4.1 (Unreleased)
+## v0.5.0 (Unreleased)
 
+- Adds bounded Poetry 2.x lockfile parsing for exact package versions, markers,
+  package source locators or indexes, resolved Git revisions, and per-file
+  artifact hashes without dependency resolution, downloads, or local path reads.
 - Splits requirements, uv, and conda-lock parsing into format-owned modules
   behind the existing dependency-file facade without changing CLI behavior,
   parser budgets, warning semantics, or exported result types.

@@ -19,6 +19,7 @@ from packaging.utils import canonicalize_name
 
 
 REQUIRED_WHEEL_FILES = {
+    "ai_bom_generator/collectors/dependency_parsers/poetry_lock.py",
     "ai_bom_generator/config/schema/aibom-config-v1.schema.json",
     "ai_bom_generator/exporters/cyclonedx_json/schema/bom-1.7.schema.json",
     "ai_bom_generator/exporters/cyclonedx_json/schema/LICENSE",
@@ -28,6 +29,8 @@ REQUIRED_WHEEL_FILES = {
 }
 REQUIRED_SDIST_FILES = {
     "tests/fixtures/conda-lock-corpus/official-shapes-v1.yml",
+    "tests/fixtures/poetry-lock/aibom.toml",
+    "tests/fixtures/poetry-lock/poetry.lock",
     "tests/fixtures/ml-ecosystem-dependencies/MODEL_CARD.md",
     "tests/fixtures/ml-ecosystem-dependencies/aibom.toml",
     "tests/fixtures/ml-ecosystem-dependencies/lockfiles/conda/conda-lock.yml",
