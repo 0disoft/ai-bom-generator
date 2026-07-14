@@ -20,6 +20,7 @@ from ai_bom_generator.security import Redactor
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "poetry-lock"
+CORPUS = Path(__file__).parent / "fixtures" / "poetry-lock-corpus"
 
 
 class PoetryLockTests(unittest.TestCase):
@@ -63,6 +64,60 @@ class PoetryLockTests(unittest.TestCase):
         direct = packages["synthetic-direct"]
         self.assertEqual(direct.source_type, "url")
         self.assertIn("sys_platform", direct.marker or "")
+
+    def test_poetry_2_0_corpus_preserves_category_era_sources_and_hashes(self) -> None:
+        result = self._parse_corpus("poetry-2.0.lock")
+
+        self.assertEqual(result.skipped_entries, 0)
+        self.assertEqual(
+            [package.name for package in result.packages],
+            ["synthetic-core", "synthetic-git-20", "synthetic-legacy-index"],
+        )
+        packages = {package.name: package for package in result.packages}
+
+        core = packages["synthetic-core"]
+        self.assertEqual(core.source_type, "registry")
+        self.assertEqual(
+            [(item.algorithm, item.locator) for item in core.package_source.artifact_hashes],
+            [("sha256", "synthetic_core-1.3.0-py3-none-any.whl")],
+        )
+        legacy = packages["synthetic-legacy-index"]
+        self.assertEqual(legacy.source_type, "legacy")
+        self.assertEqual(legacy.package_source.index, "https://packages.example.invalid/simple")
+        git = packages["synthetic-git-20"]
+        self.assertEqual(git.package_source.revision, "2020202020202020202020202020202020202020")
+
+        for package in result.packages:
+            self.assertIsNone(package.marker)
+            self.assertEqual(package.extras, ())
+
+    def test_poetry_2_1_corpus_handles_group_marker_shapes_without_inference(self) -> None:
+        result = self._parse_corpus("poetry-2.1.lock")
+
+        self.assertEqual(result.skipped_entries, 1)
+        self.assertEqual(len(result.packages), 4)
+        packages = {package.name: package for package in result.packages}
+
+        shared = packages["synthetic-shared-marker"]
+        self.assertEqual(shared.marker, "python_version >= '3.10'")
+        self.assertEqual(shared.extras, ())
+        split = packages["synthetic-split-marker"]
+        self.assertIsNone(split.marker)
+        self.assertEqual(split.extras, ())
+        direct = packages["synthetic-url-21"]
+        self.assertEqual(direct.source_type, "url")
+        self.assertEqual(
+            [item.locator for item in direct.package_source.artifact_hashes],
+            ["synthetic_url_21-4.0.0-py3-none-any.whl"],
+        )
+        git = packages["synthetic-git-21"]
+        self.assertEqual(git.package_source.revision, "5151515151515151515151515151515151515151")
+        self.assertEqual(git.source_locator, "https://example.invalid/synthetic-git-21.git")
+
+        self.assertIsNotNone(result.first_issue)
+        assert result.first_issue is not None
+        self.assertEqual(result.first_issue.location, "package[1].markers")
+        self.assertIn("selected group", result.first_issue.reason)
 
     def test_poetry_fixture_reaches_both_exporters(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -150,6 +205,14 @@ class PoetryLockTests(unittest.TestCase):
     def _parse_fixture(self) -> DependencyParseResult:
         return parse_dependency_file(
             FIXTURE / "poetry.lock",
+            "poetry.lock",
+            "poetry",
+            Redactor("strict"),
+        )
+
+    def _parse_corpus(self, name: str) -> DependencyParseResult:
+        return parse_dependency_file(
+            CORPUS / name,
             "poetry.lock",
             "poetry",
             Redactor("strict"),

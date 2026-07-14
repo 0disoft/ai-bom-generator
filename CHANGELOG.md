@@ -5,6 +5,9 @@
 - Adds bounded Poetry 2.x lockfile parsing for exact package versions, markers,
   package source locators or indexes, resolved Git revisions, and per-file
   artifact hashes without dependency resolution, downloads, or local path reads.
+- Adds a publication-safe Poetry compatibility corpus for lock versions 2.0 and
+  2.1, covering category-era and group-era records, source variants, file hashes,
+  and group-marker ambiguity without inferring selected dependency groups.
 - Splits requirements, uv, and conda-lock parsing into format-owned modules
   behind the existing dependency-file facade without changing CLI behavior,
   parser budgets, warning semantics, or exported result types.

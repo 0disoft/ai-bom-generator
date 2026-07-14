@@ -77,6 +77,8 @@ later exporter and CI integrations.
 - Add bounded Poetry 2.x lockfile support only after the parser boundary is
   format-owned, preserving sources, revisions, markers, and artifact hashes
   without inferring selected dependency groups or resolving the environment.
+- Preserve separate Poetry 2.0 category-era and Poetry 2.1 group-era fixture
+  shapes in a publication-safe compatibility corpus required by release packaging.
 
 ## Deferred
 

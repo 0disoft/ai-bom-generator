@@ -1,0 +1,46 @@
+# Publication-safe synthetic data shaped like Poetry lock version 2.0.
+
+[[package]]
+name = "Synthetic_Core"
+version = "1.3.0"
+description = "Synthetic registry package"
+category = "main"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "synthetic_core-1.3.0-py3-none-any.whl", hash = "sha256:1010101010101010101010101010101010101010101010101010101010101010"},
+]
+
+[[package]]
+name = "synthetic-legacy-index"
+version = "2.0.0"
+description = "Synthetic legacy-index package"
+category = "dev"
+optional = false
+python-versions = ">=3.9"
+files = []
+
+[package.source]
+type = "legacy"
+url = "https://packages.example.invalid/simple"
+reference = "synthetic"
+
+[[package]]
+name = "synthetic-git-20"
+version = "0.8.0"
+description = "Synthetic Git package"
+category = "main"
+optional = false
+python-versions = ">=3.9"
+files = []
+
+[package.source]
+type = "git"
+url = "https://example.invalid/synthetic-git-20.git"
+reference = "stable"
+resolved_reference = "2020202020202020202020202020202020202020"
+
+[metadata]
+lock-version = "2.0"
+python-versions = ">=3.9"
+content-hash = "2020202020202020202020202020202020202020202020202020202020202020"

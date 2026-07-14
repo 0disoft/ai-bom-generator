@@ -1,0 +1,60 @@
+# Publication-safe synthetic data shaped like Poetry lock version 2.1.
+
+[[package]]
+name = "synthetic-shared-marker"
+version = "2.1.0"
+description = "Synthetic package with one marker across groups"
+optional = false
+python-versions = ">=3.10"
+groups = ["main", "test"]
+markers = {main = "python_version >= '3.10'", test = "python_version >= '3.10'"}
+files = [
+    {file = "synthetic_shared_marker-2.1.0.tar.gz", hash = "sha256:2121212121212121212121212121212121212121212121212121212121212121"},
+]
+
+[[package]]
+name = "synthetic-split-marker"
+version = "2.1.1"
+description = "Synthetic package with different markers by group"
+optional = false
+python-versions = ">=3.10"
+groups = ["main", "gpu"]
+markers = {main = "sys_platform == 'win32'", gpu = "sys_platform == 'linux'"}
+files = []
+
+[[package]]
+name = "synthetic-url-21"
+version = "4.0.0"
+description = "Synthetic direct URL package"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "python_version >= '3.10'"
+files = [
+    {file = "synthetic_url_21-4.0.0-py3-none-any.whl", hash = "sha256:4141414141414141414141414141414141414141414141414141414141414141"},
+]
+
+[package.source]
+type = "url"
+url = "https://files.example.invalid/synthetic_url_21-4.0.0-py3-none-any.whl"
+
+[[package]]
+name = "synthetic-git-21"
+version = "5.0.0"
+description = "Synthetic Git subdirectory package"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = []
+
+[package.source]
+type = "git"
+url = "https://example.invalid/synthetic-git-21.git"
+reference = "main"
+resolved_reference = "5151515151515151515151515151515151515151"
+subdirectory = "python"
+
+[metadata]
+lock-version = "2.1"
+python-versions = ">=3.10"
+content-hash = "2121212121212121212121212121212121212121212121212121212121212121"
