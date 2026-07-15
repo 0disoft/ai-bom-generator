@@ -19,6 +19,7 @@ from ai_bom_generator.security import Redactor
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "pipenv-lock"
+CORPUS = Path(__file__).parent / "fixtures" / "pipenv-lock-corpus"
 
 
 class PipenvLockTests(unittest.TestCase):
@@ -95,6 +96,46 @@ class PipenvLockTests(unittest.TestCase):
                     git = next(item for item in packages if item["name"] == "synthetic-git")
                     self.assertEqual(git["aiBom:sourceRevision"], "abababababababababababababababababababab")
 
+    def test_versioned_corpus_preserves_registry_evidence_across_pipenv_releases(self) -> None:
+        normalized_packages: list[list[tuple[object, ...]]] = []
+
+        for producer_version in ("2023.12.1", "2026.6.2"):
+            result = self._parse_corpus(producer_version)
+
+            self.assertEqual(result.skipped_entries, 0)
+            self.assertEqual([package.name for package in result.packages], ["attrs", "idna"])
+            packages = {package.name: package for package in result.packages}
+
+            attrs = packages["attrs"]
+            self.assertEqual(attrs.version, "24.2.0")
+            self.assertEqual(attrs.marker, "python_version >= '3.8'")
+            self.assertEqual(attrs.source_type, "registry")
+            self.assertIsNone(attrs.source_locator)
+            self.assertEqual(len(attrs.package_source.artifact_hashes), 2)
+
+            idna = packages["idna"]
+            self.assertEqual(idna.version, "3.10")
+            self.assertEqual(idna.marker, "python_version >= '3.6'")
+            self.assertEqual(idna.source_type, "registry")
+            self.assertEqual(idna.source_locator, "https://pypi.org/simple")
+            self.assertEqual(idna.package_source.index, "https://pypi.org/simple")
+            self.assertEqual(len(idna.package_source.artifact_hashes), 2)
+
+            normalized_packages.append(
+                [
+                    (
+                        package.name,
+                        package.version,
+                        package.requirement,
+                        package.marker,
+                        package.package_source.identity_key(),
+                    )
+                    for package in result.packages
+                ]
+            )
+
+        self.assertEqual(normalized_packages[0], normalized_packages[1])
+
     def test_malformed_entries_warn_without_fabricated_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "Pipfile.lock"
@@ -167,6 +208,14 @@ class PipenvLockTests(unittest.TestCase):
     def _parse_fixture(self):
         return parse_dependency_file(
             FIXTURE / "Pipfile.lock",
+            "Pipfile.lock",
+            "pipenv",
+            Redactor("strict"),
+        )
+
+    def _parse_corpus(self, producer_version: str):
+        return parse_dependency_file(
+            CORPUS / f"pipenv-{producer_version}.lock",
             "Pipfile.lock",
             "pipenv",
             Redactor("strict"),
