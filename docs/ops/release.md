@@ -33,6 +33,12 @@ reads the version from `pyproject.toml`, rejects loose or prerelease versions,
 and consumes that exact notes file instead of embedding release prose in a
 version-specific script.
 
+Repository-owned Bun entry points are `tools/release/release.ts`,
+`tools/release/verify.ts`, and `tools/release/promote.ts`. Promotion reruns exact
+release verification before changing the mutable `v<major>` tag. Completed
+releases are safe to recheck; a GitHub-only or PyPI-only partial state fails
+closed for operator review.
+
 ## PyPI Publishing Policy
 
 PyPI publishing is approved for strict semver releases after the package registry setup
