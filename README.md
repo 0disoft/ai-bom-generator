@@ -136,7 +136,7 @@ stale report at that requested path.
 - uses: actions/checkout@v7
 
 - id: ai-bom
-  uses: 0disoft/ai-bom-generator@v0.4.0
+  uses: 0disoft/ai-bom-generator@v0.6.0
   with:
     model-directory: .
     warnings: allow

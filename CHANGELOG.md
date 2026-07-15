@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.6.0 (Unreleased)
+## v0.6.0
 
 - Adds bounded Pipenv `Pipfile.lock` specification 6 parsing for exact versions,
   hashes, extras, PEP 508 markers, declared package indexes, Git references,
