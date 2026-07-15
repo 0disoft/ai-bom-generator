@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.5.0 (Unreleased)
+## v0.5.0
 
 - Adds bounded Poetry 2.x lockfile parsing for exact package versions, markers,
   package source locators or indexes, resolved Git revisions, and per-file
