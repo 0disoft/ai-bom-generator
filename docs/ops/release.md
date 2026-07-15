@@ -39,6 +39,12 @@ release verification before changing the mutable `v<major>` tag. Completed
 releases are safe to recheck; a GitHub-only or PyPI-only partial state fails
 closed for operator review.
 
+`tools/release/update-smoke.ts` validates and updates the sibling consumer
+repository's one exact Action reference from the current package version.
+`tools/release/commit-smoke.ts` refuses commits unless that workflow is the only
+staged file and actionlint accepts it. Version-specific smoke updater and commit
+scripts are not used.
+
 ## PyPI Publishing Policy
 
 PyPI publishing is approved for strict semver releases after the package registry setup

@@ -31,7 +31,7 @@ use the minimum supported runtime, Python 3.12.
 | check | `uv run --python 3.12 python -m compileall -q src tests scripts` |
 | lint | `uv run --python 3.12 ruff check src tests scripts` |
 | test | `uv run --python 3.12 python -m unittest discover -s tests -v` |
-| test | `bun test tools/release/lib.test.ts` |
+| test | `bun test tools/release` |
 | check | `uv run --python 3.12 python scripts/benchmark_components.py --check --json` |
 | check | `uv build` |
 | check | `uv run --python 3.12 python scripts/verify_wheel.py dist` |
