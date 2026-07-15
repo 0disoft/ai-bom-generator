@@ -27,6 +27,12 @@ PyPI package metadata is maintained in `pyproject.toml` with classifiers,
 keywords, and project URLs. Package distributions must validate their README
 rendering and wheel contents before upload.
 
+Each release must have reviewed notes at `docs/releases/v<version>.md` with
+Highlights, Compatibility, and Rollback sections. Workspace release automation
+reads the version from `pyproject.toml`, rejects loose or prerelease versions,
+and consumes that exact notes file instead of embedding release prose in a
+version-specific script.
+
 ## PyPI Publishing Policy
 
 PyPI publishing is approved for strict semver releases after the package registry setup
