@@ -1,0 +1,65 @@
+{
+  "_meta": {
+    "hash": {
+      "sha256": "6060606060606060606060606060606060606060606060606060606060606060"
+    },
+    "pipfile-spec": 6,
+    "requires": {
+      "python_version": "3.12"
+    },
+    "sources": [
+      {
+        "name": "pypi",
+        "url": "https://pypi.org/simple",
+        "verify_ssl": true
+      },
+      {
+        "name": "private",
+        "url": "https://packages.example.invalid/$PRIVATE_INDEX_TOKEN/simple",
+        "verify_ssl": true
+      }
+    ]
+  },
+  "default": {
+    "Synthetic_Core": {
+      "extras": ["speedups"],
+      "hashes": [
+        "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+      ],
+      "index": "private",
+      "markers": "python_version >= '3.12'",
+      "version": "==1.2.3"
+    },
+    "synthetic-git": {
+      "editable": true,
+      "git": "https://example.invalid/synthetic-git.git",
+      "ref": "abababababababababababababababababababab"
+    },
+    "synthetic-remote-file": {
+      "file": "https://files.example.invalid/synthetic_remote_file-2.0.0.whl",
+      "hashes": [
+        "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      ],
+      "version": "==2.0.0"
+    },
+    "synthetic-platform": {
+      "platform_machine": "== 'x86_64'",
+      "version": "*"
+    }
+  },
+  "develop": {
+    "synthetic-dev": {
+      "hashes": [
+        "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      ],
+      "index": "pypi",
+      "markers": "sys_platform != 'win32'",
+      "version": "==3.0.0"
+    },
+    "synthetic-workspace": {
+      "editable": true,
+      "path": "packages/synthetic-workspace"
+    }
+  }
+}

@@ -82,10 +82,10 @@ the warning report and JSON summary, and the over-budget pattern or artifact is
 skipped.
 
 Dependency parsing supports explicitly selected `uv.lock`, Poetry 2.x
-`poetry.lock`, requirements files, and unified conda-lock v1 YAML. It does not
-auto-discover lockfiles, resolve Poetry dependency groups, solve Conda
-environments, or support Conda explicit/environment lock formats. Poetry 1.x
-and Pipenv parsing remain unsupported.
+`poetry.lock`, Pipenv `Pipfile.lock` specification 6, requirements files, and
+unified conda-lock v1 YAML. It does not auto-discover lockfiles, resolve Poetry
+or Pipenv dependency groups, solve Conda environments, or support Conda
+explicit/environment lock formats. Poetry 1.x remains unsupported.
 
 ## Still UNDECIDED
 

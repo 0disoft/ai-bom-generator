@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.6.0 (Unreleased)
+
+- Adds bounded Pipenv `Pipfile.lock` specification 6 parsing for exact versions,
+  hashes, extras, PEP 508 markers, declared package indexes, Git references,
+  remote files, and local paths without dependency resolution or group selection.
+- Rejects duplicate JSON keys, unsupported Pipfile specifications, excessive
+  JSON nesting, and excessive source, package, or hash records without
+  fabricating package evidence.
+
 ## v0.5.0
 
 - Adds bounded Poetry 2.x lockfile parsing for exact package versions, markers,

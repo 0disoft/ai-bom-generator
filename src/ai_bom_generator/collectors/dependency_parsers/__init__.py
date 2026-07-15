@@ -7,6 +7,7 @@ from ai_bom_generator.collectors.dependency_parsers.common import (
 )
 from ai_bom_generator.collectors.dependency_parsers.conda_lock import parse_conda_lock
 from ai_bom_generator.collectors.dependency_parsers.poetry_lock import parse_poetry_lock
+from ai_bom_generator.collectors.dependency_parsers.pipenv_lock import parse_pipenv_lock
 from ai_bom_generator.collectors.dependency_parsers.requirements import parse_requirements
 from ai_bom_generator.collectors.dependency_parsers.uv_lock import parse_uv_lock
 
@@ -18,6 +19,7 @@ __all__ = [
     "ParserLimits",
     "parse_conda_lock",
     "parse_poetry_lock",
+    "parse_pipenv_lock",
     "parse_requirements",
     "parse_uv_lock",
 ]

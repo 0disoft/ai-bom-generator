@@ -34,6 +34,8 @@ Explicit dependency-file parsing has separate fixed limits:
 - 256 distinct artifact hash records per parsed package.
 - 128 metadata channels, 64 metadata platforms, and 64 nested YAML levels per
   conda-lock file. YAML aliases and duplicate mapping keys are rejected.
+- 128 declared package sources and 64 nested JSON levels per Pipenv lockfile.
+  Duplicate JSON keys are rejected.
 
 When a dependency limit is hit, the original file reference remains in the BOM,
 no package components are emitted for that file, and the collector emits

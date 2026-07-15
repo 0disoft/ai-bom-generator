@@ -19,6 +19,8 @@ class ParserLimits:
     max_conda_lock_channels: int
     max_conda_lock_platforms: int
     max_conda_lock_yaml_depth: int
+    max_pipenv_sources: int
+    max_pipenv_json_depth: int
 
 
 @dataclass(frozen=True)

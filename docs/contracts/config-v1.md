@@ -118,19 +118,23 @@ are also parsed unless `parse = false`:
 - `type = "poetry"` parses Poetry 2.x TOML package arrays, including exact
   versions, package markers, per-file artifact hashes, package source locators
   or indexes, and resolved Git revisions.
+- `type = "pipenv"` parses Pipenv `Pipfile.lock` specification 6 JSON, including
+  exact versions, artifact hashes, extras, PEP 508 markers, declared package
+  indexes, Git references, remote files, and local paths.
 - When `type` is absent, `requirements*.txt` and `requirements.lock` paths use
-  the requirements parser. The exact filename `poetry.lock` uses the Poetry
-  parser. `conda-lock.yml`, `conda-lock.yaml`, and `*.conda-lock.yml|yaml` paths
-  use the conda-lock parser.
+  the requirements parser. Exact filenames `poetry.lock` and `Pipfile.lock` use
+  the Poetry and Pipenv parsers. `conda-lock.yml`, `conda-lock.yaml`, and
+  `*.conda-lock.yml|yaml` paths use the conda-lock parser.
 
 Requirements-file includes, constraints, editable installs, local paths,
 dependency or Conda environment solving, package downloads, and automatic
 discovery are not followed. Conda explicit and environment lock formats are not
 treated as unified conda-lock YAML. Poetry 1.x metadata hash layouts, project
 dependency resolution, selected dependency-group inference, and local source
-reads are not performed. Unsupported or malformed entries produce warnings and
-no fabricated package components. Package-lock, Pipenv, and other formats
-remain unsupported.
+reads are not performed. Pipenv dependency-group selection, dependency
+resolution, and local source reads are not performed. Unsupported or malformed
+entries produce warnings and no fabricated package components. Package-lock
+and other formats remain unsupported.
 
 Parsed package evidence uses one normalized source contract. It preserves the
 source kind plus strict-redacted locator, channel, index, platform, revision,
@@ -150,6 +154,11 @@ because the lockfile does not prove which installation selection the caller used
 One marker shared by every group is preserved. Differing group-specific markers
 produce a partial warning and remain absent because one flat marker would
 misrepresent the unresolved group selection.
+Pipenv `default` and `develop` entries are collected without claiming either
+group was selected. An explicit entry index resolves through `_meta.sources`;
+unknown source names remain raw index evidence with a partial warning. Git
+references and package hashes are preserved directly, while remote files and
+local paths are never opened.
 
 All normalized source fields and artifact hashes participate in package
 identity, so equal names and versions backed by different sources or artifacts

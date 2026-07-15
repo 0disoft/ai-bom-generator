@@ -80,6 +80,18 @@ later exporter and CI integrations.
 - Preserve separate Poetry 2.0 category-era and Poetry 2.1 group-era fixture
   shapes in a publication-safe compatibility corpus required by release packaging.
 
+## v0.6.0 Pipenv Compatibility
+
+- Add bounded `Pipfile.lock` specification 6 parsing behind the existing
+  parser-neutral package-source evidence boundary.
+- Preserve exact versions, hashes, extras, markers, declared indexes, Git
+  references, remote files, and local path locators without resolving or
+  opening package sources.
+- Treat `default` and `develop` as organizational evidence, not proof that a
+  dependency group was selected.
+- Reject duplicate JSON keys and bound JSON depth, source count, package count,
+  and artifact hash count before exporting package evidence.
+
 ## Deferred
 
 - Hosted registry.

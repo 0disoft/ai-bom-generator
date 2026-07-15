@@ -1,0 +1,9 @@
+schema_version = "1"
+
+[output]
+format = "cyclonedx-json-1.7"
+
+[[dependencies]]
+name = "pipenv-lock"
+path = "Pipfile.lock"
+type = "pipenv"

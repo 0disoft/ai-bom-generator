@@ -21,7 +21,7 @@ derived, or missing.
 - Collection mode: declared, derived, defaulted, or missing.
 - Lockfile package index or requirements-file line for parsed dependency
   packages, plus directly evidenced package source fields such as a conda-lock
-  platform, matched channel, Poetry source or resolved Git revision, remote
+  platform, matched channel, Poetry or Pipenv source or resolved Git revision, remote
   locator, and artifact hashes.
 - Digest algorithm and value for hashed artifacts.
 - Warning code when metadata is absent or ambiguous.

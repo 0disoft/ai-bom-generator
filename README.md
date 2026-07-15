@@ -96,10 +96,10 @@ name = "minimal-example-dataset"
 license_declared = "NOASSERTION"
 ```
 
-Explicit `uv.lock`, `poetry.lock`, requirements-file, and unified conda-lock v1
-YAML references are parsed locally into package components by default. Use
-`type = "conda-lock"` or `type = "poetry"` when a supported lockfile uses a
-non-standard filename.
+Explicit `uv.lock`, `poetry.lock`, `Pipfile.lock`, requirements-file, and
+unified conda-lock v1 YAML references are parsed locally into package components
+by default. Use `type = "conda-lock"`, `type = "poetry"`, or `type = "pipenv"`
+when a supported lockfile uses a non-standard filename.
 Set `parse = false` on a dependency reference to keep file-level evidence only.
 Includes, constraints, editable requirement directives, environment solving,
 resolution, downloads, and automatic lockfile discovery are not performed.

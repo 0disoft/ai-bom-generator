@@ -27,8 +27,9 @@ and a warning report.
 5. Collect model card paths, training-code references, dependency-file
    references, dataset references, prompt references, eval references, and
    local Git commit references when in-root Git metadata is available. Parse
-   explicitly declared `uv.lock`, Poetry 2.x `poetry.lock`, requirements files,
-   and unified conda-lock v1 YAML through one bounded parser boundary into
+   explicitly declared `uv.lock`, Poetry 2.x `poetry.lock`, Pipenv
+   `Pipfile.lock` specification 6, requirements files, and unified conda-lock v1
+   YAML through one bounded parser boundary into
    normalized package and
    package-source evidence unless parsing is disabled for that reference. The
    boundary preserves source

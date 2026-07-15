@@ -235,7 +235,10 @@ class CliTests(unittest.TestCase):
             shutil.copytree(FIXTURES / "complete-project", project)
             config = project / "aibom.toml"
             config.write_text(
-                config.read_text(encoding="utf-8").replace('type = "pip"', 'type = "pipenv"'),
+                config.read_text(encoding="utf-8").replace(
+                    'type = "pip"',
+                    'type = "unsupported-lock"',
+                ),
                 encoding="utf-8",
                 newline="\n",
             )

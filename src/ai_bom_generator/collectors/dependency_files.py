@@ -11,6 +11,7 @@ from ai_bom_generator.collectors.dependency_parsers import (
     DependencyParseResult,
     ParserLimits,
     parse_conda_lock,
+    parse_pipenv_lock,
     parse_poetry_lock,
     parse_requirements,
     parse_uv_lock,
@@ -25,6 +26,8 @@ MAX_ARTIFACT_HASH_RECORDS_PER_PACKAGE = 256
 MAX_CONDA_LOCK_CHANNELS = 128
 MAX_CONDA_LOCK_PLATFORMS = 64
 MAX_CONDA_LOCK_YAML_DEPTH = 64
+MAX_PIPENV_SOURCES = 128
+MAX_PIPENV_JSON_DEPTH = 64
 
 _FORMAT_ALIASES = {
     "pip": "requirements",
@@ -37,6 +40,9 @@ _FORMAT_ALIASES = {
     "poetry": "poetry",
     "poetry-lock": "poetry",
     "poetry.lock": "poetry",
+    "pipenv": "pipenv",
+    "pipfile-lock": "pipenv",
+    "pipfile.lock": "pipenv",
     "uv": "uv",
     "uv-lock": "uv",
     "uv.lock": "uv",
@@ -54,6 +60,8 @@ def detect_dependency_format(relative_path: str, declared_type: object) -> str |
         return "uv"
     if name == "poetry.lock":
         return "poetry"
+    if name == "pipfile.lock":
+        return "pipenv"
     if name in {"conda-lock.yml", "conda-lock.yaml"} or name.endswith(
         (".conda-lock.yml", ".conda-lock.yaml")
     ):
@@ -84,6 +92,8 @@ def _parser_limits() -> ParserLimits:
         max_conda_lock_channels=MAX_CONDA_LOCK_CHANNELS,
         max_conda_lock_platforms=MAX_CONDA_LOCK_PLATFORMS,
         max_conda_lock_yaml_depth=MAX_CONDA_LOCK_YAML_DEPTH,
+        max_pipenv_sources=MAX_PIPENV_SOURCES,
+        max_pipenv_json_depth=MAX_PIPENV_JSON_DEPTH,
     )
 
 
@@ -118,6 +128,7 @@ DependencyPayloadParser = Callable[[bytes, str, Redactor, ParserLimits], Depende
 _DEPENDENCY_PARSERS: dict[str, DependencyPayloadParser] = {
     "conda-lock": parse_conda_lock,
     "poetry": parse_poetry_lock,
+    "pipenv": parse_pipenv_lock,
     "uv": parse_uv_lock,
     "requirements": parse_requirements,
 }

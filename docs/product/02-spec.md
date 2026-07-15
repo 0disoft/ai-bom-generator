@@ -27,8 +27,9 @@ mapping, not on proving that the evidence is complete or legally sufficient.
   `MODEL_CARD.md` path as evidence without copying or parsing its contents.
 - Model artifact or checkpoint files selected by explicit patterns.
 - Dependency files declared explicitly in config. Bounded parsers read
-  `uv.lock`, Poetry 2.x `poetry.lock`, requirements files, and unified
-  conda-lock v1 YAML into normalized package evidence while preserving the
+  `uv.lock`, Poetry 2.x `poetry.lock`, Pipenv `Pipfile.lock` specification 6,
+  requirements files, and unified conda-lock v1 YAML into normalized package
+  evidence while preserving the
   original file reference. Automatic
   discovery, recursive includes, dependency or environment solving, downloads,
   and completeness claims remain out of scope.
@@ -85,9 +86,9 @@ metadata.
 - Second exporter: `spdx-ai` emits an SPDX 3.0.1 AI Profile preview with local
   preview contract validation and explicit unsupported-field notes.
 - Lockfile support set: explicit config-declared dependency file references,
-  with bounded local parsing for `uv.lock`, Poetry 2.x `poetry.lock`,
-  requirements files, and unified conda-lock v1 YAML. Parsing may be disabled
-  per reference with `parse = false`.
+  with bounded local parsing for `uv.lock`, Poetry 2.x `poetry.lock`, Pipenv
+  `Pipfile.lock` specification 6, requirements files, and unified conda-lock v1
+  YAML. Parsing may be disabled per reference with `parse = false`.
   Supported parsers share one normalized source-evidence boundary that preserves
   directly evidenced locator, channel or index, platform, revision, and artifact
   hash fields.

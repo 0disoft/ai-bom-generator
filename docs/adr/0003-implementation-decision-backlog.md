@@ -32,7 +32,7 @@ choices from plausible candidates that still need approval.
 | Python requirement parser dependency | `packaging>=24,<27` | Approved for Python-first dependency parsing on 2026-07-10 |
 | YAML parser dependency | `pyyaml>=6.0.3,<7` with a restricted safe loader | Approved for bounded conda-lock v1 parsing on 2026-07-13 |
 | Project lockfile | `uv.lock` | Approved by uv adoption on 2026-07-06 |
-| Dependency lockfile intake | Explicit config-declared file references plus bounded parsing for `uv.lock`, Poetry 2.x `poetry.lock`, requirements files, and unified conda-lock v1 YAML | Python-first expansion approved on 2026-07-10; conda-lock approved on 2026-07-13; Poetry 2.x approved on 2026-07-14 |
+| Dependency lockfile intake | Explicit config-declared file references plus bounded parsing for `uv.lock`, Poetry 2.x `poetry.lock`, Pipenv `Pipfile.lock` specification 6, requirements files, and unified conda-lock v1 YAML | Python-first expansion approved on 2026-07-10; conda-lock approved on 2026-07-13; Poetry 2.x approved on 2026-07-14; Pipenv approved on 2026-07-15 |
 | Dependency parser boundary | Parser-neutral package source evidence preserving optional locator, channel, index, platform, revision, and artifact hashes | Approved for v0.4.0 dependency expansion on 2026-07-13 |
 | Artifact discovery opt-in | `[artifacts].discovery = true` adds bounded default model artifact patterns in config only | Approved for MVP polish on 2026-07-09 |
 | Artifact discovery CLI flag | CLI override for artifact discovery | Deferred |
@@ -76,16 +76,17 @@ choices from plausible candidates that still need approval.
   mark conformance as partial, validate the local preview schema, and list
   unavailable or unsupported AI fields instead of fabricating evidence.
 - Dependency lockfile support remains config-driven and never discovers files
-  implicitly. Explicit `uv.lock`, Poetry 2.x `poetry.lock`, requirements-file,
-  and unified conda-lock v1 references may produce normalized package evidence
+  implicitly. Explicit `uv.lock`, Poetry 2.x `poetry.lock`, Pipenv
+  `Pipfile.lock` specification 6, requirements-file, and unified conda-lock v1
+  references may produce normalized package evidence
   through bounded local parsing. Every parser must
   map directly evidenced source fields into the shared source contract without
   flattening or inferring unavailable provenance. Recursive
   requirement includes, constraints, editable installs, Conda environment
-  solving, Poetry group-selection inference, package downloads, and completeness
+  solving, Poetry or Pipenv group-selection inference, package downloads, and completeness
   claims remain unsupported; skipped or malformed entries must produce warnings
-  instead of fabricated package components. Poetry 1.x and Pipenv parsing remain
-  deferred.
+  instead of fabricated package components. Poetry 1.x and unsupported Pipfile
+  specification revisions remain unsupported.
 - Artifact discovery is config-driven opt-in only. It must not run when
   `[artifacts].discovery` is absent or false, and it must reuse artifact budget,
   symlink, target-root, and no-fabrication warning policies.
