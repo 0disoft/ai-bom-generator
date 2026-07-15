@@ -39,6 +39,14 @@ release verification before changing the mutable `v<major>` tag. Completed
 releases are safe to recheck; a GitHub-only or PyPI-only partial state fails
 closed for operator review.
 
+`tools/release/check-metadata.ts` requires `pyproject.toml`, the editable root
+package in `uv.lock`, the first CHANGELOG release, every exact README Action
+reference, and `docs/releases/v<version>.md` to agree on one strict version.
+`tools/release/stage-metadata.ts` stages exactly those five reviewed surfaces,
+and `tools/release/commit-metadata.ts` refuses partial or mixed commits while
+deriving the commit message from that version. New-release creation reruns the
+same metadata validation before calling GitHub.
+
 `tools/release/update-smoke.ts` validates and updates the sibling consumer
 repository's one exact Action reference from the current package version.
 `tools/release/commit-smoke.ts` refuses commits unless that workflow is the only

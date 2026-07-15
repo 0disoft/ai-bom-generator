@@ -60,7 +60,9 @@ jobs:
 
       - name: Test release tooling
         if: matrix.python-version == '3.12'
-        run: bun test tools/release
+        run: |
+          bun test tools/release
+          bun tools/release/check-tooling.ts
 
       - name: Check bounded component performance
         if: matrix.python-version == '3.12'

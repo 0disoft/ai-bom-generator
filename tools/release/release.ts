@@ -1,6 +1,3 @@
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-
 import {
   SOURCE_PROJECT,
   SOURCE_REPOSITORY,
@@ -15,10 +12,12 @@ import {
   selectPublishRun,
   waitForPublish,
 } from "./lib";
+import { validateReleaseMetadata } from "./metadata-lib";
 
 if (!process.argv.includes("--apply")) throw new Error("refusing release mutation without --apply");
 
-const { version, tag } = requestedVersion(process.argv.slice(2));
+const releaseVersion = requestedVersion(process.argv.slice(2));
+const { version, tag } = releaseVersion;
 const releaseJson = optionalRun([
   "gh", "release", "view", tag, "--repo", SOURCE_REPOSITORY,
   "--json", "isDraft,isImmutable,isPrerelease,tagName,url",
@@ -71,16 +70,11 @@ const head = run(["git", "rev-parse", "HEAD"], SOURCE_PROJECT);
 const remoteMain = run(["git", "rev-parse", "origin/main"], SOURCE_PROJECT);
 if (head !== remoteMain) throw new Error(`local HEAD ${head} does not match origin/main ${remoteMain}`);
 
-const notesPath = join(SOURCE_PROJECT, "docs", "releases", `${tag}.md`);
-if (!existsSync(notesPath)) throw new Error(`missing reviewed release notes: ${notesPath}`);
-const notes = readFileSync(notesPath, "utf8").trim();
-if (!notes.startsWith("## Highlights") || !notes.includes("## Rollback")) {
-  throw new Error(`${notesPath} must contain Highlights and Rollback sections`);
-}
+const metadata = validateReleaseMetadata(releaseVersion);
 
 const releaseUrl = run([
   "gh", "release", "create", tag, "--repo", SOURCE_REPOSITORY, "--target", head,
-  "--title", `AI-BOM Generator ${tag}`, "--notes-file", notesPath, "--latest",
+  "--title", `AI-BOM Generator ${tag}`, "--notes-file", metadata.notesPath, "--latest",
 ]);
 console.log(`created release: ${releaseUrl}`);
 const publish = await waitForPublish(tag, head);

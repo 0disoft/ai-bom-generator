@@ -14,6 +14,20 @@ later exporter and CI integrations.
 - Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
+## Current Status
+
+- Phases 0 through 3 and the v0.3.1 through v0.6.0 hardening milestones are
+  implemented and released.
+- The current approved runtime surface is the local CLI, composite GitHub
+  Action, CycloneDX JSON 1.7 exporter, partial SPDX AI preview, and explicit
+  bounded parsing for the dependency formats named below.
+- There is no approved post-v0.6 dependency format or hosted-service expansion.
+  Maintainers may continue invariant testing, compatibility fixtures, release
+  automation, and documentation synchronization without expanding public
+  collection behavior.
+- Items under Deferred, or decisions marked Proposed or Deferred in ADR 0003,
+  still require an explicit product decision before implementation.
+
 ## Phase 0: Contract Baseline
 
 - Lock the source-of-truth docs.
