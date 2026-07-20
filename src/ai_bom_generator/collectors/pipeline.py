@@ -22,7 +22,7 @@ from ai_bom_generator.domain.evidence import NormalizedEvidence
 from ai_bom_generator.domain.reference import DeclaredReference
 from ai_bom_generator.domain.source_location import SourceLocation
 from ai_bom_generator.domain.warning import Warning
-from ai_bom_generator.errors import CollectorError, InvalidInputError
+from ai_bom_generator.errors import InvalidInputError
 from ai_bom_generator.security import PathPolicy, Redactor, open_binary_nofollow
 
 
