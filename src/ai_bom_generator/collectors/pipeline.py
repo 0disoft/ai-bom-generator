@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import fnmatch
 import os
 from pathlib import Path
 import re
 from typing import Any, Iterator
 
+from ai_bom_generator.collectors.artifacts import collect_artifacts
 from ai_bom_generator.collectors.dependency_files import (
     DependencyFileLimitError,
     DependencyParseError,
@@ -17,45 +17,17 @@ from ai_bom_generator.collectors.generation_marker import (
     verify_final_generation_marker,
 )
 from ai_bom_generator.config import LoadedConfig
-from ai_bom_generator.domain.artifact import ModelArtifact
 from ai_bom_generator.domain.dependency import DependencyPackage
 from ai_bom_generator.domain.evidence import NormalizedEvidence
 from ai_bom_generator.domain.reference import DeclaredReference
 from ai_bom_generator.domain.source_location import SourceLocation
 from ai_bom_generator.domain.warning import Warning
 from ai_bom_generator.errors import CollectorError, InvalidInputError
-from ai_bom_generator.hashing import sha256_file_snapshot
 from ai_bom_generator.security import PathPolicy, Redactor, open_binary_nofollow
 
 
 _GIT_SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 _MAX_GIT_METADATA_BYTES = 1024 * 1024
-_MAX_ARTIFACT_MATCHES_PER_PATTERN = 256
-_MAX_ARTIFACT_SINGLE_FILE_BYTES = 16 * 1024 * 1024 * 1024
-_MAX_ARTIFACT_TOTAL_BYTES = 25 * 1024 * 1024 * 1024
-_DISCOVERED_ARTIFACT_PATTERNS = (
-    "**/*.safetensors",
-    "**/*.gguf",
-    "**/*.bin",
-    "**/*.pt",
-    "**/*.pth",
-    "**/*.ckpt",
-    "**/*.onnx",
-)
-_DISCOVERED_ARTIFACT_EXCLUDES = (
-    "**/.*/**",
-    "**/.*",
-    "**/.git/**",
-    "**/__pycache__/**",
-    "**/node_modules/**",
-    "**/.venv/**",
-    "**/venv/**",
-    "**/dist/**",
-    "**/build/**",
-    "**/.cache/**",
-    "**/.ruff_cache/**",
-    "**/.mypy_cache/**",
-)
 _KNOWN_MODEL_CARD = "MODEL_CARD.md"
 
 
@@ -74,7 +46,7 @@ def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redacto
             )
         )
     model_metadata = _collect_model(config, policy, warnings, redactor)
-    artifacts = _collect_artifacts(config, policy, warnings)
+    artifacts = collect_artifacts(config, policy, warnings)
     dependencies, dependency_packages = _collect_dependencies(config, policy, warnings, redactor)
     datasets = _collect_named_references("datasets", config, warnings, redactor)
     prompts = _collect_path_references("prompts", config, policy, warnings, redactor, optional_paths=True)
@@ -218,234 +190,6 @@ def _discover_model_card(policy: PathPolicy, warnings: list[Warning]) -> str | N
     if not resolved.is_file():
         return None
     return policy.relative_to_root(resolved)
-
-
-def _collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[Warning]) -> list[ModelArtifact]:
-    artifacts_config = config.get_table("artifacts")
-    discovery = artifacts_config.get("discovery", False)
-    if not isinstance(discovery, bool):
-        raise InvalidInputError("[artifacts].discovery must be a boolean.", "config")
-
-    includes = artifacts_config.get("include", [])
-    if not includes and not discovery:
-        warnings.append(
-            Warning(
-                code="MISSING_ARTIFACT_SELECTION",
-                severity="warning",
-                object_kind="artifact",
-                object_id="artifacts",
-                message="No model artifact include patterns were declared.",
-                source=_source(config, "artifacts.include"),
-                remediation="Add [artifacts].include patterns for model files to hash.",
-            )
-        )
-        return []
-    if not isinstance(includes, list) or any(not isinstance(item, str) for item in includes):
-        raise InvalidInputError("[artifacts].include must be an array of strings.", "config")
-
-    excludes = artifacts_config.get("exclude", [])
-    if excludes and (not isinstance(excludes, list) or any(not isinstance(item, str) for item in excludes)):
-        raise InvalidInputError("[artifacts].exclude must be an array of strings.", "config")
-
-    include_patterns = [policy.validate_relative_glob(pattern, "[artifacts].include") for pattern in includes]
-    discovery_patterns = list(_DISCOVERED_ARTIFACT_PATTERNS) if discovery else []
-    exclude_patterns = [policy.validate_relative_glob(pattern, "[artifacts].exclude") for pattern in excludes]
-    discovery_exclude_patterns = (
-        exclude_patterns
-        + [policy.validate_relative_glob(pattern, "[artifacts].discovery") for pattern in _DISCOVERED_ARTIFACT_EXCLUDES]
-    )
-
-    selected: list[ModelArtifact] = []
-    selected_paths: set[str] = set()
-    selected_bytes = 0
-    discovery_matched = False
-    discovery_limit_hit = False
-    for pattern, pattern_source, active_excludes, is_discovery in _artifact_pattern_specs(
-        include_patterns,
-        discovery_patterns,
-        exclude_patterns,
-        discovery_exclude_patterns,
-    ):
-        matches, match_limit_exceeded = _collect_candidate_artifact_paths(policy.root, pattern, active_excludes)
-        if match_limit_exceeded:
-            if is_discovery:
-                discovery_limit_hit = True
-            warnings.append(
-                Warning(
-                    code="ARTIFACT_MATCH_LIMIT_EXCEEDED",
-                    severity="warning",
-                    object_kind="artifact",
-                    object_id=pattern,
-                    message=(
-                        "Artifact include pattern matched more than "
-                        f"{_MAX_ARTIFACT_MATCHES_PER_PATTERN} candidate paths after excludes: {pattern}"
-                    ),
-                    source=_source(config, pattern_source),
-                    remediation="Use narrower artifact include patterns or add exclude patterns for non-model files.",
-                )
-            )
-            continue
-        if not matches:
-            if is_discovery:
-                continue
-            warnings.append(
-                Warning(
-                    code="MISSING_ARTIFACT",
-                    severity="warning",
-                    object_kind="artifact",
-                    object_id=pattern,
-                    message=f"No artifact matched include pattern: {pattern}",
-                    source=_source(config, pattern_source),
-                    remediation="Check the artifact path or remove the include pattern.",
-                )
-            )
-            continue
-        if is_discovery:
-            discovery_matched = True
-        for match in matches:
-            if _is_excluded(match, policy.root, active_excludes):
-                continue
-            try:
-                if match.is_symlink():
-                    warnings.append(
-                        Warning(
-                            code="SKIPPED_SYMLINK",
-                            severity="warning",
-                            object_kind="artifact",
-                            object_id=match.as_posix(),
-                            message="Symlink artifact was skipped by default.",
-                            source=_source(config, pattern_source),
-                            remediation="Use a real file inside the target root.",
-                        )
-                    )
-                    continue
-                resolved = match.resolve(strict=True)
-                policy.ensure_inside_root(resolved)
-                if not resolved.is_file():
-                    continue
-                relative_path = policy.relative_to_root(resolved)
-                if relative_path in selected_paths:
-                    continue
-                artifact_bytes = _artifact_size(resolved)
-                if _artifact_exceeds_single_file_budget(config, warnings, relative_path, artifact_bytes, pattern_source):
-                    continue
-                if _artifact_exceeds_total_budget(config, warnings, relative_path, selected_bytes, artifact_bytes, pattern_source):
-                    continue
-                snapshot = sha256_file_snapshot(resolved)
-                if _artifact_exceeds_single_file_budget(config, warnings, relative_path, snapshot.size, pattern_source):
-                    continue
-                if _artifact_exceeds_total_budget(config, warnings, relative_path, selected_bytes, snapshot.size, pattern_source):
-                    continue
-                selected_paths.add(relative_path)
-                selected_bytes += snapshot.size
-                selected.append(
-                    ModelArtifact(
-                        path=relative_path,
-                        size=snapshot.size,
-                        digest=snapshot.digest,
-                        digest_algorithm=snapshot.digest_algorithm,
-                        selected_by=pattern,
-                        source=_source(config, pattern_source),
-                    )
-                )
-            except OSError as exc:
-                raise CollectorError(f"Failed to collect artifact {match}: {exc}", "artifact") from exc
-    if discovery and not discovery_matched and not discovery_limit_hit:
-        warnings.append(
-            Warning(
-                code="MISSING_ARTIFACT",
-                severity="warning",
-                object_kind="artifact",
-                object_id="artifacts.discovery",
-                message="Artifact discovery did not match any default model artifact patterns.",
-                source=_source(config, "artifacts.discovery"),
-                remediation="Add explicit [artifacts].include patterns or place model artifacts under supported extensions.",
-            )
-        )
-    return selected
-
-
-def _artifact_pattern_specs(
-    include_patterns: list[str],
-    discovery_patterns: list[str],
-    exclude_patterns: list[str],
-    discovery_exclude_patterns: list[str],
-) -> list[tuple[str, str, list[str], bool]]:
-    specs = [(pattern, "artifacts.include", exclude_patterns, False) for pattern in sorted(include_patterns)]
-    specs.extend((pattern, "artifacts.discovery", discovery_exclude_patterns, True) for pattern in discovery_patterns)
-    return specs
-
-
-def _artifact_exceeds_single_file_budget(
-    config: LoadedConfig,
-    warnings: list[Warning],
-    relative_path: str,
-    artifact_bytes: int,
-    source_field: str,
-) -> bool:
-    if artifact_bytes > _MAX_ARTIFACT_SINGLE_FILE_BYTES:
-        warnings.append(
-            Warning(
-                code="ARTIFACT_SIZE_LIMIT_EXCEEDED",
-                severity="warning",
-                object_kind="artifact",
-                object_id=relative_path,
-                message=(
-                    f"Artifact exceeds the {_MAX_ARTIFACT_SINGLE_FILE_BYTES} byte "
-                    f"single-file budget and was skipped: {relative_path} ({artifact_bytes} bytes)"
-                ),
-                source=_source(config, source_field),
-                remediation="Hash a smaller staged artifact or wait for configurable budgets in a later release.",
-            )
-        )
-        return True
-    return False
-
-
-def _artifact_exceeds_total_budget(
-    config: LoadedConfig,
-    warnings: list[Warning],
-    relative_path: str,
-    selected_bytes: int,
-    artifact_bytes: int,
-    source_field: str,
-) -> bool:
-    if selected_bytes + artifact_bytes > _MAX_ARTIFACT_TOTAL_BYTES:
-        warnings.append(
-            Warning(
-                code="ARTIFACT_TOTAL_SIZE_LIMIT_EXCEEDED",
-                severity="warning",
-                object_kind="artifact",
-                object_id=relative_path,
-                message=(
-                    f"Artifact would exceed the {_MAX_ARTIFACT_TOTAL_BYTES} byte total "
-                    f"artifact budget and was skipped: {relative_path} "
-                    f"({selected_bytes} selected bytes + {artifact_bytes} artifact bytes)"
-                ),
-                source=_source(config, source_field),
-                remediation="Use narrower artifact patterns or run against a smaller staged artifact set.",
-            )
-        )
-        return True
-    return False
-
-
-def _collect_candidate_artifact_paths(root: Path, pattern: str, exclude_patterns: list[str]) -> tuple[list[Path], bool]:
-    candidates: list[Path] = []
-    for match in root.glob(pattern):
-        if _is_excluded(match, root, exclude_patterns):
-            continue
-        if len(candidates) >= _MAX_ARTIFACT_MATCHES_PER_PATTERN:
-            return candidates, True
-        candidates.append(match)
-    return sorted(candidates), False
-
-
-def _artifact_size(path: Path) -> int:
-    try:
-        return path.stat().st_size
-    except OSError as exc:
-        raise CollectorError(f"Failed to stat artifact {path}: {exc}", "artifact") from exc
 
 
 def _collect_path_references(
@@ -829,26 +573,6 @@ def _scalar_object_id(value: object, fallback: str) -> str:
 def _source(config: LoadedConfig, field: str) -> SourceLocation:
     path = config.path.as_posix() if config.path else "<inline-defaults>"
     return SourceLocation(path=path, field=field)
-
-
-def _is_excluded(path: Path, root: Path, excludes: list[str]) -> bool:
-    relative = path.relative_to(root).as_posix()
-    return any(_matches_glob(relative, pattern) for pattern in excludes)
-
-
-def _matches_glob(relative_path: str, pattern: str) -> bool:
-    normalized = pattern.replace("\\", "/")
-    if normalized.startswith("./"):
-        normalized = normalized[2:]
-    if not normalized:
-        return False
-    if relative_path == normalized:
-        return True
-    if normalized.startswith("**/"):
-        trimmed = normalized[3:]
-        if fnmatch.fnmatchcase(relative_path, trimmed):
-            return True
-    return fnmatch.fnmatchcase(relative_path, normalized)
 
 
 def _singular_kind(section: str) -> str:

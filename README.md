@@ -55,6 +55,11 @@ summary.json.manifest.json
 warnings.json
 ```
 
+The output directory also retains one dot-prefixed `*.ai-bom.lock`
+coordination file per generated destination. These files contain no project
+evidence; their stable paths let overlapping writers coordinate across later
+invocations.
+
 For the bundled minimal project, `summary.json` reports
 `"status": "success"`, `"completeness_status": "complete"`,
 `"artifact_count": 1`, and `"warning_count": 0`.
@@ -136,7 +141,7 @@ stale report at that requested path.
 - uses: actions/checkout@v7
 
 - id: ai-bom
-  uses: 0disoft/ai-bom-generator@v0.6.0
+  uses: 0disoft/ai-bom-generator@v0.6.1
   with:
     model-directory: .
     warnings: allow
@@ -159,11 +164,15 @@ When `format` or `warnings` inputs are omitted, the action lets the CLI use the
 discovered or explicit config values and CLI defaults. Generated files are
 written to explicit paths when provided, or to a run-unique directory under
 `RUNNER_TEMP`.
+Explicit relative output paths resolve from `GITHUB_WORKSPACE`. `redaction: off`
+is an intentional local-debugging escape hatch that can place secret-shaped
+values in generated artifacts; strict redaction is still best effort, so do not
+put credentials in declared evidence or lockfile locators.
 
 Summary-derived action outputs are published only when the generation manifest
 matches the BOM, warning report, and summary files from the current run.
 
-Use `@v0` for compatible 0.x updates, or pin the exact `@v0.6.0` tag when a
+Use `@v0` for compatible 0.x updates, or pin the exact `@v0.6.1` tag when a
 workflow needs release reproducibility. GitHub-enforced immutable releases
 apply to versions published after `v0.2.0`.
 
@@ -184,7 +193,7 @@ uv run --python 3.12 python scripts/verify_github_action.py
 Post-release verification:
 
 ```powershell
-$env:RELEASE_VERSION = "0.6.0"
+$env:RELEASE_VERSION = "0.6.1"
 $env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
 $env:SMOKE_RUN_ID = "<successful-exact-version-action-smoke-run-id>"
 uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID --smoke-run-id $env:SMOKE_RUN_ID

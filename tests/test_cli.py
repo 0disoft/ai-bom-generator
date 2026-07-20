@@ -1655,7 +1655,7 @@ class CliTests(unittest.TestCase):
             summary = work / "summary.json"
             warnings = work / "warnings.json"
 
-            with patch("ai_bom_generator.collectors.pipeline._MAX_ARTIFACT_MATCHES_PER_PATTERN", 2):
+            with patch("ai_bom_generator.collectors.artifacts._MAX_ARTIFACT_MATCHES_PER_PATTERN", 2):
                 code = main(
                     [
                         "generate",
@@ -1690,7 +1690,7 @@ class CliTests(unittest.TestCase):
             summary = work / "summary.json"
             warnings = work / "warnings.json"
 
-            with patch("ai_bom_generator.collectors.pipeline._MAX_ARTIFACT_SINGLE_FILE_BYTES", 1):
+            with patch("ai_bom_generator.collectors.artifacts._MAX_ARTIFACT_SINGLE_FILE_BYTES", 1):
                 code = main(
                     [
                         "generate",
@@ -1737,8 +1737,8 @@ class CliTests(unittest.TestCase):
             summary = work / "summary.json"
 
             with (
-                patch("ai_bom_generator.collectors.pipeline._MAX_ARTIFACT_SINGLE_FILE_BYTES", 10),
-                patch("ai_bom_generator.collectors.pipeline._MAX_ARTIFACT_TOTAL_BYTES", 5),
+                patch("ai_bom_generator.collectors.artifacts._MAX_ARTIFACT_SINGLE_FILE_BYTES", 10),
+                patch("ai_bom_generator.collectors.artifacts._MAX_ARTIFACT_TOTAL_BYTES", 5),
             ):
                 code = main(
                     [
@@ -1778,7 +1778,7 @@ class CliTests(unittest.TestCase):
 
             with (
                 patch(
-                    "ai_bom_generator.collectors.pipeline.sha256_file_snapshot",
+                    "ai_bom_generator.collectors.artifacts.sha256_file_snapshot",
                     side_effect=CollectorError("blocked hash read", "hash"),
                 ),
                 redirect_stderr(stderr),

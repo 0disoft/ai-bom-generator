@@ -31,5 +31,8 @@ training-data audits.
 - Maintainability: changes must preserve source-of-truth documents.
 - Security: input paths, summaries, logs, and artifacts must avoid leaking secrets or private dataset contents.
 - Operability: CI and local runs must distinguish success, warnings, and hard failures.
-- Determinism: stable input should produce stable output.
+- Determinism: stable input should produce a byte-stable BOM and warning report.
+  Summaries include measured elapsed time, and manifests include a run-unique
+  generation identifier, so those two operational surfaces are intentionally
+  invocation-specific.
 - Honesty: generated BOM output must not imply evidence that was not collected.

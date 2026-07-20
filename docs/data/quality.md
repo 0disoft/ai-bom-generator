@@ -5,8 +5,8 @@ Owner: UNASSIGNED
 
 ## Purpose
 
-Data quality for AI-BOM Generator means deterministic, traceable, standards-valid
-output from the same input project.
+Data quality for AI-BOM Generator means a deterministic, traceable,
+standards-valid BOM and warning report from the same input project.
 
 ## Source of Truth
 
@@ -16,7 +16,8 @@ output from the same input project.
 
 ## Quality Gates
 
-- Stable input produces byte-stable or semantically stable output.
+- Stable input produces a byte-stable BOM and warning report. Summary
+  `elapsed_ms` and manifest `generation_id` are intentionally run-specific.
 - Hashes use a documented algorithm.
 - Artifact size and digest are recorded from one stable file snapshot, not from
   separate observations that can race with mutable checkpoints.

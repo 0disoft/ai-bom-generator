@@ -16,17 +16,22 @@ def main() -> int:
     runner_temp = _path_env("RUNNER_TEMP", Path(tempfile.gettempdir()))
     model_directory = _required_input("INPUT_MODEL_DIRECTORY")
     default_output_dir = runner_temp / "ai-bom-generator" / uuid.uuid4().hex
-    output = _input_path("INPUT_OUTPUT", default_output_dir / "bom.cdx.json")
-    warning_report = _input_path("INPUT_WARNING_REPORT", default_output_dir / "warnings.json")
-    summary = _input_path("INPUT_SUMMARY", default_output_dir / "summary.json")
-    manifest = _input_path("INPUT_MANIFEST", default_output_dir / "output-manifest.json")
-    error_report = _input_path("INPUT_ERROR_REPORT", default_output_dir / "error.json")
+    output = _input_path("INPUT_OUTPUT", default_output_dir / "bom.cdx.json", workspace)
+    warning_report = _input_path("INPUT_WARNING_REPORT", default_output_dir / "warnings.json", workspace)
+    summary = _input_path("INPUT_SUMMARY", default_output_dir / "summary.json", workspace)
+    manifest = _input_path("INPUT_MANIFEST", default_output_dir / "output-manifest.json", workspace)
+    error_report = _input_path("INPUT_ERROR_REPORT", default_output_dir / "error.json", workspace)
     output.parent.mkdir(parents=True, exist_ok=True)
     warning_report.parent.mkdir(parents=True, exist_ok=True)
     summary.parent.mkdir(parents=True, exist_ok=True)
     manifest.parent.mkdir(parents=True, exist_ok=True)
     error_report.parent.mkdir(parents=True, exist_ok=True)
-    _remove_stale_action_outputs((output, warning_report, summary, manifest, error_report))
+    try:
+        _remove_stale_action_outputs((output, warning_report, summary, manifest, error_report))
+    except OSError as exc:
+        print(f"Could not remove a stale AI-BOM output: {exc}", file=sys.stderr)
+        _write_basic_outputs(exit_code=70)
+        return 70
 
     args = [
         "uv",
@@ -86,23 +91,25 @@ def _input_value(name: str, default: str) -> str:
     return os.environ.get(name, "").strip() or default
 
 
-def _input_path(name: str, default: Path) -> Path:
+def _input_path(name: str, default: Path, base: Path) -> Path:
     value = os.environ.get(name, "").strip()
-    return Path(value) if value else default
+    candidate = Path(value) if value else default
+    return _resolve_path(candidate, base)
 
 
 def _path_env(name: str, default: Path) -> Path:
     value = os.environ.get(name, "").strip()
-    return Path(value) if value else default
+    return _resolve_path(Path(value) if value else default, Path.cwd())
+
+
+def _resolve_path(candidate: Path, base: Path) -> Path:
+    path = candidate if candidate.is_absolute() else base / candidate
+    return path.resolve(strict=False)
 
 
 def _remove_stale_action_outputs(paths: tuple[Path, ...]) -> None:
     for path in paths:
-        try:
-            if path.exists():
-                path.unlink()
-        except OSError:
-            pass
+        path.unlink(missing_ok=True)
 
 
 def _write_outputs(

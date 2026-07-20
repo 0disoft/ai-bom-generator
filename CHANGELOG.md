@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.6.1
+
+- Resolve explicit relative GitHub Action output paths from the workspace so
+  verified summary outputs remain available.
+- Reject stale-output cleanup failures before Action execution and prevent old
+  failure reports from being accepted as current-run evidence.
+- Serialize commits across every shared generated destination, including runs
+  that use different manifest paths.
+- Scan artifact discovery patterns in one top-down walk and prune subtrees that
+  every active pattern excludes.
+- Clarify deterministic-output and strict-redaction boundaries and synchronize
+  the supported security-fix line with the current release.
+
 ## v0.6.0
 
 - Adds bounded Pipenv `Pipfile.lock` specification 6 parsing for exact versions,

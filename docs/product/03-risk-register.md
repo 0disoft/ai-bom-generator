@@ -22,7 +22,10 @@ the evidence behind it.
 | Exporter mapping is wrong | Downstream tools reject or misread BOM output | Build fixture-based mapping tests before claiming exporter support |
 | Dataset license or source is guessed | Legal and trust claims become misleading | Only report declared dataset metadata; never infer license approval |
 | Large checkpoint hashing is slow | CLI becomes painful in CI | Define digest caching or explicit artifact selection before broad use |
+| Large directory trees make artifact selection slow | Discovery can spend excessive time walking irrelevant directories before hashing | Use one top-down walk, prune subtrees excluded by every active pattern, and keep a visited-entry ceiling UNDECIDED until measured fixtures justify one |
 | Secrets leak through config or paths | BOM output may expose private URLs or tokens | Redact known sensitive values and document non-secret input requirements |
+| Unknown credential shapes bypass strict redaction | A generated artifact may expose a new or organization-specific token format | Treat redaction as best effort, reject secret-bearing evidence by policy, and review artifacts before sharing |
+| Concurrent runs share one output destination | Backup and replacement operations can mix files from different generations | Acquire stable locks for every generated destination in canonical path order and verify the committed manifest before consumption |
 | "All frameworks" scope creep | Maintainer load explodes | Start with explicit config and fixtures instead of framework autodiscovery |
 
 ## Required Decisions Before Release

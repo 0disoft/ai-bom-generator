@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 import hashlib
 import json
 import os
@@ -64,7 +64,7 @@ def write_json_output_set(items: Iterable[JsonOutputPayload], manifest_path: Pat
         staged.append(("manifest", manifest_temp_path, manifest_path))
         _write_temp_json_file(manifest_temp_path, manifest_payload)
 
-        with _output_set_lock(manifest_path):
+        with _output_set_lock([path for _, _, path in staged]):
             _commit_staged_output_set(staged)
     finally:
         for _, temp_path, _ in staged:
@@ -110,9 +110,24 @@ def _commit_staged_output_set(staged: list[tuple[str, Path, Path]]) -> None:
 
 
 @contextmanager
-def _output_set_lock(manifest_path: Path):
-    lock_path = manifest_path.with_name(f".{manifest_path.name}.lock")
+def _output_set_lock(output_paths: Iterable[Path]):
+    unique_paths: dict[str, Path] = {}
+    for path in output_paths:
+        resolved = path.resolve(strict=False)
+        unique_paths[os.path.normcase(os.fspath(resolved))] = resolved
+    paths = sorted(unique_paths.values(), key=lambda path: os.path.normcase(os.fspath(path)))
+    with ExitStack() as stack:
+        for path in paths:
+            stack.enter_context(_output_path_lock(path))
+        yield
+
+
+@contextmanager
+def _output_path_lock(output_path: Path):
+    lock_path = output_path.with_name(f".{output_path.name}.ai-bom.lock")
     lock_path.parent.mkdir(parents=True, exist_ok=True)
+    if lock_path.is_symlink():
+        raise OutputSetLockedError(f"Output lock path must not be a symlink: {lock_path}")
     with lock_path.open("a+b") as handle:
         handle.seek(0, os.SEEK_END)
         if handle.tell() == 0:
@@ -122,7 +137,7 @@ def _output_set_lock(manifest_path: Path):
         try:
             _lock_file(handle)
         except OSError as exc:
-            raise OutputSetLockedError(f"Output set is already being committed: {manifest_path}") from exc
+            raise OutputSetLockedError(f"Output path is already being committed: {output_path}") from exc
         try:
             yield
         finally:

@@ -37,6 +37,12 @@ The redaction layer should detect obvious credential forms before output:
 - Disabled redaction must be reported as a warning instead of silently producing
   unredacted output.
 
+Strict redaction is a best-effort defense for known provider shapes and
+sensitive key names, not proof that arbitrary or newly introduced credential
+formats are absent. Callers must not place credentials in declared evidence,
+paths, or lockfile locators, and must review generated artifacts before sharing
+or uploading them.
+
 ## Output Surfaces
 
 - BOM file.

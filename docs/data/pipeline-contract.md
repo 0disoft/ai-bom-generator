@@ -35,9 +35,12 @@ and a warning report.
    boundary preserves source
    locator, channel, index, platform, revision, and artifact hash fields when a
    supported parser has direct evidence for them.
-6. Select artifacts from explicit include patterns and, only when
+6. Select artifacts in one deterministic top-down tree walk from explicit
+   include patterns and, only when
    `[artifacts].discovery = true`, bounded default model artifact patterns for
    `.safetensors`, `.gguf`, `.bin`, `.pt`, `.pth`, `.ckpt`, and `.onnx` files.
+   Prune a directory before descent when every still-active pattern excludes its
+   subtree. Explicit patterns retain their own exclude semantics.
 7. Apply fixed MVP artifact budgets before hashing: at most 256 candidate paths
    per include pattern after excludes, at most 16 GiB for one artifact, and at
    most 25 GiB of selected artifacts per run. Budget hits are machine-readable
@@ -54,8 +57,9 @@ and a warning report.
 13. Build a generation manifest from the staged file bytes, including a
    run-unique generation id plus role, path, size, and SHA-256 digest for every
    final output in the set.
-14. Acquire the manifest-adjacent output-set lock, preserve any previous
-   committed files as destination-local rollback copies, replace final BOM,
+14. Acquire stable destination-adjacent locks for every generated output path,
+    including the manifest, in canonical path order; preserve any previous
+    committed files as destination-local rollback copies, replace final BOM,
    warning-report, and summary files, then replace the manifest last as the
    commit marker. Restore the previous set on a handled replacement failure.
 15. Emit missing-metadata warnings and machine-readable summary output.
@@ -117,9 +121,11 @@ component `bom-ref` values are derived from that identity.
   outputs as if they came from the failed attempt.
 - Output write failure: remove the current temporary files and restore the
   previous committed output set after handled replacement failures.
-- Concurrent writers: serialize the final replacement phase through the
-  manifest-adjacent OS-released lock. Staging may occur concurrently, but final
-  files and the manifest must come from one lock owner.
+- Concurrent writers: serialize the final replacement phase through persistent,
+  destination-adjacent OS-released lock files acquired in canonical path order.
+  Writers that share any generated destination therefore contend even when
+  their manifest paths differ. Staging may occur concurrently, but final files
+  and the manifest must come from one lock owner.
 - Interrupted output replacement: if the process stops after one final output is
   replaced but before the manifest is replaced, consumers can reject the output
   set because the current run has no committed manifest with matching digests.

@@ -16,23 +16,33 @@ inputs:
     required: false
     default: ""
   output:
-    description: Output path for the generated BOM. Defaults under RUNNER_TEMP.
+    description: >-
+      Output path for the generated BOM. Relative paths resolve from
+      GITHUB_WORKSPACE; empty defaults under RUNNER_TEMP.
     required: false
     default: ""
   warning-report:
-    description: Output path for the warning report. Defaults under RUNNER_TEMP.
+    description: >-
+      Output path for the warning report. Relative paths resolve from
+      GITHUB_WORKSPACE; empty defaults under RUNNER_TEMP.
     required: false
     default: ""
   summary:
-    description: Output path for the JSON summary. Defaults under RUNNER_TEMP.
+    description: >-
+      Output path for the JSON summary. Relative paths resolve from
+      GITHUB_WORKSPACE; empty defaults under RUNNER_TEMP.
     required: false
     default: ""
   manifest:
-    description: Output path for the generation manifest. Defaults under RUNNER_TEMP.
+    description: >-
+      Output path for the generation manifest. Relative paths resolve from
+      GITHUB_WORKSPACE; empty defaults under RUNNER_TEMP.
     required: false
     default: ""
   error-report:
-    description: Output path for the hard-failure JSON report. Defaults under RUNNER_TEMP.
+    description: >-
+      Output path for the hard-failure JSON report. Relative paths resolve from
+      GITHUB_WORKSPACE; empty defaults under RUNNER_TEMP.
     required: false
     default: ""
   warnings:
@@ -40,7 +50,9 @@ inputs:
     required: false
     default: ""
   redaction:
-    description: Redaction mode passed to ai-bom.
+    description: >-
+      Redaction mode passed to ai-bom. The off value intentionally permits
+      unredacted generated artifacts.
     required: false
     default: strict
 

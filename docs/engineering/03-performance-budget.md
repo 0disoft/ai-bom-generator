@@ -22,9 +22,10 @@ When a budget is hit, the collector emits a machine-readable warning and skips
 the over-budget pattern or artifact. It does not fail the whole run unless the
 configured warning policy treats warnings as failures.
 
-Artifact discovery is config opt-in and reuses the same budgets. Discovery must
-not add unbounded recursive scans outside the fixed default model artifact
-patterns and built-in hidden/cache/build/dependency excludes.
+Artifact discovery is config opt-in and reuses the same budgets. One top-down
+tree walk evaluates all fixed default model-artifact patterns, and directories
+excluded for every active pattern are pruned before descent. Candidate counts
+remain bounded per pattern; a separate visited-entry ceiling remains UNDECIDED.
 
 Explicit dependency-file parsing has separate fixed limits:
 

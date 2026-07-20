@@ -30,6 +30,9 @@ This repository type owns action inputs, outputs, permissions, token handling, a
   writes BOM, warning report, summary, generation manifest, and reserved error
   report paths under a run-unique directory in `RUNNER_TEMP` and exposes those paths as action
   outputs.
+- GitHub Action explicit output paths: relative BOM, warning-report, summary,
+  manifest, and error-report paths resolve from `GITHUB_WORKSPACE` before the
+  CLI is invoked and before manifest path verification.
 - GitHub Action summary output safety: the action must remove stale generated
   output files before invoking the CLI and must publish summary-derived outputs
   only when the generation manifest matches the current BOM, warning-report, and
@@ -37,6 +40,10 @@ This repository type owns action inputs, outputs, permissions, token handling, a
 - GitHub Action failure output safety: the action publishes `error-code` and
   `error-stage` only from a current-run error report whose schema, failed
   status, and exit code match the CLI process result.
+- GitHub Action stale-output safety: failure to remove any requested stale
+  generated output stops the wrapper before invoking the CLI, returns internal
+  error exit code 70, and does not trust the unreadable or undeletable file as
+  current-run evidence.
 - GitHub Action runtime setup: the composite action prepares Python 3.12 and
   pinned uv `0.11.28`, with setup-uv's GitHub cache disabled. It runs the
   action checkout through `uv run --project --locked` and forces both the

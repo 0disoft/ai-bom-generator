@@ -101,7 +101,9 @@ def main(argv: list[str] | None = None) -> int:
         ]
         for case in cases:
             _run_case(case, work / case.name)
+        _run_relative_output_case(work / "relative-output-paths")
         _run_missing_required_input_case(work / "missing-model-directory")
+        _run_stale_cleanup_failure_case(work / "stale-cleanup-failure")
         _run_stale_summary_failure_case(work / "stale-summary-failure")
         _verify_github_output_escaping(work / "escaped-github-output")
     return 0
@@ -356,6 +358,112 @@ def _run_missing_required_input_case(case_root: Path) -> None:
     outputs = _read_github_output(github_output)
     if outputs.get("exit-code") != "20":
         raise AssertionError(f"missing-model-directory output exit-code mismatch: {outputs.get('exit-code')}")
+
+
+def _run_relative_output_case(case_root: Path) -> None:
+    case_root.mkdir(parents=True)
+    github_output = case_root / "github-output.txt"
+    output = case_root / "bom.cdx.json"
+    warning_report = case_root / "warnings.json"
+    summary = case_root / "summary.json"
+    manifest = case_root / "output-manifest.json"
+    error_report = case_root / "error.json"
+
+    def relative(path: Path) -> str:
+        return os.path.relpath(path, ROOT)
+
+    env = os.environ.copy()
+    env.update(
+        {
+            "GITHUB_ACTION_PATH": str(ROOT),
+            "GITHUB_WORKSPACE": str(ROOT),
+            "GITHUB_OUTPUT": str(github_output),
+            "RUNNER_TEMP": str(case_root / "runner-temp"),
+            "INPUT_MODEL_DIRECTORY": "tests/fixtures/complete-project",
+            "INPUT_CONFIG": "tests/fixtures/complete-project/aibom.toml",
+            "INPUT_FORMAT": "cyclonedx-json-1.7",
+            "INPUT_OUTPUT": relative(output),
+            "INPUT_WARNING_REPORT": relative(warning_report),
+            "INPUT_SUMMARY": relative(summary),
+            "INPUT_MANIFEST": relative(manifest),
+            "INPUT_ERROR_REPORT": relative(error_report),
+            "INPUT_WARNINGS": "allow",
+            "INPUT_REDACTION": "strict",
+        }
+    )
+    result = subprocess.run(
+        [sys.executable, str(ENTRYPOINT)],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        print(result.stdout, file=sys.stderr)
+        print(result.stderr, file=sys.stderr)
+        raise AssertionError(f"relative-output-paths returned {result.returncode}, expected 0")
+    outputs = _read_github_output(github_output)
+    expected_paths = {
+        "bom-path": output,
+        "warning-report-path": warning_report,
+        "summary-path": summary,
+        "manifest-path": manifest,
+        "error-report-path": error_report,
+    }
+    for key, path in expected_paths.items():
+        if outputs.get(key) != path.as_posix():
+            raise AssertionError(f"relative-output-paths {key} mismatch: {outputs.get(key)}")
+    if outputs.get("status") != "success" or outputs.get("warning-count") != "0":
+        raise AssertionError("relative-output-paths did not publish verified summary outputs")
+
+
+def _run_stale_cleanup_failure_case(case_root: Path) -> None:
+    case_root.mkdir(parents=True)
+    github_output = case_root / "github-output.txt"
+    stale_output_directory = case_root / "bom.cdx.json"
+    stale_output_directory.mkdir()
+    env = os.environ.copy()
+    env.update(
+        {
+            "GITHUB_ACTION_PATH": str(ROOT),
+            "GITHUB_WORKSPACE": str(ROOT),
+            "GITHUB_OUTPUT": str(github_output),
+            "RUNNER_TEMP": str(case_root / "runner-temp"),
+            "INPUT_MODEL_DIRECTORY": "tests/fixtures/complete-project",
+            "INPUT_CONFIG": "tests/fixtures/complete-project/aibom.toml",
+            "INPUT_FORMAT": "cyclonedx-json-1.7",
+            "INPUT_OUTPUT": str(stale_output_directory),
+            "INPUT_WARNING_REPORT": str(case_root / "warnings.json"),
+            "INPUT_SUMMARY": str(case_root / "summary.json"),
+            "INPUT_MANIFEST": str(case_root / "output-manifest.json"),
+            "INPUT_ERROR_REPORT": str(case_root / "error.json"),
+            "INPUT_WARNINGS": "allow",
+            "INPUT_REDACTION": "strict",
+        }
+    )
+    result = subprocess.run(
+        [sys.executable, str(ENTRYPOINT)],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+    )
+    if result.returncode != 70:
+        print(result.stdout, file=sys.stderr)
+        print(result.stderr, file=sys.stderr)
+        raise AssertionError(f"stale-cleanup-failure returned {result.returncode}, expected 70")
+    outputs = _read_github_output(github_output)
+    if outputs.get("exit-code") != "70":
+        raise AssertionError(f"stale-cleanup-failure exit-code mismatch: {outputs.get('exit-code')}")
+    for key in ("warning-count", "status", "completeness-status", "format", "error-code", "error-stage"):
+        if key in outputs:
+            raise AssertionError(f"stale-cleanup-failure published untrusted output key: {key}")
+    if "Could not remove a stale AI-BOM output" not in result.stderr:
+        raise AssertionError("stale-cleanup-failure did not explain the cleanup failure")
 
 
 def _run_stale_summary_failure_case(case_root: Path) -> None:

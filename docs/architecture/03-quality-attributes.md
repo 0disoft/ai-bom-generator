@@ -9,7 +9,8 @@ exporter mappings, warning report, JSON summary, and validation fixtures.
 
 ## Required Attributes
 
-- Deterministic output for stable input.
+- Byte-stable BOM and warning-report output for stable input. Summary timing and
+  manifest generation identity are explicitly run-specific.
 - Honest warning behavior for missing or unsupported metadata.
 - Source traceability from BOM fields back to collected evidence where possible.
 - No mutation of caller-owned project files in MVP.
@@ -21,7 +22,8 @@ exporter mappings, warning report, JSON summary, and validation fixtures.
 
 ## Review Blockers
 
-- A change makes output nondeterministic without a documented reason.
+- A change makes BOM or warning-report output nondeterministic without a
+  documented reason, or adds another run-specific field without documenting it.
 - A change hides warnings or treats missing metadata as collected evidence.
 - A change claims audit completeness, safety, compliance, or license correctness.
 - A change adds network access, caching, or dataset-content inspection without an ADR.

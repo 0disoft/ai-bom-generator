@@ -30,7 +30,10 @@ metadata rather than copying source file contents into telemetry or JSON summari
 
 ## Retention Boundary
 
-- The CLI should write only requested output artifacts.
+- The CLI writes requested output artifacts plus evidence-free, persistent,
+  destination-adjacent coordination lock files. Lock files contain no project
+  evidence and are excluded from the output manifest; retaining their stable
+  inode prevents overlapping later writers from splitting lock ownership.
 - No background cache, telemetry log, or hidden local database is part of MVP.
   The Action's explicit `RUNNER_TEMP` uv cache is ephemeral runtime state and
   is not persisted through the GitHub Actions cache service.

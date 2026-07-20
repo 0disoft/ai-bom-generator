@@ -30,10 +30,12 @@ behavior stay comparable.
   `RUNNER_TEMP`.
 - `error-report`: output path for the optional hard-failure report. Empty
   defaults under the same run-unique `RUNNER_TEMP` directory.
+  Explicit relative output and report paths resolve from `GITHUB_WORKSPACE`.
 - `warnings`: warning policy. The Action wrapper must mirror the CLI's accepted
   values: `allow` and `fail`.
 - `redaction`: redaction mode. The Action wrapper must mirror the CLI's accepted
-  values: `strict` and `off`.
+  values: `strict` and `off`. The explicit `off` value permits unredacted
+  generated artifacts and is intended only for controlled local debugging.
 
 Artifact upload behavior remains UNDECIDED. The wrapper must not invent values
 that diverge from the CLI contract.
@@ -63,6 +65,9 @@ and summary files from the same run.
 Failure-derived outputs are published only when the error report has
 `schema_version` `ai-bom-error-report/v1`, status `failed`, and an `exit_code`
 matching the CLI process status.
+If any requested stale output cannot be removed before invocation, the wrapper
+returns exit code 70 without invoking the CLI or accepting that stale file as
+current-run evidence.
 
 ## Review Blockers
 

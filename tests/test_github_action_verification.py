@@ -5,6 +5,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
@@ -69,6 +70,34 @@ class GitHubActionVerificationTests(unittest.TestCase):
             self.assertNotIn("warning-count<<", text)
             self.assertNotIn("completeness-status<<", text)
             self.assertNotIn("format<<", text)
+
+    def test_relative_output_path_is_resolved_against_workspace(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            workspace = Path(temp).resolve()
+            previous = os.environ.get("INPUT_OUTPUT")
+            os.environ["INPUT_OUTPUT"] = "artifacts/bom.json"
+            try:
+                resolved = github_action_entrypoint._input_path(
+                    "INPUT_OUTPUT",
+                    workspace / "fallback.json",
+                    workspace,
+                )
+            finally:
+                if previous is None:
+                    os.environ.pop("INPUT_OUTPUT", None)
+                else:
+                    os.environ["INPUT_OUTPUT"] = previous
+
+            self.assertEqual(resolved, workspace / "artifacts" / "bom.json")
+
+    def test_stale_output_cleanup_failure_is_not_ignored(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            stale = Path(temp) / "stale.json"
+            stale.write_text('{"stale":true}\n', encoding="utf-8", newline="\n")
+
+            with patch.object(Path, "unlink", side_effect=OSError("blocked cleanup")):
+                with self.assertRaisesRegex(OSError, "blocked cleanup"):
+                    github_action_entrypoint._remove_stale_action_outputs((stale,))
 
     def test_exact_action_pin_accepts_sha_with_version_comment(self) -> None:
         sha = "11f9893b081a58869d3b5fccaea48c9e9e46f990"

@@ -21,7 +21,8 @@ AI-BOM Generator owns:
 - Optional GitHub Action behavior that wraps the CLI in CI.
 - Collector contracts for model cards, metadata manifests, model/checkpoint hashes, dependency lockfiles, training-code references, dataset references, prompt references, and eval references.
 - Exporter mappings to an existing BOM family once the first exporter is selected.
-- Missing-metadata warning reports and deterministic machine-readable summaries.
+- Deterministic BOM and missing-metadata warning reports plus machine-readable
+  summaries with explicitly run-specific timing.
 
 AI-BOM Generator does not own:
 
@@ -44,7 +45,8 @@ behavior. BOM files, warning reports, and JSON summaries are derived artifacts.
 
 - Missing optional metadata produces warnings.
 - Invalid config, unreadable required files, hashing failures, and invalid exporter output fail the run.
-- Stable inputs should produce stable outputs.
+- Stable inputs should produce byte-stable BOM and warning-report outputs.
+  Summary timing and manifest generation identity are invocation-specific.
 - JSON summaries must report evidence gaps without embedding private source contents.
 
 ## Validation Needed Before Merge

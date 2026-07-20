@@ -31,5 +31,6 @@ review, model registry operations, or model serving.
 - Maintainability: changes must preserve source-of-truth documents.
 - Security: config, paths, and generated reports must avoid leaking secrets or private dataset contents.
 - Operability: CI output must distinguish success, warnings, and failures without requiring hosted services.
-- Determinism: stable input should produce stable output.
+- Determinism: stable input should produce a byte-stable BOM and warning report;
+  elapsed summary timing and manifest generation identity remain run-specific.
 - Honesty: generated BOM output must never imply audit completeness beyond the collected evidence.

@@ -20,12 +20,27 @@ class JsonWriterTests(unittest.TestCase):
             output = work / "bom.json"
             manifest = work / "manifest.json"
 
-            with json_writer._output_set_lock(manifest):
+            with json_writer._output_set_lock([output, manifest]):
                 with self.assertRaises(OutputSetLockedError):
                     write_json_output_set([("bom", output, {"run": "B"})], manifest)
 
             self.assertFalse(output.exists())
             self.assertFalse(manifest.exists())
+
+    def test_shared_output_path_is_locked_across_different_manifests(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp)
+            output = work / "bom.json"
+            first_manifest = work / "manifest-a.json"
+            second_manifest = work / "manifest-b.json"
+
+            with json_writer._output_set_lock([output, first_manifest]):
+                with self.assertRaisesRegex(OutputSetLockedError, "bom.json"):
+                    write_json_output_set([("bom", output, {"run": "B"})], second_manifest)
+
+            self.assertFalse(output.exists())
+            self.assertFalse(first_manifest.exists())
+            self.assertFalse(second_manifest.exists())
 
     def test_replace_failure_restores_previous_committed_set(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

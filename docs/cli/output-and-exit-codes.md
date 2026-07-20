@@ -48,8 +48,10 @@ When `--summary -` is used, the same JSON summary object is written to stdout
 while BOM and warning-report outputs are still written to their explicit paths.
 Requested JSON files are staged in destination-local temporary files before
 final replacement. Generation failures before commit preserve the previous
-output set. The commit phase is serialized by a stable manifest-adjacent lock;
-if final replacement raises a handled error, the writer restores the previous
+output set. The commit phase is serialized by stable locks adjacent to every
+generated destination. The dot-prefixed coordination lock files persist outside the
+manifest as coordination state and contain no collected evidence. If final
+replacement raises a handled error, the writer restores the previous
 files and removes the current run's staged temporary files before returning an
 internal error.
 The generation manifest is replaced last. Consumers that need transaction-level

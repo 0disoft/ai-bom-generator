@@ -30,9 +30,11 @@ The executable schema lives at `schemas/aibom-output-manifest-v1.schema.json`.
   manifest itself.
 - Consumers should verify every expected role by path, size, and SHA-256 digest
   before using summary-derived automation outputs.
-- A stable manifest-adjacent lock serializes the final replacement phase for
-  writers targeting the same output set. Lock ownership is released by the OS
-  when a process exits.
+- Stable destination-adjacent lock files serialize the final replacement phase
+  for writers that share any generated output path, even when their manifest
+  paths differ. Locks are acquired in canonical path order, ownership is
+  released by the OS when a process exits, and the coordination lock files
+  persist so replacing an inode cannot split future lock ownership.
 - A handled replacement failure restores the previously committed output set.
   Generation failures before commit leave existing outputs untouched.
 

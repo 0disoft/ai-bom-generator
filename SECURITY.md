@@ -6,8 +6,8 @@ AI-BOM Generator provides security fixes for the latest released minor line.
 
 | Version | Supported |
 | --- | --- |
-| 0.2.x | Yes |
-| 0.1.x and earlier | No |
+| 0.6.x | Yes |
+| 0.5.x and earlier | No |
 
 This table is updated when a newer minor line becomes the supported release.
 
