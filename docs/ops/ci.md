@@ -60,6 +60,10 @@ After the advisory flow has been exercised, repository variable
 `CLARISSIMI_GATE_MODE=required` can make the existing decision job fail closed
 without renaming the check.
 
+Repository-level smoke uses a documentation-only source pull request and
+closes the generated Clarissimi draft without promotion, so test-only
+assessment data never enters the contributor ledger.
+
 ## CodeQL Workflow
 
 The repository CodeQL workflow lives at `.github/workflows/codeql.yml`.
