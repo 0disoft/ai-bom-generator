@@ -1,0 +1,41 @@
+{
+  "affectedArea": "docs(ci): exercise Clarissimi integration",
+  "confidence": 0.64,
+  "contributionType": "maintenance",
+  "contributor": {
+    "id": "100320863",
+    "login": "0disoft",
+    "platform": "github",
+    "profileUrl": "https://github.com/0disoft"
+  },
+  "evidenceRefs": [
+    {
+      "id": "PR-21",
+      "kind": "pull_request",
+      "title": "docs(ci): exercise Clarissimi integration",
+      "url": "https://github.com/0disoft/ai-bom-generator/pull/21"
+    },
+    {
+      "id": "docs/ops/ci.md",
+      "kind": "file",
+      "title": "docs/ops/ci.md"
+    },
+    {
+      "id": "713724bb5e8f9811c65c81adbfe5c5b5309ec348",
+      "kind": "commit",
+      "title": "Merge commit 713724bb5e8f"
+    }
+  ],
+  "evidenceSummary": "Drafted maintenance recognition for docs(ci): exercise Clarissimi integration from pull_request PR-21.",
+  "impactLevel": "medium",
+  "maintainerApprovalStatus": "draft",
+  "publicRecognitionText": "Reduced maintenance work around docs(ci): exercise Clarissimi integration.",
+  "schemaVersion": "clarissimi.assessment/v1",
+  "source": {
+    "event": "merged_pull_request",
+    "mergedAt": "2026-07-22T12:44:59Z",
+    "pullRequestNumber": 21,
+    "repository": "0disoft/ai-bom-generator"
+  },
+  "suggestedBadge": "Maintenance Steward"
+}
