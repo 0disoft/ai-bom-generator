@@ -17,6 +17,9 @@ ROOT = Path(__file__).resolve().parents[1]
 ACTION = ROOT / "action.yml"
 ENTRYPOINT = ROOT / "scripts" / "github_action_entrypoint.py"
 WORKFLOWS = ROOT / ".github" / "workflows"
+APPROVED_MOVING_ACTION_REFERENCES = {
+    Path(".github/workflows/clarissimi.yml"): {"0disoft/clarissimi@v0"},
+}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -207,6 +210,9 @@ def _verify_external_action_pins() -> None:
                 continue
             target = match.group("target")
             if target.startswith("./"):
+                continue
+            source_path = source.relative_to(ROOT)
+            if target in APPROVED_MOVING_ACTION_REFERENCES.get(source_path, set()):
                 continue
             action, separator, ref = target.rpartition("@")
             comment = match.group("comment") or ""

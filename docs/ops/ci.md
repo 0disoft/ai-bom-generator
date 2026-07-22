@@ -44,6 +44,22 @@ The workflow intentionally does not upload artifacts, write pull request
 comments, attach releases, publish packages, or request secrets. Release
 publishing is isolated in `.github/workflows/publish-pypi.yml`.
 
+`.github/workflows/clarissimi.yml` is the single deliberate moving-Action
+exception. It follows the maintainer-promoted `0disoft/clarissimi@v0` channel
+so contributor-recognition fixes arrive without a repository edit. The
+pre-merge decision job is read-only and advisory by default. Merged pull
+requests create only a review draft; an approved draft is promoted through a
+second proposal pull request. Its proposal jobs persist checkout credentials
+only for their scoped branch push and do not commit directly to `main`.
+
+The workflow intentionally has no provider token. Its deterministic initial
+draft is only an inbox scaffold: a maintainer or delegated coding agent must
+replace or correct the assessment, change its approval status, and merge that
+draft before dispatching `promote-draft` with the exact checked-in draft path.
+After the advisory flow has been exercised, repository variable
+`CLARISSIMI_GATE_MODE=required` can make the existing decision job fail closed
+without renaming the check.
+
 ## CodeQL Workflow
 
 The repository CodeQL workflow lives at `.github/workflows/codeql.yml`.

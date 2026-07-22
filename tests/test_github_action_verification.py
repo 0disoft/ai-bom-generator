@@ -11,7 +11,11 @@ from unittest.mock import patch
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from verify_github_action import _require_exact_action_pin, _verify_external_action_pins  # noqa: E402
+from verify_github_action import (  # noqa: E402
+    APPROVED_MOVING_ACTION_REFERENCES,
+    _require_exact_action_pin,
+    _verify_external_action_pins,
+)
 import github_action_entrypoint  # noqa: E402
 
 from ai_bom_generator.reporting.json_writer import write_json_output_set  # noqa: E402
@@ -20,6 +24,12 @@ from ai_bom_generator.reporting.json_writer import write_json_output_set  # noqa
 class GitHubActionVerificationTests(unittest.TestCase):
     def test_repository_external_actions_are_sha_pinned(self) -> None:
         _verify_external_action_pins()
+
+    def test_only_clarissimi_workflow_can_use_the_moving_v0_channel(self) -> None:
+        self.assertEqual(
+            APPROVED_MOVING_ACTION_REFERENCES,
+            {Path(".github/workflows/clarissimi.yml"): {"0disoft/clarissimi@v0"}},
+        )
 
     def test_nonzero_exit_does_not_publish_verified_stale_summary_state(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

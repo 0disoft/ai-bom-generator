@@ -64,6 +64,8 @@ discovery while using the locked validation environment for dependencies.
 runs clean, warning-only, fail-on-warning, stale-output, and manifest-gated
 action wrapper smoke cases. External actions must use a full commit SHA with a
 human-readable semantic-version comment, while Dependabot maintains both values.
+The only allowlisted moving reference is `0disoft/clarissimi@v0` in
+`.github/workflows/clarissimi.yml`; every other external Action remains SHA-pinned.
 Hosted CI separately invokes the local action on a
 clean Ubuntu, macOS, and Windows runner matrix without caller-side Python or uv
 setup. Matrix fail-fast is disabled so one platform failure does not hide the
