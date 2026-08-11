@@ -1,3 +1,12 @@
+# llmnav/1 module
+# id=aibom.app.generation
+# role=Orchestrate one local evidence collection and BOM export run, validate output destinations, and publish an atomic output set.
+# owns=generation use case|exporter selection|output set validation
+# excludes=CLI argument parsing|evidence collector internals
+# search=generate ai bom|select bom exporter|write generation outputs
+# invariant=Generated BOM, warning, summary, and manifest destinations are distinct, non-overlapping, and outside the target model directory.
+# stability=architecture
+# /llmnav
 from __future__ import annotations
 
 from dataclasses import dataclass

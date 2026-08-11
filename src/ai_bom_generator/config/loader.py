@@ -1,3 +1,12 @@
+# llmnav/1 module
+# id=aibom.config.loading
+# role=Discover or load an in-root aibom.toml file under size and reference budgets, then validate config schema version 1.
+# owns=config discovery|bounded TOML loading|config schema validation
+# excludes=CLI option precedence|evidence collection
+# search=load aibom config|discover aibom.toml|validate config schema
+# invariant=Config input must be a no-follow file inside the target root and satisfy schema, size, and reference-count limits.
+# stability=contract
+# /llmnav
 from __future__ import annotations
 
 from dataclasses import dataclass

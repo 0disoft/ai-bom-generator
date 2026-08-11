@@ -1,0 +1,447 @@
+{
+  "cards": [
+    {
+      "boundaries": [],
+      "excludes": [
+        "CLI argument parsing",
+        "evidence collector internals"
+      ],
+      "hashes": {
+        "body": "02a032f40d2a236a5f1cad87c049a0fc73fc85da7d88544a145c876339e9b646",
+        "semantic": "5d6dea3e29db94574608b8ec17f273ce7ef7e116b34fc78aa2bb6915d9706c31",
+        "structure": "4efec00027ff5b273ce63071335eebccfdb71566693269f5edc6dce6b69896b1"
+      },
+      "id": "aibom.app.generation",
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors",
+        "ai_bom_generator.config",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.exporters.cyclonedx_json",
+        "ai_bom_generator.exporters.spdx_ai",
+        "ai_bom_generator.reporting",
+        "ai_bom_generator.reporting.json_writer",
+        "ai_bom_generator.security",
+        "dataclasses",
+        "pathlib",
+        "sys",
+        "time"
+      ],
+      "invariant": [
+        "Generated BOM, warning, summary, and manifest destinations are distinct, non-overlapping, and outside the target model directory."
+      ],
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/app.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "owns": [
+        "generation use case",
+        "exporter selection",
+        "output set validation"
+      ],
+      "role": "Orchestrate one local evidence collection and BOM export run, validate output destinations, and publish an atomic output set.",
+      "scope": "module",
+      "search": [
+        "generate ai bom",
+        "select bom exporter",
+        "write generation outputs"
+      ],
+      "stability": "architecture"
+    },
+    {
+      "boundaries": [],
+      "excludes": [
+        "BOM generation logic",
+        "exporter mapping"
+      ],
+      "hashes": {
+        "body": "9b474dc99c5d5b92686937cc0370fd3d9730eab2d6b5be5815ade3cda45bbb1e",
+        "semantic": "8400200ade5a40ad427a0c567c414df7575c75a7a4a910f3e0ef4d184a12edc2",
+        "structure": "b3124f7e79c327cc8c8b59677560f5e092919ca623e57e443991e719f2bf237d"
+      },
+      "id": "aibom.cli.command",
+      "imports": [
+        "__future__",
+        "ai_bom_generator",
+        "ai_bom_generator.app",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.reporting",
+        "ai_bom_generator.security",
+        "argparse",
+        "pathlib",
+        "sys"
+      ],
+      "invariant": [
+        "Expected failures retain stable exit codes and terminal error text is strictly redacted before display."
+      ],
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/cli.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "owns": [
+        "CLI arguments",
+        "error report routing",
+        "process exit codes"
+      ],
+      "role": "Parse the ai-bom generate command, normalize output options, redact terminal failures, and return stable process exit codes.",
+      "scope": "module",
+      "search": [
+        "ai-bom generate cli",
+        "command exit code",
+        "failure error report"
+      ],
+      "stability": "contract"
+    },
+    {
+      "boundaries": [],
+      "excludes": [
+        "CLI option precedence",
+        "evidence collection"
+      ],
+      "hashes": {
+        "body": "2241577571e67062864a99b3195bfa53988651b27033ed30c01d05ba45c1dfce",
+        "semantic": "942e3e4595f18335ed9196e073529cef80a01c5eeaa739fe8b9813059d11f087",
+        "structure": "5410d618f3224321552c98a006b1f7517cf96a7251299ca960a73474539b48ff"
+      },
+      "id": "aibom.config.loading",
+      "imports": [
+        "__future__",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security.file_io",
+        "ai_bom_generator.security.path_policy",
+        "ai_bom_generator.validation",
+        "dataclasses",
+        "importlib",
+        "os",
+        "pathlib",
+        "tomllib",
+        "typing"
+      ],
+      "invariant": [
+        "Config input must be a no-follow file inside the target root and satisfy schema, size, and reference-count limits."
+      ],
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/config/loader.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "owns": [
+        "config discovery",
+        "bounded TOML loading",
+        "config schema validation"
+      ],
+      "role": "Discover or load an in-root aibom.toml file under size and reference budgets, then validate config schema version 1.",
+      "scope": "module",
+      "search": [
+        "load aibom config",
+        "discover aibom.toml",
+        "validate config schema"
+      ],
+      "stability": "contract"
+    },
+    {
+      "boundaries": [],
+      "excludes": [
+        "dependency solving",
+        "automatic file discovery"
+      ],
+      "hashes": {
+        "body": "0bcf19f6c948bdf41e61a735640e5f44dc7647ad6db68aa5a0afdb688cad9308",
+        "semantic": "b7b3fa042a829ff5a6637eba7103cd790c62b1e7808fd81ed8cc0b144ff4d890",
+        "structure": "5c5ea39540e161e1a4178ad838565150178a0da4db7b0ed83eecb7886940bcfa"
+      },
+      "id": "aibom.dependencies.files",
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors.dependency_parsers",
+        "ai_bom_generator.security",
+        "os",
+        "pathlib",
+        "typing"
+      ],
+      "invariant": [
+        "A dependency file is rejected if it exceeds configured limits or changes identity while its snapshot is being read."
+      ],
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/collectors/dependency_files.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "owns": [
+        "dependency format detection",
+        "bounded file snapshot",
+        "parser dispatch"
+      ],
+      "role": "Detect approved dependency lockfile formats and parse a bounded, no-follow snapshot through format-specific parsers.",
+      "scope": "module",
+      "search": [
+        "parse dependency lockfile",
+        "detect requirements format",
+        "bounded lockfile read"
+      ],
+      "stability": "contract"
+    },
+    {
+      "boundaries": [],
+      "excludes": [
+        "BOM format mapping",
+        "network enrichment"
+      ],
+      "hashes": {
+        "body": "232cd933b15b68bce8abe72e66fc20dfcd809d3cf338443f2960d502a5c5829e",
+        "semantic": "e381f4bf724e5f59fc774e82a067cf3b2b9c63f038382bee1d302d8c92201738",
+        "structure": "205e971ab0582d72f8186d811f884ab83d755b2c8b576a33de14b5acfad3c4ec"
+      },
+      "id": "aibom.evidence.pipeline",
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors.artifacts",
+        "ai_bom_generator.collectors.dependency_files",
+        "ai_bom_generator.collectors.generation_marker",
+        "ai_bom_generator.config",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.domain.reference",
+        "ai_bom_generator.domain.source_location",
+        "ai_bom_generator.domain.warning",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security",
+        "os",
+        "pathlib",
+        "re",
+        "typing"
+      ],
+      "invariant": [
+        "Collection remains local and returns deterministically sorted evidence without mutating the target model directory."
+      ],
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/collectors/pipeline.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "owns": [
+        "evidence collection orchestration",
+        "reference normalization",
+        "evidence deduplication"
+      ],
+      "role": "Collect and normalize local model, artifact, dependency, reference, Git, warning, and generation-marker evidence.",
+      "scope": "module",
+      "search": [
+        "collect normalized evidence",
+        "model project references",
+        "generation marker verification"
+      ],
+      "stability": "architecture"
+    },
+    {
+      "boundaries": [],
+      "excludes": [
+        "evidence collection",
+        "output file writing"
+      ],
+      "hashes": {
+        "body": "51c1e5f6036be8d41c35c33aa74e314b9e6d3e4bc046eda6aaf2a2683ff3fcb2",
+        "semantic": "df828cac12842dc13d9a9d6b492b9b18f83bfe13436ac0056609f1cb025f13c5",
+        "structure": "29b7132d2687240e4bc1d5264d0663c222ef281b16e8bff632c93cec9c26d511"
+      },
+      "id": "aibom.export.cyclonedx",
+      "imports": [
+        "__future__",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.exporters.cyclonedx_schema",
+        "ai_bom_generator.security",
+        "hashlib"
+      ],
+      "invariant": [
+        "Every emitted component has a unique stable bom-ref and the redacted document passes the bundled CycloneDX 1.7 schema."
+      ],
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/exporters/cyclonedx_json/mapper.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "owns": [
+        "CycloneDX component mapping",
+        "stable bom references",
+        "CycloneDX schema validation"
+      ],
+      "role": "Map normalized evidence into a redacted CycloneDX JSON 1.7 ML-BOM with stable component references and schema validation.",
+      "scope": "module",
+      "search": [
+        "export cyclonedx 1.7",
+        "machine learning bom",
+        "validate bom references"
+      ],
+      "stability": "contract"
+    },
+    {
+      "boundaries": [],
+      "excludes": [
+        "full SPDX conformance claims",
+        "evidence collection"
+      ],
+      "hashes": {
+        "body": "31fc8c3871a8b28882aee9f02ad4b216954f26bbb0daf536464b2858a7a0ce6a",
+        "semantic": "1ed0c86b48fbc2546cec09c91cc3361b4f1a4c1e06f4e80d502562a86e6176a1",
+        "structure": "e2b2bc944dffa08841629a601dac6c15c4cee320abc01eccdfa2edc0ff299d6a"
+      },
+      "id": "aibom.export.spdx-ai",
+      "imports": [
+        "__future__",
+        "ai_bom_generator",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.domain.reference",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security",
+        "ai_bom_generator.validation",
+        "hashlib",
+        "importlib"
+      ],
+      "invariant": [
+        "The preview never fabricates unavailable evidence and every emitted SPDX element retains a unique stable identifier."
+      ],
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/exporters/spdx_ai/mapper.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "owns": [
+        "SPDX AI graph mapping",
+        "stable SPDX identifiers",
+        "preview schema validation"
+      ],
+      "role": "Map normalized evidence into a redacted partial SPDX 3.0.1 AI Profile preview with explicit unavailable fields.",
+      "scope": "module",
+      "search": [
+        "export spdx ai preview",
+        "spdx 3.0.1 profile",
+        "unavailable ai fields"
+      ],
+      "stability": "contract"
+    },
+    {
+      "boundaries": [],
+      "excludes": [
+        "file content parsing",
+        "output writing"
+      ],
+      "hashes": {
+        "body": "6a3a8586da6cbd15c0211d381150cefc243839daa18d03c70f28a3b3d6e71eef",
+        "semantic": "e0b68ae205582fe476de5af64b4e043dc387108d36cb9093d0064238b352521b",
+        "structure": "032f279551c24b4714bca128a2dd1ef360fe7c792c99a9b9b20f38962ab2729d"
+      },
+      "id": "aibom.security.path-policy",
+      "imports": [
+        "__future__",
+        "ai_bom_generator.errors",
+        "pathlib"
+      ],
+      "invariant": [
+        "Referenced inputs cannot escape the resolved target root and generated outputs cannot be placed inside that root."
+      ],
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/security/path_policy.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "owns": [
+        "target root containment",
+        "input path validation",
+        "output path validation"
+      ],
+      "role": "Resolve trusted in-root inputs and reject unsafe symlinks, traversal patterns, and output destinations inside the target project.",
+      "scope": "module",
+      "search": [
+        "validate target path",
+        "reject symlink input",
+        "output outside model directory"
+      ],
+      "stability": "architecture"
+    }
+  ],
+  "contractFingerprints": {
+    "configuration": {
+      "sha256": "010d61a400860a00cba0cc3a3519b67b69e1d79f451797694e1c6998eb156959"
+    },
+    "exportedApi": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "schemaVersion": 1
+  },
+  "generatedBy": "llmnav@0.6.5",
+  "repositoryId": "ai-bom-generator",
+  "schemaVersion": 1,
+  "sourceHash": "11ae3c107daa27e0ea118bb2d17f50cfe2e2f15c091b30812e3825e5bc3bc2ec",
+  "specVersion": "1"
+}

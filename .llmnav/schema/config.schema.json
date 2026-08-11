@@ -1,0 +1,296 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llmnav.dev/schema/config.schema.json",
+  "title": "LLMNav configuration",
+  "type": "object",
+  "required": [
+    "version",
+    "repositoryId",
+    "sourceRoots",
+    "includeExtensions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "const": 1
+    },
+    "repositoryId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,63}$"
+    },
+    "sourceRoots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^(?!/|[A-Za-z]:|.*(?:^|/)\\.\\.(?:/|$))(?:\\.|[^\\\\]+)$"
+      },
+      "uniqueItems": true
+    },
+    "includeExtensions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^\\."
+      },
+      "uniqueItems": true
+    },
+    "excludeDirectories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "excludeFiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "coverageRules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "match"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "match": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "scope": {
+            "enum": [
+              "file",
+              "module",
+              "symbol"
+            ]
+          },
+          "requiredFields": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "id",
+                "role",
+                "owns",
+                "excludes",
+                "search",
+                "invariant",
+                "effect",
+                "risk",
+                "rel",
+                "stability"
+              ]
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "graph": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "indexFiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?!/|[A-Za-z]:|.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "lint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxRoleLength": {
+          "type": "integer",
+          "minimum": 40
+        },
+        "maxSearchTerms": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "minSearchTerms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxInvariants": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxEffects": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxRelations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxBlockBytes": {
+          "type": "object",
+          "properties": {
+            "file": {
+              "type": "integer",
+              "minimum": 100
+            },
+            "module": {
+              "type": "integer",
+              "minimum": 100
+            },
+            "symbol": {
+              "type": "integer",
+              "minimum": 100
+            }
+          }
+        },
+        "maxSemanticRatio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "minimumSourceBytesForRatio": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "searchTermSaturation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "minimumCardsForSaturation": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "genericSearchTerms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "vagueRoleWords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "strictRisks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "additionalEffects": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9.-]*$"
+          },
+          "uniqueItems": true
+        },
+        "additionalRisks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9.-]*$"
+          },
+          "uniqueItems": true
+        },
+        "additionalRelations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "uniqueItems": true
+        },
+        "requireCanonicalOrder": {
+          "type": "boolean"
+        },
+        "requireCanonicalFormatting": {
+          "type": "boolean"
+        }
+      }
+    },
+    "generation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cacheDirectory": {
+          "type": "string",
+          "pattern": "^\\.llmnav/(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
+        },
+        "moduleDepth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "searchShardSize": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "repositoryCatalogStabilities": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "architecture",
+              "contract",
+              "implementation"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "moduleCatalogStabilities": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "architecture",
+              "contract",
+              "implementation"
+            ]
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "queryFile": {
+          "type": "string",
+          "pattern": "^(?!/|[A-Za-z]:|.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
+        },
+        "minimumRecallAt1": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "minimumRecallAt5": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  }
+}

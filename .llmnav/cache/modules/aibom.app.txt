@@ -1,0 +1,8 @@
+llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.app
+Read semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.
+
+@aibom.app.generation
+role Orchestrate one local evidence collection and BOM export run, validate output destinations, and publish an atomic output set.
+owns generation use case, exporter selection, output set validation
+excludes CLI argument parsing, evidence collector internals
+invariant Generated BOM, warning, summary, and manifest destinations are distinct, non-overlapping, and outside the target model directory.

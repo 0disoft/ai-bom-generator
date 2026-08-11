@@ -1,0 +1,14 @@
+llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.export
+Read semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.
+
+@aibom.export.cyclonedx
+role Map normalized evidence into a redacted CycloneDX JSON 1.7 ML-BOM with stable component references and schema validation.
+owns CycloneDX component mapping, stable bom references, CycloneDX schema validation
+excludes evidence collection, output file writing
+invariant Every emitted component has a unique stable bom-ref and the redacted document passes the bundled CycloneDX 1.7 schema.
+
+@aibom.export.spdx-ai
+role Map normalized evidence into a redacted partial SPDX 3.0.1 AI Profile preview with explicit unavailable fields.
+owns SPDX AI graph mapping, stable SPDX identifiers, preview schema validation
+excludes full SPDX conformance claims, evidence collection
+invariant The preview never fabricates unavailable evidence and every emitted SPDX element retains a unique stable identifier.

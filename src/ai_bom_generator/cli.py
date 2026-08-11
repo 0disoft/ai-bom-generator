@@ -1,3 +1,12 @@
+# llmnav/1 module
+# id=aibom.cli.command
+# role=Parse the ai-bom generate command, normalize output options, redact terminal failures, and return stable process exit codes.
+# owns=CLI arguments|error report routing|process exit codes
+# excludes=BOM generation logic|exporter mapping
+# search=ai-bom generate cli|command exit code|failure error report
+# invariant=Expected failures retain stable exit codes and terminal error text is strictly redacted before display.
+# stability=contract
+# /llmnav
 from __future__ import annotations
 
 import argparse

@@ -1,0 +1,114 @@
+{
+  "assembly": {
+    "basePartitionIds": [
+      "package:tool-definitions",
+      "package:agent-protocol",
+      "repository:core"
+    ],
+    "modulePartitionIds": [
+      "module:aibom.app",
+      "module:aibom.cli",
+      "module:aibom.config",
+      "module:aibom.dependencies",
+      "module:aibom.evidence",
+      "module:aibom.export",
+      "module:aibom.security"
+    ],
+    "volatileContextAfter": true
+  },
+  "bundleHash": "ad00955dda26cd91f30efe3100aafce32bbf3e20532b1f1c014ecca804302506",
+  "partitions": [
+    {
+      "cacheBoundaryAfter": true,
+      "cacheScope": "package",
+      "content": "[\n  {\n    \"description\": \"Find the most relevant semantic cards for a coding task.\",\n    \"inputSchema\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"task\": {\n          \"description\": \"Task language to search for.\",\n          \"minLength\": 1,\n          \"type\": \"string\"\n        },\n        \"top\": {\n          \"default\": 5,\n          \"description\": \"Maximum results.\",\n          \"maximum\": 100,\n          \"minimum\": 1,\n          \"type\": \"integer\"\n        }\n      },\n      \"required\": [\n        \"task\"\n      ],\n      \"type\": \"object\"\n    },\n    \"name\": \"llmnav_query\",\n    \"schemaVersion\": 1\n  },\n  {\n    \"description\": \"Resolve one local or qualified workspace semantic ID.\",\n    \"inputSchema\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"id\": {\n          \"description\": \"Semantic ID or repository-qualified semantic ID.\",\n          \"minLength\": 1,\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"id\"\n      ],\n      \"type\": \"object\"\n    },\n    \"name\": \"llmnav_show\",\n    \"schemaVersion\": 1\n  },\n  {\n    \"description\": \"Build bounded semantic and graph context around one ID.\",\n    \"inputSchema\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"budget\": {\n          \"default\": 2500,\n          \"description\": \"Approximate token budget.\",\n          \"maximum\": 100000,\n          \"minimum\": 128,\n          \"type\": \"integer\"\n        },\n        \"depth\": {\n          \"default\": 1,\n          \"description\": \"Maximum graph traversal depth.\",\n          \"maximum\": 8,\n          \"minimum\": 0,\n          \"type\": \"integer\"\n        },\n        \"id\": {\n          \"description\": \"Semantic ID or repository-qualified semantic ID.\",\n          \"minLength\": 1,\n          \"type\": \"string\"\n        },\n        \"maxEdges\": {\n          \"default\": 24,\n          \"description\": \"Maximum graph edges to inspect and pack.\",\n          \"maximum\": 1000,\n          \"minimum\": 0,\n          \"type\": \"integer\"\n        }\n      },\n      \"required\": [\n        \"id\"\n      ],\n      \"type\": \"object\"\n    },\n    \"name\": \"llmnav_context\",\n    \"schemaVersion\": 1\n  },\n  {\n    \"description\": \"Validate semantic cards and configured graph inputs without mutation.\",\n    \"inputSchema\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"paths\": {\n          \"default\": [],\n          \"description\": \"Optional repository-relative paths to validate.\",\n          \"items\": {\n            \"minLength\": 1,\n            \"type\": \"string\"\n          },\n          \"type\": \"array\"\n        }\n      },\n      \"required\": [],\n      \"type\": \"object\"\n    },\n    \"name\": \"llmnav_check\",\n    \"schemaVersion\": 1\n  }\n]\n",
+      "contentHash": "d0fb5a43b36f123589b217e0ebefaf4f81c43a9c333654b0f9e88e26a3ec7ce1",
+      "contentType": "application/json",
+      "estimatedTokens": 665,
+      "id": "package:tool-definitions"
+    },
+    {
+      "cacheBoundaryAfter": true,
+      "cacheScope": "package",
+      "content": "## LLMNav code navigation\n\n<!-- llmnav:start -->\nBefore broad grep, directory scans, or opening many source files, run `npm exec -- llmnav query \"<task>\" --top 5`.\n\nResolve the selected semantic ID with `npm exec -- llmnav show <id>`. Use `npm exec -- llmnav context <id> --depth 1 --budget 2500` when related policy, workflow, fallback, migration, or test cards are needed.\n\nWhen the host supports structured tools, load the provider-neutral definitions from `npm exec -- llmnav tools --json`. Keep the repository root bound by the host rather than accepting it from model-generated tool input.\n\nRead generated cards and signatures before opening full symbol bodies. Treat paths, line numbers, signatures, imports, and hashes as generated data rather than source-of-truth annotations.\n\nKeep an existing LLMNav ID when a symbol or file is renamed or moved. Change `role`, `invariant`, `effect`, `risk`, and semantic `rel` values only when behavior or contracts change.\n\nDo not add hand-maintained `calls`, `imports`, `references`, `implements`, `exports`, or `overrides` relations. Do not put paths, line numbers, commit hashes, timestamps, callers, or current signatures in LLMNav source comments.\n\nAfter initialization and whenever public entrypoints, commands, routes, schemas, migrations, or high fan-in modules change, run `npm exec -- llmnav audit`. Review high and medium candidates; never add cards automatically. Add a module card only after confirming a durable responsibility, then encode the accepted boundary in a path-specific `coverageRules` entry and add a representative retrieval query.\n\nAfter semantic changes, run `npm exec -- llmnav format`, `npm exec -- llmnav check`, and `npm exec -- llmnav generate`. Use broad text search only when LLMNav returns no credible candidate.\n<!-- llmnav:end -->",
+      "contentHash": "936d109e3437e794f84eaf4da4c7d4adf23fb47013464a494d8c984d147ca43a",
+      "contentType": "text/markdown",
+      "estimatedTokens": 454,
+      "id": "package:agent-protocol"
+    },
+    {
+      "cacheBoundaryAfter": true,
+      "cacheScope": "repository",
+      "content": "llmnav-catalog/1 repository=ai-bom-generator catalog=repository\nRead semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.\n\n@aibom.app.generation\nrole Orchestrate one local evidence collection and BOM export run, validate output destinations, and publish an atomic output set.\nowns generation use case, exporter selection, output set validation\nexcludes CLI argument parsing, evidence collector internals\ninvariant Generated BOM, warning, summary, and manifest destinations are distinct, non-overlapping, and outside the target model directory.\n\n@aibom.evidence.pipeline\nrole Collect and normalize local model, artifact, dependency, reference, Git, warning, and generation-marker evidence.\nowns evidence collection orchestration, reference normalization, evidence deduplication\nexcludes BOM format mapping, network enrichment\ninvariant Collection remains local and returns deterministically sorted evidence without mutating the target model directory.\n\n@aibom.security.path-policy\nrole Resolve trusted in-root inputs and reject unsafe symlinks, traversal patterns, and output destinations inside the target project.\nowns target root containment, input path validation, output path validation\nexcludes file content parsing, output writing\ninvariant Referenced inputs cannot escape the resolved target root and generated outputs cannot be placed inside that root.\n",
+      "contentHash": "e2405c562267b35c0cf3cfd4f5a5eea218fc92dea9b9096aa7db24b67dc97b51",
+      "contentType": "text/plain",
+      "estimatedTokens": 353,
+      "id": "repository:core"
+    },
+    {
+      "cacheBoundaryAfter": true,
+      "cacheScope": "module",
+      "content": "llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.app\nRead semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.\n\n@aibom.app.generation\nrole Orchestrate one local evidence collection and BOM export run, validate output destinations, and publish an atomic output set.\nowns generation use case, exporter selection, output set validation\nexcludes CLI argument parsing, evidence collector internals\ninvariant Generated BOM, warning, summary, and manifest destinations are distinct, non-overlapping, and outside the target model directory.\n",
+      "contentHash": "881186cf23414e9ef8e04da81a464725ded9a8894e5d171960238ce24a8d1a2e",
+      "contentType": "text/plain",
+      "estimatedTokens": 148,
+      "id": "module:aibom.app"
+    },
+    {
+      "cacheBoundaryAfter": true,
+      "cacheScope": "module",
+      "content": "llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.cli\nRead semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.\n\n@aibom.cli.command\nrole Parse the ai-bom generate command, normalize output options, redact terminal failures, and return stable process exit codes.\nowns CLI arguments, error report routing, process exit codes\nexcludes BOM generation logic, exporter mapping\ninvariant Expected failures retain stable exit codes and terminal error text is strictly redacted before display.\n",
+      "contentHash": "e9d2448b53f003d4d9005e5d2b32b3c6c96b7b0ba7e0037653f92191660c59cf",
+      "contentType": "text/plain",
+      "estimatedTokens": 136,
+      "id": "module:aibom.cli"
+    },
+    {
+      "cacheBoundaryAfter": true,
+      "cacheScope": "module",
+      "content": "llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.config\nRead semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.\n\n@aibom.config.loading\nrole Discover or load an in-root aibom.toml file under size and reference budgets, then validate config schema version 1.\nowns config discovery, bounded TOML loading, config schema validation\nexcludes CLI option precedence, evidence collection\ninvariant Config input must be a no-follow file inside the target root and satisfy schema, size, and reference-count limits.\n",
+      "contentHash": "4ea4cb65157c6581fbc3b03e37f70040881bd98fc4ffd5a27aba70314932d420",
+      "contentType": "text/plain",
+      "estimatedTokens": 142,
+      "id": "module:aibom.config"
+    },
+    {
+      "cacheBoundaryAfter": true,
+      "cacheScope": "module",
+      "content": "llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.dependencies\nRead semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.\n\n@aibom.dependencies.files\nrole Detect approved dependency lockfile formats and parse a bounded, no-follow snapshot through format-specific parsers.\nowns dependency format detection, bounded file snapshot, parser dispatch\nexcludes dependency solving, automatic file discovery\ninvariant A dependency file is rejected if it exceeds configured limits or changes identity while its snapshot is being read.\n",
+      "contentHash": "590b76a49acbfa3f5c7ea47e2dd5ca334e44610f04fc099ad1cdf2cf811bb6c2",
+      "contentType": "text/plain",
+      "estimatedTokens": 146,
+      "id": "module:aibom.dependencies"
+    },
+    {
+      "cacheBoundaryAfter": true,
+      "cacheScope": "module",
+      "content": "llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.evidence\nRead semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.\n\n@aibom.evidence.pipeline\nrole Collect and normalize local model, artifact, dependency, reference, Git, warning, and generation-marker evidence.\nowns evidence collection orchestration, reference normalization, evidence deduplication\nexcludes BOM format mapping, network enrichment\ninvariant Collection remains local and returns deterministically sorted evidence without mutating the target model directory.\n",
+      "contentHash": "dde887c97a34b8185ea764c8a4634216b1fe8e8959afad61dc0a5079aae3d785",
+      "contentType": "text/plain",
+      "estimatedTokens": 146,
+      "id": "module:aibom.evidence"
+    },
+    {
+      "cacheBoundaryAfter": true,
+      "cacheScope": "module",
+      "content": "llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.export\nRead semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.\n\n@aibom.export.cyclonedx\nrole Map normalized evidence into a redacted CycloneDX JSON 1.7 ML-BOM with stable component references and schema validation.\nowns CycloneDX component mapping, stable bom references, CycloneDX schema validation\nexcludes evidence collection, output file writing\ninvariant Every emitted component has a unique stable bom-ref and the redacted document passes the bundled CycloneDX 1.7 schema.\n\n@aibom.export.spdx-ai\nrole Map normalized evidence into a redacted partial SPDX 3.0.1 AI Profile preview with explicit unavailable fields.\nowns SPDX AI graph mapping, stable SPDX identifiers, preview schema validation\nexcludes full SPDX conformance claims, evidence collection\ninvariant The preview never fabricates unavailable evidence and every emitted SPDX element retains a unique stable identifier.\n",
+      "contentHash": "25ff8f7f6f3eeee27c70c2bbf66fa999ff60296a0afe27116db54343db349340",
+      "contentType": "text/plain",
+      "estimatedTokens": 249,
+      "id": "module:aibom.export"
+    },
+    {
+      "cacheBoundaryAfter": true,
+      "cacheScope": "module",
+      "content": "llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.security\nRead semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.\n\n@aibom.security.path-policy\nrole Resolve trusted in-root inputs and reject unsafe symlinks, traversal patterns, and output destinations inside the target project.\nowns target root containment, input path validation, output path validation\nexcludes file content parsing, output writing\ninvariant Referenced inputs cannot escape the resolved target root and generated outputs cannot be placed inside that root.\n",
+      "contentHash": "994150ac779ae668054b7c272767a6eb2a6285e575f874fef4eeb6870d1a721d",
+      "contentType": "text/plain",
+      "estimatedTokens": 147,
+      "id": "module:aibom.security"
+    }
+  ],
+  "repositoryId": "ai-bom-generator",
+  "schemaVersion": 1
+}

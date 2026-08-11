@@ -1,0 +1,8 @@
+llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.security
+Read semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.
+
+@aibom.security.path-policy
+role Resolve trusted in-root inputs and reject unsafe symlinks, traversal patterns, and output destinations inside the target project.
+owns target root containment, input path validation, output path validation
+excludes file content parsing, output writing
+invariant Referenced inputs cannot escape the resolved target root and generated outputs cannot be placed inside that root.

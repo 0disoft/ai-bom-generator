@@ -1,0 +1,8 @@
+{"id":"aibom.app.generation","state":"active"}
+{"id":"aibom.cli.command","state":"active"}
+{"id":"aibom.dependencies.files","state":"active"}
+{"id":"aibom.evidence.pipeline","state":"active"}
+{"id":"aibom.config.loading","state":"active"}
+{"id":"aibom.export.cyclonedx","state":"active"}
+{"id":"aibom.export.spdx-ai","state":"active"}
+{"id":"aibom.security.path-policy","state":"active"}

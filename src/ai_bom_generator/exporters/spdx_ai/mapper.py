@@ -1,3 +1,12 @@
+# llmnav/1 module
+# id=aibom.export.spdx-ai
+# role=Map normalized evidence into a redacted partial SPDX 3.0.1 AI Profile preview with explicit unavailable fields.
+# owns=SPDX AI graph mapping|stable SPDX identifiers|preview schema validation
+# excludes=full SPDX conformance claims|evidence collection
+# search=export spdx ai preview|spdx 3.0.1 profile|unavailable ai fields
+# invariant=The preview never fabricates unavailable evidence and every emitted SPDX element retains a unique stable identifier.
+# stability=contract
+# /llmnav
 from __future__ import annotations
 
 from hashlib import sha256

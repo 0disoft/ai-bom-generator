@@ -1,0 +1,8 @@
+llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.evidence
+Read semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.
+
+@aibom.evidence.pipeline
+role Collect and normalize local model, artifact, dependency, reference, Git, warning, and generation-marker evidence.
+owns evidence collection orchestration, reference normalization, evidence deduplication
+excludes BOM format mapping, network enrichment
+invariant Collection remains local and returns deterministically sorted evidence without mutating the target model directory.

@@ -1,3 +1,12 @@
+# llmnav/1 module
+# id=aibom.export.cyclonedx
+# role=Map normalized evidence into a redacted CycloneDX JSON 1.7 ML-BOM with stable component references and schema validation.
+# owns=CycloneDX component mapping|stable bom references|CycloneDX schema validation
+# excludes=evidence collection|output file writing
+# search=export cyclonedx 1.7|machine learning bom|validate bom references
+# invariant=Every emitted component has a unique stable bom-ref and the redacted document passes the bundled CycloneDX 1.7 schema.
+# stability=contract
+# /llmnav
 from __future__ import annotations
 
 from hashlib import sha256

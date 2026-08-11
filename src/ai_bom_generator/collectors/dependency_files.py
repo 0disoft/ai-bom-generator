@@ -1,3 +1,12 @@
+# llmnav/1 module
+# id=aibom.dependencies.files
+# role=Detect approved dependency lockfile formats and parse a bounded, no-follow snapshot through format-specific parsers.
+# owns=dependency format detection|bounded file snapshot|parser dispatch
+# excludes=dependency solving|automatic file discovery
+# search=parse dependency lockfile|detect requirements format|bounded lockfile read
+# invariant=A dependency file is rejected if it exceeds configured limits or changes identity while its snapshot is being read.
+# stability=contract
+# /llmnav
 from __future__ import annotations
 
 import os

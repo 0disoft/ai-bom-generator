@@ -1,0 +1,8 @@
+llmnav-catalog/1 repository=ai-bom-generator catalog=aibom.cli
+Read semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.
+
+@aibom.cli.command
+role Parse the ai-bom generate command, normalize output options, redact terminal failures, and return stable process exit codes.
+owns CLI arguments, error report routing, process exit codes
+excludes BOM generation logic, exporter mapping
+invariant Expected failures retain stable exit codes and terminal error text is strictly redacted before display.

@@ -1,0 +1,20 @@
+llmnav-catalog/1 repository=ai-bom-generator catalog=repository
+Read semantic cards before opening source. Resolve current paths and signatures with llmnav query or show.
+
+@aibom.app.generation
+role Orchestrate one local evidence collection and BOM export run, validate output destinations, and publish an atomic output set.
+owns generation use case, exporter selection, output set validation
+excludes CLI argument parsing, evidence collector internals
+invariant Generated BOM, warning, summary, and manifest destinations are distinct, non-overlapping, and outside the target model directory.
+
+@aibom.evidence.pipeline
+role Collect and normalize local model, artifact, dependency, reference, Git, warning, and generation-marker evidence.
+owns evidence collection orchestration, reference normalization, evidence deduplication
+excludes BOM format mapping, network enrichment
+invariant Collection remains local and returns deterministically sorted evidence without mutating the target model directory.
+
+@aibom.security.path-policy
+role Resolve trusted in-root inputs and reject unsafe symlinks, traversal patterns, and output destinations inside the target project.
+owns target root containment, input path validation, output path validation
+excludes file content parsing, output writing
+invariant Referenced inputs cannot escape the resolved target root and generated outputs cannot be placed inside that root.

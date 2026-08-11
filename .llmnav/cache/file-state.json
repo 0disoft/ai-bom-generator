@@ -1,0 +1,1458 @@
+{
+  "files": [
+    {
+      "blocks": [],
+      "contentHash": "831443a125fefdd6adbfd7f57d60bfa85017280f5eaec13175b7529de6f1ac03",
+      "declarations": [],
+      "imports": [],
+      "path": "src/ai_bom_generator/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 55
+    },
+    {
+      "blocks": [],
+      "contentHash": "996da2de381229cdf06f09804ef882549559985d7bba55aa970dfdc4e6c1a6d7",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.cli"
+      ],
+      "path": "src/ai_bom_generator/__main__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 96
+    },
+    {
+      "blocks": [
+        {
+          "card": {
+            "effect": [],
+            "excludes": [
+              "CLI argument parsing",
+              "evidence collector internals"
+            ],
+            "id": "aibom.app.generation",
+            "invariant": [
+              "Generated BOM, warning, summary, and manifest destinations are distinct, non-overlapping, and outside the target model directory."
+            ],
+            "owns": [
+              "generation use case",
+              "exporter selection",
+              "output set validation"
+            ],
+            "rel": [],
+            "risk": [],
+            "role": "Orchestrate one local evidence collection and BOM export run, validate output destinations, and publish an atomic output set.",
+            "scope": "module",
+            "search": [
+              "generate ai bom",
+              "select bom exporter",
+              "write generation outputs"
+            ],
+            "stability": "architecture",
+            "unknown": []
+          },
+          "end": 553,
+          "endLine": 9,
+          "entries": [
+            {
+              "key": "id",
+              "line": 2,
+              "order": 0,
+              "value": "aibom.app.generation"
+            },
+            {
+              "key": "role",
+              "line": 3,
+              "order": 1,
+              "value": "Orchestrate one local evidence collection and BOM export run, validate output destinations, and publish an atomic output set."
+            },
+            {
+              "key": "owns",
+              "line": 4,
+              "order": 2,
+              "value": "generation use case|exporter selection|output set validation"
+            },
+            {
+              "key": "excludes",
+              "line": 5,
+              "order": 3,
+              "value": "CLI argument parsing|evidence collector internals"
+            },
+            {
+              "key": "search",
+              "line": 6,
+              "order": 4,
+              "value": "generate ai bom|select bom exporter|write generation outputs"
+            },
+            {
+              "key": "invariant",
+              "line": 7,
+              "order": 5,
+              "value": "Generated BOM, warning, summary, and manifest destinations are distinct, non-overlapping, and outside the target model directory."
+            },
+            {
+              "key": "stability",
+              "line": 8,
+              "order": 6,
+              "value": "architecture"
+            }
+          ],
+          "filePath": "src/ai_bom_generator/app.py",
+          "indent": "",
+          "newline": "\n",
+          "prefix": "#",
+          "raw": "# llmnav/1 module\n# id=aibom.app.generation\n# role=Orchestrate one local evidence collection and BOM export run, validate output destinations, and publish an atomic output set.\n# owns=generation use case|exporter selection|output set validation\n# excludes=CLI argument parsing|evidence collector internals\n# search=generate ai bom|select bom exporter|write generation outputs\n# invariant=Generated BOM, warning, summary, and manifest destinations are distinct, non-overlapping, and outside the target model directory.\n# stability=architecture\n# /llmnav\n",
+          "scope": "module",
+          "specVersion": "1",
+          "start": 0,
+          "startLine": 1,
+          "style": "line",
+          "syntaxErrors": []
+        }
+      ],
+      "contentHash": "02a032f40d2a236a5f1cad87c049a0fc73fc85da7d88544a145c876339e9b646",
+      "declarations": [
+        null
+      ],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors",
+        "ai_bom_generator.config",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.exporters.cyclonedx_json",
+        "ai_bom_generator.exporters.spdx_ai",
+        "ai_bom_generator.reporting",
+        "ai_bom_generator.reporting.json_writer",
+        "ai_bom_generator.security",
+        "dataclasses",
+        "pathlib",
+        "sys",
+        "time"
+      ],
+      "path": "src/ai_bom_generator/app.py",
+      "semanticBytes": 553,
+      "sourceBytes": 6451
+    },
+    {
+      "blocks": [
+        {
+          "card": {
+            "effect": [],
+            "excludes": [
+              "BOM generation logic",
+              "exporter mapping"
+            ],
+            "id": "aibom.cli.command",
+            "invariant": [
+              "Expected failures retain stable exit codes and terminal error text is strictly redacted before display."
+            ],
+            "owns": [
+              "CLI arguments",
+              "error report routing",
+              "process exit codes"
+            ],
+            "rel": [],
+            "risk": [],
+            "role": "Parse the ai-bom generate command, normalize output options, redact terminal failures, and return stable process exit codes.",
+            "scope": "module",
+            "search": [
+              "ai-bom generate cli",
+              "command exit code",
+              "failure error report"
+            ],
+            "stability": "contract",
+            "unknown": []
+          },
+          "end": 498,
+          "endLine": 9,
+          "entries": [
+            {
+              "key": "id",
+              "line": 2,
+              "order": 0,
+              "value": "aibom.cli.command"
+            },
+            {
+              "key": "role",
+              "line": 3,
+              "order": 1,
+              "value": "Parse the ai-bom generate command, normalize output options, redact terminal failures, and return stable process exit codes."
+            },
+            {
+              "key": "owns",
+              "line": 4,
+              "order": 2,
+              "value": "CLI arguments|error report routing|process exit codes"
+            },
+            {
+              "key": "excludes",
+              "line": 5,
+              "order": 3,
+              "value": "BOM generation logic|exporter mapping"
+            },
+            {
+              "key": "search",
+              "line": 6,
+              "order": 4,
+              "value": "ai-bom generate cli|command exit code|failure error report"
+            },
+            {
+              "key": "invariant",
+              "line": 7,
+              "order": 5,
+              "value": "Expected failures retain stable exit codes and terminal error text is strictly redacted before display."
+            },
+            {
+              "key": "stability",
+              "line": 8,
+              "order": 6,
+              "value": "contract"
+            }
+          ],
+          "filePath": "src/ai_bom_generator/cli.py",
+          "indent": "",
+          "newline": "\n",
+          "prefix": "#",
+          "raw": "# llmnav/1 module\n# id=aibom.cli.command\n# role=Parse the ai-bom generate command, normalize output options, redact terminal failures, and return stable process exit codes.\n# owns=CLI arguments|error report routing|process exit codes\n# excludes=BOM generation logic|exporter mapping\n# search=ai-bom generate cli|command exit code|failure error report\n# invariant=Expected failures retain stable exit codes and terminal error text is strictly redacted before display.\n# stability=contract\n# /llmnav\n",
+          "scope": "module",
+          "specVersion": "1",
+          "start": 0,
+          "startLine": 1,
+          "style": "line",
+          "syntaxErrors": []
+        }
+      ],
+      "contentHash": "9b474dc99c5d5b92686937cc0370fd3d9730eab2d6b5be5815ade3cda45bbb1e",
+      "declarations": [
+        null
+      ],
+      "imports": [
+        "__future__",
+        "ai_bom_generator",
+        "ai_bom_generator.app",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.reporting",
+        "ai_bom_generator.security",
+        "argparse",
+        "pathlib",
+        "sys"
+      ],
+      "path": "src/ai_bom_generator/cli.py",
+      "semanticBytes": 498,
+      "sourceBytes": 7453
+    },
+    {
+      "blocks": [],
+      "contentHash": "2aaa313c290398fb36c66b583ccf57a0a1ec51e511d9449dd70091e715954e04",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.collectors.pipeline"
+      ],
+      "path": "src/ai_bom_generator/collectors/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 98
+    },
+    {
+      "blocks": [],
+      "contentHash": "42df5693531149da8df4ada296110c0684e5406c3b31aba300bac2af78644224",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.config",
+        "ai_bom_generator.domain.artifact",
+        "ai_bom_generator.domain.source_location",
+        "ai_bom_generator.domain.warning",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.hashing",
+        "ai_bom_generator.security",
+        "dataclasses",
+        "fnmatch",
+        "functools",
+        "os",
+        "pathlib"
+      ],
+      "path": "src/ai_bom_generator/collectors/artifacts.py",
+      "semanticBytes": 0,
+      "sourceBytes": 15050
+    },
+    {
+      "blocks": [
+        {
+          "card": {
+            "effect": [],
+            "excludes": [
+              "dependency solving",
+              "automatic file discovery"
+            ],
+            "id": "aibom.dependencies.files",
+            "invariant": [
+              "A dependency file is rejected if it exceeds configured limits or changes identity while its snapshot is being read."
+            ],
+            "owns": [
+              "dependency format detection",
+              "bounded file snapshot",
+              "parser dispatch"
+            ],
+            "rel": [],
+            "risk": [],
+            "role": "Detect approved dependency lockfile formats and parse a bounded, no-follow snapshot through format-specific parsers.",
+            "scope": "module",
+            "search": [
+              "parse dependency lockfile",
+              "detect requirements format",
+              "bounded lockfile read"
+            ],
+            "stability": "contract",
+            "unknown": []
+          },
+          "end": 543,
+          "endLine": 9,
+          "entries": [
+            {
+              "key": "id",
+              "line": 2,
+              "order": 0,
+              "value": "aibom.dependencies.files"
+            },
+            {
+              "key": "role",
+              "line": 3,
+              "order": 1,
+              "value": "Detect approved dependency lockfile formats and parse a bounded, no-follow snapshot through format-specific parsers."
+            },
+            {
+              "key": "owns",
+              "line": 4,
+              "order": 2,
+              "value": "dependency format detection|bounded file snapshot|parser dispatch"
+            },
+            {
+              "key": "excludes",
+              "line": 5,
+              "order": 3,
+              "value": "dependency solving|automatic file discovery"
+            },
+            {
+              "key": "search",
+              "line": 6,
+              "order": 4,
+              "value": "parse dependency lockfile|detect requirements format|bounded lockfile read"
+            },
+            {
+              "key": "invariant",
+              "line": 7,
+              "order": 5,
+              "value": "A dependency file is rejected if it exceeds configured limits or changes identity while its snapshot is being read."
+            },
+            {
+              "key": "stability",
+              "line": 8,
+              "order": 6,
+              "value": "contract"
+            }
+          ],
+          "filePath": "src/ai_bom_generator/collectors/dependency_files.py",
+          "indent": "",
+          "newline": "\n",
+          "prefix": "#",
+          "raw": "# llmnav/1 module\n# id=aibom.dependencies.files\n# role=Detect approved dependency lockfile formats and parse a bounded, no-follow snapshot through format-specific parsers.\n# owns=dependency format detection|bounded file snapshot|parser dispatch\n# excludes=dependency solving|automatic file discovery\n# search=parse dependency lockfile|detect requirements format|bounded lockfile read\n# invariant=A dependency file is rejected if it exceeds configured limits or changes identity while its snapshot is being read.\n# stability=contract\n# /llmnav\n",
+          "scope": "module",
+          "specVersion": "1",
+          "start": 0,
+          "startLine": 1,
+          "style": "line",
+          "syntaxErrors": []
+        }
+      ],
+      "contentHash": "0bcf19f6c948bdf41e61a735640e5f44dc7647ad6db68aa5a0afdb688cad9308",
+      "declarations": [
+        null
+      ],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors.dependency_parsers",
+        "ai_bom_generator.security",
+        "os",
+        "pathlib",
+        "typing"
+      ],
+      "path": "src/ai_bom_generator/collectors/dependency_files.py",
+      "semanticBytes": 543,
+      "sourceBytes": 5230
+    },
+    {
+      "blocks": [],
+      "contentHash": "402fd0e455fe59a7dd788ab5ab69c7bd4c27b731a1c4af2c678c4b8fdf9f37a6",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.collectors.dependency_parsers.common",
+        "ai_bom_generator.collectors.dependency_parsers.conda_lock",
+        "ai_bom_generator.collectors.dependency_parsers.pipenv_lock",
+        "ai_bom_generator.collectors.dependency_parsers.poetry_lock",
+        "ai_bom_generator.collectors.dependency_parsers.requirements",
+        "ai_bom_generator.collectors.dependency_parsers.uv_lock"
+      ],
+      "path": "src/ai_bom_generator/collectors/dependency_parsers/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 907
+    },
+    {
+      "blocks": [],
+      "contentHash": "2040060514d140efe51dab22f5271c64092511d51e6abbda13610c3fddaca3d8",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.security",
+        "dataclasses",
+        "re",
+        "urllib.parse"
+      ],
+      "path": "src/ai_bom_generator/collectors/dependency_parsers/common.py",
+      "semanticBytes": 0,
+      "sourceBytes": 3253
+    },
+    {
+      "blocks": [],
+      "contentHash": "519ffccbe0b04b57e26fcc95c738e62da28b4a6adbe8e891412426bb46f53e40",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors.dependency_parsers.common",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.source_location",
+        "ai_bom_generator.security",
+        "packaging.utils",
+        "re",
+        "urllib.parse",
+        "yaml",
+        "yaml.events",
+        "yaml.nodes"
+      ],
+      "path": "src/ai_bom_generator/collectors/dependency_parsers/conda_lock.py",
+      "semanticBytes": 0,
+      "sourceBytes": 12219
+    },
+    {
+      "blocks": [],
+      "contentHash": "bdd4ff6bcb3e285d7bddff89cc51bad0ab2b0c7a89f1c9ac7fc95790a2480f93",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors.dependency_parsers.common",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.source_location",
+        "ai_bom_generator.security",
+        "json",
+        "packaging.markers",
+        "packaging.specifiers",
+        "packaging.utils",
+        "urllib.parse"
+      ],
+      "path": "src/ai_bom_generator/collectors/dependency_parsers/pipenv_lock.py",
+      "semanticBytes": 0,
+      "sourceBytes": 14202
+    },
+    {
+      "blocks": [],
+      "contentHash": "394231729a9a2e9c4fa766fd12ccaea608eb583a873852eea98a8f770b6d4c67",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors.dependency_parsers.common",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.source_location",
+        "ai_bom_generator.security",
+        "packaging.utils",
+        "packaging.version",
+        "tomllib"
+      ],
+      "path": "src/ai_bom_generator/collectors/dependency_parsers/poetry_lock.py",
+      "semanticBytes": 0,
+      "sourceBytes": 9035
+    },
+    {
+      "blocks": [],
+      "contentHash": "6eeffd4bafee5dbb3e9ef28ecc3e1e5c00928e8ad683f61c2aed2130ab0bdb27",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors.dependency_parsers.common",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.source_location",
+        "ai_bom_generator.security",
+        "packaging.requirements",
+        "packaging.utils",
+        "re",
+        "urllib.parse"
+      ],
+      "path": "src/ai_bom_generator/collectors/dependency_parsers/requirements.py",
+      "semanticBytes": 0,
+      "sourceBytes": 6236
+    },
+    {
+      "blocks": [],
+      "contentHash": "3e2b2b29954957174c0bdabf24b3976b7d491cf069c34e7b734d96d990219d49",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors.dependency_parsers.common",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.source_location",
+        "ai_bom_generator.security",
+        "packaging.utils",
+        "tomllib"
+      ],
+      "path": "src/ai_bom_generator/collectors/dependency_parsers/uv_lock.py",
+      "semanticBytes": 0,
+      "sourceBytes": 6614
+    },
+    {
+      "blocks": [],
+      "contentHash": "5db7eb38821d3f73667a349700338842b780fc03ad99b0d5aeb8ce188dd91a87",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.config",
+        "ai_bom_generator.domain.generation",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security",
+        "dataclasses",
+        "hashlib",
+        "json",
+        "os",
+        "pathlib",
+        "typing"
+      ],
+      "path": "src/ai_bom_generator/collectors/generation_marker.py",
+      "semanticBytes": 0,
+      "sourceBytes": 4929
+    },
+    {
+      "blocks": [
+        {
+          "card": {
+            "effect": [],
+            "excludes": [
+              "BOM format mapping",
+              "network enrichment"
+            ],
+            "id": "aibom.evidence.pipeline",
+            "invariant": [
+              "Collection remains local and returns deterministically sorted evidence without mutating the target model directory."
+            ],
+            "owns": [
+              "evidence collection orchestration",
+              "reference normalization",
+              "evidence deduplication"
+            ],
+            "rel": [],
+            "risk": [],
+            "role": "Collect and normalize local model, artifact, dependency, reference, Git, warning, and generation-marker evidence.",
+            "scope": "module",
+            "search": [
+              "collect normalized evidence",
+              "model project references",
+              "generation marker verification"
+            ],
+            "stability": "architecture",
+            "unknown": []
+          },
+          "end": 561,
+          "endLine": 9,
+          "entries": [
+            {
+              "key": "id",
+              "line": 2,
+              "order": 0,
+              "value": "aibom.evidence.pipeline"
+            },
+            {
+              "key": "role",
+              "line": 3,
+              "order": 1,
+              "value": "Collect and normalize local model, artifact, dependency, reference, Git, warning, and generation-marker evidence."
+            },
+            {
+              "key": "owns",
+              "line": 4,
+              "order": 2,
+              "value": "evidence collection orchestration|reference normalization|evidence deduplication"
+            },
+            {
+              "key": "excludes",
+              "line": 5,
+              "order": 3,
+              "value": "BOM format mapping|network enrichment"
+            },
+            {
+              "key": "search",
+              "line": 6,
+              "order": 4,
+              "value": "collect normalized evidence|model project references|generation marker verification"
+            },
+            {
+              "key": "invariant",
+              "line": 7,
+              "order": 5,
+              "value": "Collection remains local and returns deterministically sorted evidence without mutating the target model directory."
+            },
+            {
+              "key": "stability",
+              "line": 8,
+              "order": 6,
+              "value": "architecture"
+            }
+          ],
+          "filePath": "src/ai_bom_generator/collectors/pipeline.py",
+          "indent": "",
+          "newline": "\n",
+          "prefix": "#",
+          "raw": "# llmnav/1 module\n# id=aibom.evidence.pipeline\n# role=Collect and normalize local model, artifact, dependency, reference, Git, warning, and generation-marker evidence.\n# owns=evidence collection orchestration|reference normalization|evidence deduplication\n# excludes=BOM format mapping|network enrichment\n# search=collect normalized evidence|model project references|generation marker verification\n# invariant=Collection remains local and returns deterministically sorted evidence without mutating the target model directory.\n# stability=architecture\n# /llmnav\n",
+          "scope": "module",
+          "specVersion": "1",
+          "start": 0,
+          "startLine": 1,
+          "style": "line",
+          "syntaxErrors": []
+        }
+      ],
+      "contentHash": "232cd933b15b68bce8abe72e66fc20dfcd809d3cf338443f2960d502a5c5829e",
+      "declarations": [
+        null
+      ],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.collectors.artifacts",
+        "ai_bom_generator.collectors.dependency_files",
+        "ai_bom_generator.collectors.generation_marker",
+        "ai_bom_generator.config",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.domain.reference",
+        "ai_bom_generator.domain.source_location",
+        "ai_bom_generator.domain.warning",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security",
+        "os",
+        "pathlib",
+        "re",
+        "typing"
+      ],
+      "path": "src/ai_bom_generator/collectors/pipeline.py",
+      "semanticBytes": 561,
+      "sourceBytes": 23842
+    },
+    {
+      "blocks": [],
+      "contentHash": "5b832341c26074bc790aba1b76f9cdf29e515da580a3f51b99cf63adce1f1fab",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.config.loader"
+      ],
+      "path": "src/ai_bom_generator/config/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 112
+    },
+    {
+      "blocks": [
+        {
+          "card": {
+            "effect": [],
+            "excludes": [
+              "CLI option precedence",
+              "evidence collection"
+            ],
+            "id": "aibom.config.loading",
+            "invariant": [
+              "Config input must be a no-follow file inside the target root and satisfy schema, size, and reference-count limits."
+            ],
+            "owns": [
+              "config discovery",
+              "bounded TOML loading",
+              "config schema validation"
+            ],
+            "rel": [],
+            "risk": [],
+            "role": "Discover or load an in-root aibom.toml file under size and reference budgets, then validate config schema version 1.",
+            "scope": "module",
+            "search": [
+              "load aibom config",
+              "discover aibom.toml",
+              "validate config schema"
+            ],
+            "stability": "contract",
+            "unknown": []
+          },
+          "end": 519,
+          "endLine": 9,
+          "entries": [
+            {
+              "key": "id",
+              "line": 2,
+              "order": 0,
+              "value": "aibom.config.loading"
+            },
+            {
+              "key": "role",
+              "line": 3,
+              "order": 1,
+              "value": "Discover or load an in-root aibom.toml file under size and reference budgets, then validate config schema version 1."
+            },
+            {
+              "key": "owns",
+              "line": 4,
+              "order": 2,
+              "value": "config discovery|bounded TOML loading|config schema validation"
+            },
+            {
+              "key": "excludes",
+              "line": 5,
+              "order": 3,
+              "value": "CLI option precedence|evidence collection"
+            },
+            {
+              "key": "search",
+              "line": 6,
+              "order": 4,
+              "value": "load aibom config|discover aibom.toml|validate config schema"
+            },
+            {
+              "key": "invariant",
+              "line": 7,
+              "order": 5,
+              "value": "Config input must be a no-follow file inside the target root and satisfy schema, size, and reference-count limits."
+            },
+            {
+              "key": "stability",
+              "line": 8,
+              "order": 6,
+              "value": "contract"
+            }
+          ],
+          "filePath": "src/ai_bom_generator/config/loader.py",
+          "indent": "",
+          "newline": "\n",
+          "prefix": "#",
+          "raw": "# llmnav/1 module\n# id=aibom.config.loading\n# role=Discover or load an in-root aibom.toml file under size and reference budgets, then validate config schema version 1.\n# owns=config discovery|bounded TOML loading|config schema validation\n# excludes=CLI option precedence|evidence collection\n# search=load aibom config|discover aibom.toml|validate config schema\n# invariant=Config input must be a no-follow file inside the target root and satisfy schema, size, and reference-count limits.\n# stability=contract\n# /llmnav\n",
+          "scope": "module",
+          "specVersion": "1",
+          "start": 0,
+          "startLine": 1,
+          "style": "line",
+          "syntaxErrors": []
+        }
+      ],
+      "contentHash": "2241577571e67062864a99b3195bfa53988651b27033ed30c01d05ba45c1dfce",
+      "declarations": [
+        null
+      ],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security.file_io",
+        "ai_bom_generator.security.path_policy",
+        "ai_bom_generator.validation",
+        "dataclasses",
+        "importlib",
+        "os",
+        "pathlib",
+        "tomllib",
+        "typing"
+      ],
+      "path": "src/ai_bom_generator/config/loader.py",
+      "semanticBytes": 519,
+      "sourceBytes": 5317
+    },
+    {
+      "blocks": [],
+      "contentHash": "0f2c90567bced08799f478c626f8aec542c401b87c58deb4c9e9a5a0ebee820d",
+      "declarations": [],
+      "imports": [],
+      "path": "src/ai_bom_generator/config/schema/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 38
+    },
+    {
+      "blocks": [],
+      "contentHash": "38ff11348398240fbb39d3495d6f6927d5f93af833c26349e7afca8e73bb8590",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.domain.generation",
+        "ai_bom_generator.domain.warning"
+      ],
+      "path": "src/ai_bom_generator/domain/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 261
+    },
+    {
+      "blocks": [],
+      "contentHash": "d37da6fb6f75e880bd06edc9de1a20277f45295670ed5edafaedfb763fd45ab7",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.domain.source_location",
+        "dataclasses"
+      ],
+      "path": "src/ai_bom_generator/domain/artifact.py",
+      "semanticBytes": 0,
+      "sourceBytes": 629
+    },
+    {
+      "blocks": [],
+      "contentHash": "88d1ebcb7db9883c77255e8aa463cbf6fc7dc08a92dec873538af3f35c10c137",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.domain.source_location",
+        "dataclasses"
+      ],
+      "path": "src/ai_bom_generator/domain/dependency.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1911
+    },
+    {
+      "blocks": [],
+      "contentHash": "305066312702bb38c388cbef67c23d824a12e160f630fe09f9a56c89c56da6e2",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.domain.artifact",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.generation",
+        "ai_bom_generator.domain.reference",
+        "ai_bom_generator.domain.warning",
+        "dataclasses"
+      ],
+      "path": "src/ai_bom_generator/domain/evidence.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1259
+    },
+    {
+      "blocks": [],
+      "contentHash": "be330457a810b6ff1056c43d8db59747f568405c42cf89d9f2d3245182fdf563",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "dataclasses"
+      ],
+      "path": "src/ai_bom_generator/domain/generation.py",
+      "semanticBytes": 0,
+      "sourceBytes": 196
+    },
+    {
+      "blocks": [],
+      "contentHash": "2f2bccdca71904d4108dadc4b1e82a0975458a303865ade3b288eef12c28ce5b",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.domain.source_location",
+        "dataclasses"
+      ],
+      "path": "src/ai_bom_generator/domain/reference.py",
+      "semanticBytes": 0,
+      "sourceBytes": 531
+    },
+    {
+      "blocks": [],
+      "contentHash": "ace1fdffe0cf335166b5e6c3cee723bae81aaff5aac71c03db07e39a73e9fb38",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "dataclasses"
+      ],
+      "path": "src/ai_bom_generator/domain/source_location.py",
+      "semanticBytes": 0,
+      "sourceBytes": 439
+    },
+    {
+      "blocks": [],
+      "contentHash": "6004a39ae2a1355bb17d89887ffa4accbcba92998b6651e92bc3ca6dee5a8c28",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.domain.source_location",
+        "dataclasses"
+      ],
+      "path": "src/ai_bom_generator/domain/warning.py",
+      "semanticBytes": 0,
+      "sourceBytes": 815
+    },
+    {
+      "blocks": [],
+      "contentHash": "513a32302c617f070ce7d1b8472eade9dc630aa30c77e7a6adee99e05c6dbedd",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "dataclasses"
+      ],
+      "path": "src/ai_bom_generator/errors.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1091
+    },
+    {
+      "blocks": [],
+      "contentHash": "bc159d041ca2576046fd908f366154ce98ffd4bc739490caa6cf4f889e4d74fd",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.exporters.cyclonedx_json.mapper",
+        "ai_bom_generator.exporters.spdx_ai.mapper"
+      ],
+      "path": "src/ai_bom_generator/exporters/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 207
+    },
+    {
+      "blocks": [],
+      "contentHash": "9a117ee7c60285e461a1cdf2e4486477b0dd70432d758b7cfdbcadcadefb28ab",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.exporters.cyclonedx_json.mapper"
+      ],
+      "path": "src/ai_bom_generator/exporters/cyclonedx_json/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 158
+    },
+    {
+      "blocks": [
+        {
+          "card": {
+            "effect": [],
+            "excludes": [
+              "evidence collection",
+              "output file writing"
+            ],
+            "id": "aibom.export.cyclonedx",
+            "invariant": [
+              "Every emitted component has a unique stable bom-ref and the redacted document passes the bundled CycloneDX 1.7 schema."
+            ],
+            "owns": [
+              "CycloneDX component mapping",
+              "stable bom references",
+              "CycloneDX schema validation"
+            ],
+            "rel": [],
+            "risk": [],
+            "role": "Map normalized evidence into a redacted CycloneDX JSON 1.7 ML-BOM with stable component references and schema validation.",
+            "scope": "module",
+            "search": [
+              "export cyclonedx 1.7",
+              "machine learning bom",
+              "validate bom references"
+            ],
+            "stability": "contract",
+            "unknown": []
+          },
+          "end": 548,
+          "endLine": 9,
+          "entries": [
+            {
+              "key": "id",
+              "line": 2,
+              "order": 0,
+              "value": "aibom.export.cyclonedx"
+            },
+            {
+              "key": "role",
+              "line": 3,
+              "order": 1,
+              "value": "Map normalized evidence into a redacted CycloneDX JSON 1.7 ML-BOM with stable component references and schema validation."
+            },
+            {
+              "key": "owns",
+              "line": 4,
+              "order": 2,
+              "value": "CycloneDX component mapping|stable bom references|CycloneDX schema validation"
+            },
+            {
+              "key": "excludes",
+              "line": 5,
+              "order": 3,
+              "value": "evidence collection|output file writing"
+            },
+            {
+              "key": "search",
+              "line": 6,
+              "order": 4,
+              "value": "export cyclonedx 1.7|machine learning bom|validate bom references"
+            },
+            {
+              "key": "invariant",
+              "line": 7,
+              "order": 5,
+              "value": "Every emitted component has a unique stable bom-ref and the redacted document passes the bundled CycloneDX 1.7 schema."
+            },
+            {
+              "key": "stability",
+              "line": 8,
+              "order": 6,
+              "value": "contract"
+            }
+          ],
+          "filePath": "src/ai_bom_generator/exporters/cyclonedx_json/mapper.py",
+          "indent": "",
+          "newline": "\n",
+          "prefix": "#",
+          "raw": "# llmnav/1 module\n# id=aibom.export.cyclonedx\n# role=Map normalized evidence into a redacted CycloneDX JSON 1.7 ML-BOM with stable component references and schema validation.\n# owns=CycloneDX component mapping|stable bom references|CycloneDX schema validation\n# excludes=evidence collection|output file writing\n# search=export cyclonedx 1.7|machine learning bom|validate bom references\n# invariant=Every emitted component has a unique stable bom-ref and the redacted document passes the bundled CycloneDX 1.7 schema.\n# stability=contract\n# /llmnav\n",
+          "scope": "module",
+          "specVersion": "1",
+          "start": 0,
+          "startLine": 1,
+          "style": "line",
+          "syntaxErrors": []
+        }
+      ],
+      "contentHash": "51c1e5f6036be8d41c35c33aa74e314b9e6d3e4bc046eda6aaf2a2683ff3fcb2",
+      "declarations": [
+        null
+      ],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.exporters.cyclonedx_schema",
+        "ai_bom_generator.security",
+        "hashlib"
+      ],
+      "path": "src/ai_bom_generator/exporters/cyclonedx_json/mapper.py",
+      "semanticBytes": 548,
+      "sourceBytes": 7034
+    },
+    {
+      "blocks": [],
+      "contentHash": "5bc813df83d2529b8623234d552c5296835c45948c1d96435b04c1362c67df92",
+      "declarations": [],
+      "imports": [],
+      "path": "src/ai_bom_generator/exporters/cyclonedx_json/schema/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 51
+    },
+    {
+      "blocks": [],
+      "contentHash": "a87dbf32cfc6ea2e5e25e61453ef04e697df1c0056f8aadd2fa24c0f8dfcdb3c",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.validation",
+        "ai_bom_generator.validation.json_schema",
+        "importlib",
+        "typing"
+      ],
+      "path": "src/ai_bom_generator/exporters/cyclonedx_schema.py",
+      "semanticBytes": 0,
+      "sourceBytes": 704
+    },
+    {
+      "blocks": [],
+      "contentHash": "848881b87f5b94acd8cb417654843c29c70837cc89d19c7c9129734be12fb7d2",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.exporters.spdx_ai.mapper"
+      ],
+      "path": "src/ai_bom_generator/exporters/spdx_ai/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 137
+    },
+    {
+      "blocks": [
+        {
+          "card": {
+            "effect": [],
+            "excludes": [
+              "full SPDX conformance claims",
+              "evidence collection"
+            ],
+            "id": "aibom.export.spdx-ai",
+            "invariant": [
+              "The preview never fabricates unavailable evidence and every emitted SPDX element retains a unique stable identifier."
+            ],
+            "owns": [
+              "SPDX AI graph mapping",
+              "stable SPDX identifiers",
+              "preview schema validation"
+            ],
+            "rel": [],
+            "risk": [],
+            "role": "Map normalized evidence into a redacted partial SPDX 3.0.1 AI Profile preview with explicit unavailable fields.",
+            "scope": "module",
+            "search": [
+              "export spdx ai preview",
+              "spdx 3.0.1 profile",
+              "unavailable ai fields"
+            ],
+            "stability": "contract",
+            "unknown": []
+          },
+          "end": 535,
+          "endLine": 9,
+          "entries": [
+            {
+              "key": "id",
+              "line": 2,
+              "order": 0,
+              "value": "aibom.export.spdx-ai"
+            },
+            {
+              "key": "role",
+              "line": 3,
+              "order": 1,
+              "value": "Map normalized evidence into a redacted partial SPDX 3.0.1 AI Profile preview with explicit unavailable fields."
+            },
+            {
+              "key": "owns",
+              "line": 4,
+              "order": 2,
+              "value": "SPDX AI graph mapping|stable SPDX identifiers|preview schema validation"
+            },
+            {
+              "key": "excludes",
+              "line": 5,
+              "order": 3,
+              "value": "full SPDX conformance claims|evidence collection"
+            },
+            {
+              "key": "search",
+              "line": 6,
+              "order": 4,
+              "value": "export spdx ai preview|spdx 3.0.1 profile|unavailable ai fields"
+            },
+            {
+              "key": "invariant",
+              "line": 7,
+              "order": 5,
+              "value": "The preview never fabricates unavailable evidence and every emitted SPDX element retains a unique stable identifier."
+            },
+            {
+              "key": "stability",
+              "line": 8,
+              "order": 6,
+              "value": "contract"
+            }
+          ],
+          "filePath": "src/ai_bom_generator/exporters/spdx_ai/mapper.py",
+          "indent": "",
+          "newline": "\n",
+          "prefix": "#",
+          "raw": "# llmnav/1 module\n# id=aibom.export.spdx-ai\n# role=Map normalized evidence into a redacted partial SPDX 3.0.1 AI Profile preview with explicit unavailable fields.\n# owns=SPDX AI graph mapping|stable SPDX identifiers|preview schema validation\n# excludes=full SPDX conformance claims|evidence collection\n# search=export spdx ai preview|spdx 3.0.1 profile|unavailable ai fields\n# invariant=The preview never fabricates unavailable evidence and every emitted SPDX element retains a unique stable identifier.\n# stability=contract\n# /llmnav\n",
+          "scope": "module",
+          "specVersion": "1",
+          "start": 0,
+          "startLine": 1,
+          "style": "line",
+          "syntaxErrors": []
+        }
+      ],
+      "contentHash": "31fc8c3871a8b28882aee9f02ad4b216954f26bbb0daf536464b2858a7a0ce6a",
+      "declarations": [
+        null
+      ],
+      "imports": [
+        "__future__",
+        "ai_bom_generator",
+        "ai_bom_generator.domain.dependency",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.domain.reference",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security",
+        "ai_bom_generator.validation",
+        "hashlib",
+        "importlib"
+      ],
+      "path": "src/ai_bom_generator/exporters/spdx_ai/mapper.py",
+      "semanticBytes": 535,
+      "sourceBytes": 11450
+    },
+    {
+      "blocks": [],
+      "contentHash": "07a8984e5c929911550d82ff21c4bdc873b33ffc6ac021b3b9864634bfd10f22",
+      "declarations": [],
+      "imports": [],
+      "path": "src/ai_bom_generator/exporters/spdx_ai/schema/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 57
+    },
+    {
+      "blocks": [],
+      "contentHash": "12c1ef48681ade7a8fc19c1c587a6dfd106ca152c1b593ee59201a5e265d763d",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.hashing.sha256"
+      ],
+      "path": "src/ai_bom_generator/hashing/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 167
+    },
+    {
+      "blocks": [],
+      "contentHash": "94b97784965b1ec44fe67b90c415f70beaf6a3731ace8d7fec686d3011504c75",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security.file_io",
+        "dataclasses",
+        "hashlib",
+        "os",
+        "pathlib"
+      ],
+      "path": "src/ai_bom_generator/hashing/sha256.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1846
+    },
+    {
+      "blocks": [],
+      "contentHash": "e4549e8d7e2cfc76f48f3247560c504452931b865017e583417a2da091c79a2d",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.reporting.error_report",
+        "ai_bom_generator.reporting.json_writer",
+        "ai_bom_generator.reporting.summary",
+        "ai_bom_generator.reporting.warning_report"
+      ],
+      "path": "src/ai_bom_generator/reporting/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 520
+    },
+    {
+      "blocks": [],
+      "contentHash": "213313dd78aa55e444bf7bde648215e12a0cf80c634f1ccda72efb3ed0510c1c",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security"
+      ],
+      "path": "src/ai_bom_generator/reporting/error_report.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1383
+    },
+    {
+      "blocks": [],
+      "contentHash": "2ccb05dd0bc151bbe78488901698bc7cea659fd85d6ba5719a5d263dce7edd71",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "contextlib",
+        "fcntl",
+        "hashlib",
+        "json",
+        "msvcrt",
+        "os",
+        "pathlib",
+        "tempfile",
+        "typing",
+        "uuid"
+      ],
+      "path": "src/ai_bom_generator/reporting/json_writer.py",
+      "semanticBytes": 0,
+      "sourceBytes": 6621
+    },
+    {
+      "blocks": [],
+      "contentHash": "f9af6195a80249e0fb1ac6946b1ca1f5207c86c3c60bcbb40e24c9645908d2ab",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security",
+        "pathlib"
+      ],
+      "path": "src/ai_bom_generator/reporting/summary.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1548
+    },
+    {
+      "blocks": [],
+      "contentHash": "572024291be0e503acaa35a115d2a446e830a4cf7a8421f37c5aba9cdfe11ecf",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.errors",
+        "ai_bom_generator.security"
+      ],
+      "path": "src/ai_bom_generator/reporting/warning_report.py",
+      "semanticBytes": 0,
+      "sourceBytes": 683
+    },
+    {
+      "blocks": [],
+      "contentHash": "d4c69863e841f53ab16dfcbe3f31de3b7040b3363330cbfbac95c0a05387af5e",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.security.file_io",
+        "ai_bom_generator.security.path_policy",
+        "ai_bom_generator.security.redaction"
+      ],
+      "path": "src/ai_bom_generator/security/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 247
+    },
+    {
+      "blocks": [],
+      "contentHash": "2aa691ec7016135ee8b8b27d48570acfc63ca6a01303dd52be813c569a53dfa2",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "contextlib",
+        "os",
+        "pathlib",
+        "stat",
+        "typing"
+      ],
+      "path": "src/ai_bom_generator/security/file_io.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1128
+    },
+    {
+      "blocks": [
+        {
+          "card": {
+            "effect": [],
+            "excludes": [
+              "file content parsing",
+              "output writing"
+            ],
+            "id": "aibom.security.path-policy",
+            "invariant": [
+              "Referenced inputs cannot escape the resolved target root and generated outputs cannot be placed inside that root."
+            ],
+            "owns": [
+              "target root containment",
+              "input path validation",
+              "output path validation"
+            ],
+            "rel": [],
+            "risk": [],
+            "role": "Resolve trusted in-root inputs and reject unsafe symlinks, traversal patterns, and output destinations inside the target project.",
+            "scope": "module",
+            "search": [
+              "validate target path",
+              "reject symlink input",
+              "output outside model directory"
+            ],
+            "stability": "architecture",
+            "unknown": []
+          },
+          "end": 553,
+          "endLine": 9,
+          "entries": [
+            {
+              "key": "id",
+              "line": 2,
+              "order": 0,
+              "value": "aibom.security.path-policy"
+            },
+            {
+              "key": "role",
+              "line": 3,
+              "order": 1,
+              "value": "Resolve trusted in-root inputs and reject unsafe symlinks, traversal patterns, and output destinations inside the target project."
+            },
+            {
+              "key": "owns",
+              "line": 4,
+              "order": 2,
+              "value": "target root containment|input path validation|output path validation"
+            },
+            {
+              "key": "excludes",
+              "line": 5,
+              "order": 3,
+              "value": "file content parsing|output writing"
+            },
+            {
+              "key": "search",
+              "line": 6,
+              "order": 4,
+              "value": "validate target path|reject symlink input|output outside model directory"
+            },
+            {
+              "key": "invariant",
+              "line": 7,
+              "order": 5,
+              "value": "Referenced inputs cannot escape the resolved target root and generated outputs cannot be placed inside that root."
+            },
+            {
+              "key": "stability",
+              "line": 8,
+              "order": 6,
+              "value": "architecture"
+            }
+          ],
+          "filePath": "src/ai_bom_generator/security/path_policy.py",
+          "indent": "",
+          "newline": "\n",
+          "prefix": "#",
+          "raw": "# llmnav/1 module\n# id=aibom.security.path-policy\n# role=Resolve trusted in-root inputs and reject unsafe symlinks, traversal patterns, and output destinations inside the target project.\n# owns=target root containment|input path validation|output path validation\n# excludes=file content parsing|output writing\n# search=validate target path|reject symlink input|output outside model directory\n# invariant=Referenced inputs cannot escape the resolved target root and generated outputs cannot be placed inside that root.\n# stability=architecture\n# /llmnav\n",
+          "scope": "module",
+          "specVersion": "1",
+          "start": 0,
+          "startLine": 1,
+          "style": "line",
+          "syntaxErrors": []
+        }
+      ],
+      "contentHash": "6a3a8586da6cbd15c0211d381150cefc243839daa18d03c70f28a3b3d6e71eef",
+      "declarations": [
+        null
+      ],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.errors",
+        "pathlib"
+      ],
+      "path": "src/ai_bom_generator/security/path_policy.py",
+      "semanticBytes": 553,
+      "sourceBytes": 4073
+    },
+    {
+      "blocks": [],
+      "contentHash": "95a40dbecdddb2a5b047353972e8fdb4d015b94afde620801d78c5dd47600bbf",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "re",
+        "typing"
+      ],
+      "path": "src/ai_bom_generator/security/redaction.py",
+      "semanticBytes": 0,
+      "sourceBytes": 3102
+    },
+    {
+      "blocks": [],
+      "contentHash": "fa95835040f65acb5d1f70368ac64136d65915edbd3a4b86fb7a75468e0d7115",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.validation.json_schema"
+      ],
+      "path": "src/ai_bom_generator/validation/__init__.py",
+      "semanticBytes": 0,
+      "sourceBytes": 157
+    },
+    {
+      "blocks": [],
+      "contentHash": "9fdbbde0d5564939016d79ead39981dccc72b4e2eb4bf7bd2fb0aa3467a2eccf",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "dataclasses",
+        "json",
+        "jsonschema",
+        "pathlib",
+        "typing"
+      ],
+      "path": "src/ai_bom_generator/validation/json_schema.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1541
+    }
+  ],
+  "indexerVersion": 5,
+  "schemaVersion": 1
+}

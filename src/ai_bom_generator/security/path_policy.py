@@ -1,3 +1,12 @@
+# llmnav/1 module
+# id=aibom.security.path-policy
+# role=Resolve trusted in-root inputs and reject unsafe symlinks, traversal patterns, and output destinations inside the target project.
+# owns=target root containment|input path validation|output path validation
+# excludes=file content parsing|output writing
+# search=validate target path|reject symlink input|output outside model directory
+# invariant=Referenced inputs cannot escape the resolved target root and generated outputs cannot be placed inside that root.
+# stability=architecture
+# /llmnav
 from __future__ import annotations
 
 from pathlib import Path, PurePosixPath, PureWindowsPath

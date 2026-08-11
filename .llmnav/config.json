@@ -1,0 +1,159 @@
+{
+  "$schema": "./schema/config.schema.json",
+  "coverageRules": [
+    {
+      "match": [
+        "src/ai_bom_generator/app.py",
+        "src/ai_bom_generator/cli.py",
+        "src/ai_bom_generator/collectors/dependency_files.py",
+        "src/ai_bom_generator/collectors/pipeline.py",
+        "src/ai_bom_generator/config/loader.py",
+        "src/ai_bom_generator/exporters/cyclonedx_json/mapper.py",
+        "src/ai_bom_generator/exporters/spdx_ai/mapper.py",
+        "src/ai_bom_generator/security/path_policy.py"
+      ],
+      "name": "initial AI BOM Generator pipeline and trust boundaries",
+      "requiredFields": [
+        "owns",
+        "invariant"
+      ],
+      "scope": "module"
+    }
+  ],
+  "evaluation": {
+    "minimumRecallAt1": 0.75,
+    "minimumRecallAt5": 0.9,
+    "queryFile": ".llmnav/eval/queries.jsonl"
+  },
+  "excludeDirectories": [
+    ".git",
+    ".hg",
+    ".svn",
+    ".idea",
+    ".vscode",
+    "node_modules",
+    "vendor",
+    "dist",
+    "build",
+    "coverage",
+    ".next",
+    ".nuxt",
+    ".svelte-kit",
+    ".astro",
+    ".turbo",
+    ".cache",
+    ".bun-cache",
+    ".pnpm-store",
+    "target",
+    "bin",
+    "obj"
+  ],
+  "excludeFiles": [
+    "*.min.js",
+    "*.bundle.js",
+    "*.generated.*",
+    "*.gen.*"
+  ],
+  "generation": {
+    "cacheDirectory": ".llmnav/cache",
+    "moduleCatalogStabilities": [
+      "architecture",
+      "contract"
+    ],
+    "moduleDepth": 2,
+    "repositoryCatalogStabilities": [
+      "architecture"
+    ],
+    "searchShardSize": 0
+  },
+  "graph": {
+    "indexFiles": []
+  },
+  "includeExtensions": [
+    ".ts",
+    ".tsx",
+    ".js",
+    ".jsx",
+    ".mjs",
+    ".cjs",
+    ".go",
+    ".rs",
+    ".py",
+    ".java",
+    ".kt",
+    ".kts",
+    ".c",
+    ".cc",
+    ".cpp",
+    ".h",
+    ".hpp",
+    ".cs",
+    ".swift",
+    ".dart",
+    ".php",
+    ".rb",
+    ".sh",
+    ".bash",
+    ".zsh",
+    ".sql",
+    ".svelte",
+    ".astro",
+    ".vue"
+  ],
+  "lint": {
+    "additionalEffects": [],
+    "additionalRelations": [],
+    "additionalRisks": [],
+    "genericSearchTerms": [
+      "service",
+      "manager",
+      "handler",
+      "helper",
+      "utility",
+      "util",
+      "data",
+      "process",
+      "logic",
+      "common",
+      "shared"
+    ],
+    "maxBlockBytes": {
+      "file": 400,
+      "module": 1200,
+      "symbol": 900
+    },
+    "maxEffects": 6,
+    "maxInvariants": 4,
+    "maxRelations": 6,
+    "maxRoleLength": 180,
+    "maxSearchTerms": 6,
+    "maxSemanticRatio": 0.03,
+    "minSearchTerms": 2,
+    "minimumCardsForSaturation": 20,
+    "minimumSourceBytesForRatio": 50000,
+    "requireCanonicalFormatting": true,
+    "requireCanonicalOrder": true,
+    "searchTermSaturation": 0.05,
+    "strictRisks": [
+      "auth",
+      "money",
+      "privacy"
+    ],
+    "vagueRoleWords": [
+      "handle",
+      "handles",
+      "manage",
+      "manages",
+      "process",
+      "processes",
+      "utility",
+      "helper",
+      "service"
+    ]
+  },
+  "repositoryId": "ai-bom-generator",
+  "sourceRoots": [
+    "src/ai_bom_generator"
+  ],
+  "version": 1
+}

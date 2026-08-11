@@ -1,0 +1,8 @@
+aibom.app.generation
+aibom.cli.command
+aibom.config.loading
+aibom.dependencies.files
+aibom.evidence.pipeline
+aibom.export.cyclonedx
+aibom.export.spdx-ai
+aibom.security.path-policy

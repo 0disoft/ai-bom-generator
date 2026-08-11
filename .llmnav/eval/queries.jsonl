@@ -1,0 +1,9 @@
+# One JSON object per line: {"query":"...","expected":["domain.feature.action"]}
+{"query":"run one AI BOM generation and validate distinct output destinations outside the model project","expected":["aibom.app.generation"]}
+{"query":"parse ai-bom generate arguments, redact failures, and return stable exit codes","expected":["aibom.cli.command"]}
+{"query":"detect and safely parse a bounded uv poetry pipenv conda or requirements lockfile","expected":["aibom.dependencies.files"]}
+{"query":"collect normalized local model artifacts dependencies references Git and warning evidence","expected":["aibom.evidence.pipeline"]}
+{"query":"discover an in-root aibom.toml and validate config schema version 1","expected":["aibom.config.loading"]}
+{"query":"map normalized evidence to a schema-validated CycloneDX JSON 1.7 ML-BOM","expected":["aibom.export.cyclonedx"]}
+{"query":"emit a partial SPDX 3.0.1 AI Profile preview without fabricating unavailable fields","expected":["aibom.export.spdx-ai"]}
+{"query":"reject symlink inputs, parent traversal, and generated outputs inside the target model directory","expected":["aibom.security.path-policy"]}

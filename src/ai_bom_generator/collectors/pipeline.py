@@ -1,3 +1,12 @@
+# llmnav/1 module
+# id=aibom.evidence.pipeline
+# role=Collect and normalize local model, artifact, dependency, reference, Git, warning, and generation-marker evidence.
+# owns=evidence collection orchestration|reference normalization|evidence deduplication
+# excludes=BOM format mapping|network enrichment
+# search=collect normalized evidence|model project references|generation marker verification
+# invariant=Collection remains local and returns deterministically sorted evidence without mutating the target model directory.
+# stability=architecture
+# /llmnav
 from __future__ import annotations
 
 import os

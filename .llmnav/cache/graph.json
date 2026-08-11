@@ -1,0 +1,190 @@
+{
+  "edges": [],
+  "nodes": [
+    {
+      "definitions": [],
+      "external": false,
+      "key": "ai-bom-generator/aibom.app.generation",
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/app.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "repositoryId": "ai-bom-generator",
+      "role": "Orchestrate one local evidence collection and BOM export run, validate output destinations, and publish an atomic output set.",
+      "semanticId": "aibom.app.generation",
+      "unresolved": false
+    },
+    {
+      "definitions": [],
+      "external": false,
+      "key": "ai-bom-generator/aibom.cli.command",
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/cli.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "repositoryId": "ai-bom-generator",
+      "role": "Parse the ai-bom generate command, normalize output options, redact terminal failures, and return stable process exit codes.",
+      "semanticId": "aibom.cli.command",
+      "unresolved": false
+    },
+    {
+      "definitions": [],
+      "external": false,
+      "key": "ai-bom-generator/aibom.config.loading",
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/config/loader.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "repositoryId": "ai-bom-generator",
+      "role": "Discover or load an in-root aibom.toml file under size and reference budgets, then validate config schema version 1.",
+      "semanticId": "aibom.config.loading",
+      "unresolved": false
+    },
+    {
+      "definitions": [],
+      "external": false,
+      "key": "ai-bom-generator/aibom.dependencies.files",
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/collectors/dependency_files.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "repositoryId": "ai-bom-generator",
+      "role": "Detect approved dependency lockfile formats and parse a bounded, no-follow snapshot through format-specific parsers.",
+      "semanticId": "aibom.dependencies.files",
+      "unresolved": false
+    },
+    {
+      "definitions": [],
+      "external": false,
+      "key": "ai-bom-generator/aibom.evidence.pipeline",
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/collectors/pipeline.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "repositoryId": "ai-bom-generator",
+      "role": "Collect and normalize local model, artifact, dependency, reference, Git, warning, and generation-marker evidence.",
+      "semanticId": "aibom.evidence.pipeline",
+      "unresolved": false
+    },
+    {
+      "definitions": [],
+      "external": false,
+      "key": "ai-bom-generator/aibom.export.cyclonedx",
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/exporters/cyclonedx_json/mapper.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "repositoryId": "ai-bom-generator",
+      "role": "Map normalized evidence into a redacted CycloneDX JSON 1.7 ML-BOM with stable component references and schema validation.",
+      "semanticId": "aibom.export.cyclonedx",
+      "unresolved": false
+    },
+    {
+      "definitions": [],
+      "external": false,
+      "key": "ai-bom-generator/aibom.export.spdx-ai",
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/exporters/spdx_ai/mapper.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "repositoryId": "ai-bom-generator",
+      "role": "Map normalized evidence into a redacted partial SPDX 3.0.1 AI Profile preview with explicit unavailable fields.",
+      "semanticId": "aibom.export.spdx-ai",
+      "unresolved": false
+    },
+    {
+      "definitions": [],
+      "external": false,
+      "key": "ai-bom-generator/aibom.security.path-policy",
+      "location": {
+        "declarationLine": null,
+        "endLine": 9,
+        "exported": null,
+        "kind": null,
+        "language": null,
+        "path": "src/ai_bom_generator/security/path_policy.py",
+        "receiver": null,
+        "signature": null,
+        "startLine": 1,
+        "symbol": null,
+        "visibility": null
+      },
+      "repositoryId": "ai-bom-generator",
+      "role": "Resolve trusted in-root inputs and reject unsafe symlinks, traversal patterns, and output destinations inside the target project.",
+      "semanticId": "aibom.security.path-policy",
+      "unresolved": false
+    }
+  ],
+  "repositoryId": "ai-bom-generator",
+  "schemaVersion": 1,
+  "sourceHash": "88b159f4e62c6b07f012f3ac1ee79c5d37a93e7edf31ccf0a17c5b81f24c014f",
+  "stats": {
+    "edgeCount": 0,
+    "importedIndexCount": 0,
+    "nodeCount": 8,
+    "unresolvedNodeCount": 0
+  }
+}
