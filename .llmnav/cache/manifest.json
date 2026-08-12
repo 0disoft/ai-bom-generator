@@ -4,10 +4,10 @@
   "files": {
     ".llmnav/cache/agent-context.md": "09c2fdc611c3bb34b66af56be18394788f5c0edd2c2bbaf7c010e3b325c39c17",
     ".llmnav/cache/cards.jsonl": "5b5243f1a65514db9cee3a7e9cadee9f7b7d95ee7cdd0d84fea87e011321df45",
-    ".llmnav/cache/file-state.json": "579d25e60802ba2c9368670bd8d917f8fe5e0e92721c2fef69b130bf54dff006",
+    ".llmnav/cache/file-state.json": "8819be4a30786298f98cb666ac34f5a04c12855a46b297ece232c9e3aba74765",
     ".llmnav/cache/graph-state.json": "8e1cdf8fed0fec9d77dfd2c1d9d44e6b1fc27bc601378b174aac4291f1f619eb",
     ".llmnav/cache/graph.json": "76a3f23c74475b0951ba07a66f3519d1116dcb08d250b578ac4a861b46a408de",
-    ".llmnav/cache/index.json": "47f3a9765a2086847b0cdff7497ad61c478894eee0a43c92aaaa2f60fb062531",
+    ".llmnav/cache/index.json": "192db34b8868f6a9b733d33a1aad28c87ed1230de17fd02a687bd63465b3f26f",
     ".llmnav/cache/modules/aibom.app.txt": "881186cf23414e9ef8e04da81a464725ded9a8894e5d171960238ce24a8d1a2e",
     ".llmnav/cache/modules/aibom.cli.txt": "e9d2448b53f003d4d9005e5d2b32b3c6c96b7b0ba7e0037653f92191660c59cf",
     ".llmnav/cache/modules/aibom.config.txt": "4ea4cb65157c6581fbc3b03e37f70040881bd98fc4ffd5a27aba70314932d420",
