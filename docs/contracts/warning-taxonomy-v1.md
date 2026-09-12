@@ -1,5 +1,9 @@
 # Warning Taxonomy v1 Draft
 
+`ARTIFACT_TRAVERSAL_LIMIT_EXCEEDED` is a warning-severity artifact warning:
+directory enumeration exceeded the run-wide entry budget and no artifacts were
+selected. Other declared evidence remains available; fail-on-warning still applies.
+
 `SENSITIVE_CONFIG_KEY` indicates a sensitive key in accepted config metadata.
 It uses warning severity and `config` object kind, with a value-free section/index
 location. It participates in the normal summary warning count and fail-on-warning

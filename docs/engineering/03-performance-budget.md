@@ -25,7 +25,26 @@ configured warning policy treats warnings as failures.
 Artifact discovery is config opt-in and reuses the same budgets. One top-down
 tree walk evaluates all fixed default model-artifact patterns, and directories
 excluded for every active pattern are pruned before descent. Candidate counts
-remain bounded per pattern; a separate visited-entry ceiling remains UNDECIDED.
+remain bounded per pattern. A run may enumerate at most 100,000 directory entries
+(files and directories, including excluded entries in an opened directory).
+Incremental directory enumeration enforces this before materializing an unbounded
+flat directory. Excluded subtrees are pruned before descent. If enumeration
+exceeds the ceiling, all partial artifact matches are discarded and
+`ARTIFACT_TRAVERSAL_LIMIT_EXCEEDED` is emitted. This avoids filesystem-order-based
+partial selection. The limit bounds work and allocation, not wall-clock latency.
+
+The synthetic tree regression contains 16 directories and 2,048 nonmatching files.
+On the Windows/Python 3.12 local validation run it scanned 2,064 entries in 2.366
+seconds with 355,047 traced allocation bytes (allocation tracing enabled).
+This is a fixture baseline, not a hosted latency promise or a linear projection.
+The 100,000-entry ceiling permits substantially larger caller trees while placing
+an explicit finite cap on enumeration and pending-directory storage. Normal,
+exact-limit, overflow, and partial-result-discard cases use smaller injected
+limits to test the same boundary without creating 100,000 files on every CI run.
+
+Persistent digest reuse is rejected: path, size, inode, and modification time do
+not establish identical bytes. Rehashing is required for current evidence; an
+external content-addressed immutable store can be used as caller-owned input.
 
 Explicit dependency-file parsing has separate fixed limits:
 

@@ -18,6 +18,7 @@ from ai_bom_generator.security import PathPolicy
 _MAX_ARTIFACT_MATCHES_PER_PATTERN = 256
 _MAX_ARTIFACT_SINGLE_FILE_BYTES = 16 * 1024 * 1024 * 1024
 _MAX_ARTIFACT_TOTAL_BYTES = 25 * 1024 * 1024 * 1024
+_MAX_VISITED_ENTRIES = 100_000
 _DISCOVERED_ARTIFACT_PATTERNS = (
     "**/*.safetensors",
     "**/*.gguf",
@@ -56,6 +57,10 @@ class _ArtifactPatternResult:
     spec: _ArtifactPatternSpec
     matches: list[Path] = field(default_factory=list)
     limit_exceeded: bool = False
+
+
+class ArtifactTraversalLimit(Exception):
+    pass
 
 
 def collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[Warning]) -> list[ModelArtifact]:
@@ -98,7 +103,17 @@ def collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[W
         exclude_patterns,
         discovery_exclude_patterns,
     )
-    pattern_results = _scan_candidate_artifact_paths(policy.root, specs)
+    try:
+        pattern_results = _scan_candidate_artifact_paths(policy.root, specs)
+    except ArtifactTraversalLimit:
+        warnings.append(Warning(
+            code="ARTIFACT_TRAVERSAL_LIMIT_EXCEEDED",
+            severity="warning", object_kind="artifact", object_id="artifacts",
+            message=f"Artifact scan exceeded {_MAX_VISITED_ENTRIES} visited entries; no artifacts were selected.",
+            source=_source(config, "artifacts"),
+            remediation="Narrow the target directory or exclude unrelated subtrees.",
+        ))
+        return []
 
     selected: list[ModelArtifact] = []
     selected_paths: set[str] = set()
@@ -254,11 +269,24 @@ def _scan_candidate_artifact_paths(
     if not results:
         return results
 
-    for current_root, directory_names, file_names in os.walk(root, topdown=True, followlinks=False):
-        current = Path(current_root)
-        directory_names.sort()
-        file_names.sort()
-        entries = [*(current / name for name in directory_names), *(current / name for name in file_names)]
+    pending = [root]
+    visited = 0
+    while pending:
+        current = pending.pop()
+        # Enumerate incrementally: os.walk materializes an entire flat directory
+        # before a caller can apply a budget. Do not retain arbitrary partial results.
+        entries: list[Path] = []
+        directories: list[Path] = []
+        with os.scandir(current) as iterator:
+            for item in iterator:
+                visited += 1
+                if visited > _MAX_VISITED_ENTRIES:
+                    raise ArtifactTraversalLimit
+                entry = current / item.name
+                entries.append(entry)
+                if item.is_dir(follow_symlinks=False):
+                    directories.append(entry)
+        entries.sort()
 
         for entry in entries:
             relative = entry.relative_to(root).as_posix()
@@ -278,15 +306,14 @@ def _scan_candidate_artifact_paths(
         active_results = [result for result in results if not result.limit_exceeded]
         if not active_results:
             break
-        directory_names[:] = [
-            name
-            for name in directory_names
-            if (current / name).is_symlink()
-            or not all(
-                _is_excluded_subtree(current / name, root, result.spec.excludes)
+        pending.extend(sorted((
+            directory
+            for directory in directories
+            if not all(
+                _is_excluded_subtree(directory, root, result.spec.excludes)
                 for result in active_results
             )
-        ]
+        ), reverse=True))
 
     for result in results:
         result.matches.sort()
