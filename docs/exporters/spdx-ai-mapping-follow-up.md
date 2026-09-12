@@ -1,7 +1,7 @@
 # SPDX AI Mapping Follow-up
 
 Status: Draft
-Owner: UNASSIGNED
+Owner: See docs/ops/maintainer-policy.md; mapping design remains unresolved.
 
 ## Purpose
 
