@@ -66,6 +66,11 @@ ai_bom_generator = [
 target-version = "py312"
 src = ["src", "tests", "scripts"]
 
+[tool.ruff.lint]
+# Preserve the reviewed pre-0.16 baseline independently of upstream defaults.
+# New rule families are adopted in focused changes, not implicitly by lock updates.
+select = ["E4", "E7", "E9", "F"]
+
 [dependency-groups]
 dev = [
   "ruff>=0.15.20",
