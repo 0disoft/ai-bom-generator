@@ -13,6 +13,7 @@ updates:
       prefix: deps
     groups:
       python-dependencies:
+        update-types: [minor, patch]
         patterns:
           - "*"
 
@@ -28,5 +29,6 @@ updates:
       prefix: deps
     groups:
       github-actions:
+        update-types: [minor, patch]
         patterns:
           - "*"

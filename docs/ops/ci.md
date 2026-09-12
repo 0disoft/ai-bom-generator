@@ -87,9 +87,15 @@ Dependabot version updates are configured in `.github/dependabot.yml`.
 - Schedule: weekly on Monday at `04:17 UTC` for Python dependencies and
   `04:27 UTC` for Actions.
 - Pull request limit: three open version-update PRs per ecosystem.
-- Grouping: one grouped PR per ecosystem to limit update noise.
+- Grouping: one same-major grouped PR per ecosystem; major updates are separate.
 - Authority boundary: Dependabot may propose lockfile and Action-reference
   changes through pull requests. It cannot merge, publish, tag, or release.
+
+Renovate owns only explicitly annotated uv and Bun tool-version fields through
+the `custom.regex` manager in `renovate.json`. Its native package and Actions
+managers are disabled to avoid duplicate Dependabot PRs. New majors require
+dashboard approval; no update is automatically merged. The canonical policy is
+[dependency and change policy](../engineering/06-dependency-and-change-policy.md).
 
 ## PyPI Publish Workflow
 

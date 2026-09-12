@@ -1,0 +1,18 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["custom.regex"],
+  "ignorePaths": ["tests/fixtures/**"],
+  "automerge": false,
+  "dependencyDashboardApproval": false,
+  "prConcurrentLimit": 3,
+  "customManagers": [{
+    "customType": "regex",
+    "managerFilePatterns": ["/^action\\.yml$/", "/^\\.github/workflows/[^/]+\\.yml$/"],
+    "matchStrings": ["# renovate: datasource=(?<datasource>[^ \\r\\n]+) depName=(?<depName>[^ \\r\\n]+)\\s+(?:version|bun-version): \"(?<currentValue>[^\"]+)\""]
+  }],
+  "packageRules": [{
+    "matchUpdateTypes": ["major"],
+    "dependencyDashboardApproval": true
+  }]
+}
