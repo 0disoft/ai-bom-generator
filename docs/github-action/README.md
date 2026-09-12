@@ -41,7 +41,8 @@ state, registry publication, or compliance approval.
   after `v0.2.0` are also protected by GitHub release immutability.
 - Mutable major tag: `v0` tracks the latest compatible 0.x action release after
   external smoke verification.
-- Marketplace registration: deferred.
+- Marketplace preparation: [listing and release checklist](marketplace.md).
+  Preparation does not mean the listing has been published.
 - Compatibility policy: compatible 0.x releases preserve the current
   input/output contract; breaking changes require a new documented release
   decision.

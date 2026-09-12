@@ -24,6 +24,7 @@ class CompletionTests(unittest.TestCase):
         self.assertIn("--max-scan-entries", spec["generate"]["words"])
         self.assertEqual(spec["generate"]["choices"]["--format"], ["cyclonedx-json-1.7", "spdx-ai"])
         self.assertIn("--config", spec["generate"]["paths"])
+        self.assertIn("--max-scan-entries", spec["generate"]["values"])
         output = io.StringIO()
         with redirect_stdout(output):
             self.assertEqual(main(["completion", "bash"]), 0)

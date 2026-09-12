@@ -1,5 +1,8 @@
 name: AI-BOM Generator
 description: Generate an AI/ML bill of materials with the ai-bom CLI.
+branding:
+  icon: package
+  color: blue
 
 inputs:
   model-directory:

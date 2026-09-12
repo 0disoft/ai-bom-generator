@@ -1,6 +1,6 @@
 # Command Contract
 
-Status: Draft
+Status: Accepted contract
 Repository Type: cli-tool
 
 ## Repository Type Contract
@@ -10,13 +10,14 @@ This repository type owns command behavior, arguments, flags, config loading, ex
 ## Source of Truth
 
 - Product decision: AI-BOM Generator is a local evidence collector and BOM exporter.
-- Technical owner: UNASSIGNED
+- Technical owner: [maintainer policy](../ops/maintainer-policy.md).
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
-## Required Decisions
+## Executable Decisions
 
 - Command list and flag ownership: `ai-bom --version` reports the installed package version, and `ai-bom generate` generates an AI-BOM from one model directory.
-- Exit-code taxonomy: success, success-with-warnings, invalid-input, collector-failure, exporter-failure, and internal-error need stable numeric codes.
+- Exit-code taxonomy: numeric codes and warning-policy behavior are governed by
+  [output and exit codes](output-and-exit-codes.md).
 - Machine-readable output contract: JSON summary must include output paths, warning counts, exporter, hash algorithm, and completeness status without embedding full source file contents.
 - Config precedence and default behavior: explicit CLI flags override config;
   explicit `--config` paths override automatic config discovery; environment-variable
@@ -24,21 +25,27 @@ This repository type owns command behavior, arguments, flags, config loading, ex
 - Runtime compatibility: Python 3.12 through 3.14.
 - CLI adapter boundary: `argparse` may own argument parsing and exit-code translation, but application and domain layers must not import it.
 
-## Candidate CLI Shape
+## CLI Shape
 
 ```text
 ai-bom --version
+ai-bom completion <bash|powershell>
 
 ai-bom generate <model-directory>
   [--config <path>]
-  --format <cyclonedx-json-1.7|spdx-ai>
+  [--format <cyclonedx-json-1.7|spdx-ai>]
   --output <path>
   --warning-report <path>
   --summary <path|->
-  --manifest <path>
+  [--manifest <path>]
   [--error-report <path>]
-  --warnings <allow|fail>
-  --redaction <strict|off>
+  [--warnings <allow|fail>]
+  [--redaction <strict|off>]
+  [--discover-artifacts | --no-discover-artifacts]
+  [--max-artifact-matches <integer>]
+  [--max-artifact-bytes <integer>]
+  [--max-total-artifact-bytes <integer>]
+  [--max-scan-entries <integer>]
 ```
 
 The exact binary name, flag names, accepted formats, and output filename defaults

@@ -11,7 +11,7 @@ def completion_spec(parser: argparse.ArgumentParser) -> dict:
     result = {}
 
     def visit(command, current):
-        flags, choices, paths = [], {}, []
+        flags, choices, paths, values = [], {}, [], []
         for action in current._actions:
             flags.extend(action.option_strings)
             if action.dest == "output_format":
@@ -21,11 +21,13 @@ def completion_spec(parser: argparse.ArgumentParser) -> dict:
                     choices[flag] = list(action.choices)
             if action.type is Path:
                 paths.extend(action.option_strings)
+            elif action.nargs != 0:
+                values.extend(action.option_strings)
             if isinstance(action, argparse._SubParsersAction):
                 flags.extend(action.choices)
                 for name, child in action.choices.items():
                     visit(name, child)
-        result[command] = {"words": sorted(set(flags)), "choices": choices, "paths": paths}
+        result[command] = {"words": sorted(set(flags)), "choices": choices, "paths": paths, "values": values}
 
     visit("root", parser)
     return result
@@ -41,6 +43,9 @@ def render_completion(parser: argparse.ArgumentParser, shell: str) -> str:
                 lines.append(f"    {command}:{flag}) COMPREPLY=( $(compgen -W {shlex.quote(' '.join(values))} -- \"$cur\") ); return ;;")
             for flag in entry["paths"]:
                 lines.append(f"    {command}:{flag}) compopt -o default 2>/dev/null; return ;;")
+            for flag in entry["values"]:
+                if flag not in entry["choices"]:
+                    lines.append(f"    {command}:{flag}) compopt +o default 2>/dev/null; return ;;")
         lines += ["  esac", '  case "$cmd" in']
         for command, entry in spec.items():
             if command != "root":
@@ -60,6 +65,7 @@ def render_completion(parser: argparse.ArgumentParser, shell: str) -> str:
     $before = @($commandAst.CommandElements | Where-Object { $_.Extent.EndOffset -lt $cursorPosition -and $_.Extent.Text -ne $wordToComplete })
     $previous = if ($before.Count) { $before[-1].Extent.Text } else { '' }
     if ($entry.paths -contains $previous) { return }
+    if (($entry.values -contains $previous) -and -not $entry.choices.ContainsKey($previous)) { return }
     $words = if ($entry.choices.ContainsKey($previous)) { $entry.choices[$previous] }
              elseif ($command -eq 'completion') { @('bash', 'powershell') }
              else { $entry.words }

@@ -24,7 +24,7 @@ collect. It must make explicit references easy and avoid broad hidden discovery.
 - Declare prompt template references.
 - Declare eval artifact references.
 - Declare training-code references.
-- Choose exporter and output path when not supplied by CLI flags.
+- Choose exporter when not supplied by CLI flags; output paths remain CLI-owned.
 - Configure warning policy.
 - Optionally declare a producer-owned generation marker for cross-file snapshot
   consistency.
@@ -70,8 +70,9 @@ preview mapping to SPDX 3.0.1 AI Profile terms and marks conformance as
 partial. It records unavailable or unsupported SPDX AI fields in the generated
 BOM instead of inventing source evidence.
 
-Artifact discovery is disabled unless `[artifacts].discovery = true` appears in
-the config. CLI enable/disable and bounded budget overrides follow `docs/cli/artifact-overrides.md`. Discovery adds
+Artifact discovery is disabled by default; `[artifacts].discovery = true` or
+`--discover-artifacts` enables it. CLI enable/disable and bounded budget
+overrides follow `docs/cli/artifact-overrides.md`. Discovery adds
 bounded defaults for common model artifact extensions: `.safetensors`, `.gguf`,
 `.bin`, `.pt`, `.pth`, `.ckpt`, and `.onnx`. It excludes hidden, cache,
 dependency, virtualenv, build, and Git metadata paths before hashing.

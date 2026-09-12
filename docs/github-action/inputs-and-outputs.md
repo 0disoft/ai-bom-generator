@@ -1,6 +1,6 @@
 # Inputs and Outputs
 
-Status: Draft
+Status: Accepted contract
 Repository Type: github-action
 
 ## Purpose
@@ -12,7 +12,7 @@ behavior stay comparable.
 
 - Product decision: docs/product/02-spec.md
 - Action contract: docs/github-action/action-contract.md
-- Technical owner: UNASSIGNED
+- Technical owner: [maintainer policy](../ops/maintainer-policy.md).
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Inputs
