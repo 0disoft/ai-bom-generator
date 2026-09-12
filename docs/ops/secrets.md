@@ -11,12 +11,11 @@ default.
 
 ## Owners
 
-- Primary owner: UNASSIGNED
-- Backup owner: UNASSIGNED
-- Escalation path: UNDECIDED
+Ownership, support, retention, and recovery follow [maintainer policy](maintainer-policy.md).
 
 ## Validation
 
 - Required validation names: VALIDATION.md
 - Release blocker status: secret leakage in logs, JSON summaries, fixtures, or generated artifacts blocks release.
-- Remaining operational risk: explicit redaction taxonomy and future token-backed integrations remain UNDECIDED.
+Current support, retention, platform-enforcement limits, and recovery decisions
+are maintained in [maintainer policy](maintainer-policy.md).

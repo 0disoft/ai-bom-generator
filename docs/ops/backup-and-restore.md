@@ -10,12 +10,11 @@ corpora used to validate deterministic BOM generation.
 
 ## Owners
 
-- Primary owner: UNASSIGNED
-- Backup owner: UNASSIGNED
-- Escalation path: UNDECIDED
+Ownership, support, retention, and recovery follow [maintainer policy](maintainer-policy.md).
 
 ## Validation
 
 - Required validation names: VALIDATION.md
 - Release blocker status: inability to recreate release artifacts or validation fixtures blocks release.
-- Remaining operational risk: package registry restore owner and release artifact retention remain UNDECIDED.
+Current support, retention, platform-enforcement limits, and recovery decisions
+are maintained in [maintainer policy](maintainer-policy.md).

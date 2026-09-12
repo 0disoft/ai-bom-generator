@@ -10,12 +10,11 @@ is no hosted service, database, or tenant runtime in the current product scope.
 
 ## Owners
 
-- Primary owner: UNASSIGNED
-- Backup owner: UNASSIGNED
-- Escalation path: UNDECIDED
+Ownership, support, retention, and recovery follow [maintainer policy](maintainer-policy.md).
 
 ## Validation
 
 - Required validation names: VALIDATION.md
 - Release blocker status: failing CLI/action contract validation, nondeterministic output, secret leakage, or misleading BOM claims block release.
-- Remaining operational risk: exact release policy, owner rotation, and support targets remain UNDECIDED.
+Current support, retention, platform-enforcement limits, and recovery decisions
+are maintained in [maintainer policy](maintainer-policy.md).

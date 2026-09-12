@@ -10,12 +10,11 @@ look like successful evidence.
 
 ## Owners
 
-- Primary owner: UNASSIGNED
-- Backup owner: UNASSIGNED
-- Escalation path: UNDECIDED
+Ownership, support, retention, and recovery follow [maintainer policy](maintainer-policy.md).
 
 ## Validation
 
 - Required validation names: VALIDATION.md
 - Release blocker status: no rollback path for a broken CLI/action release blocks publication.
-- Remaining operational risk: maintainer escalation path and registry-specific yank/deprecate policy remain UNDECIDED.
+Current support, retention, platform-enforcement limits, and recovery decisions
+are maintained in [maintainer policy](maintainer-policy.md).

@@ -10,12 +10,11 @@ clear errors, compatibility policy, and release response.
 
 ## Owners
 
-- Primary owner: UNASSIGNED
-- Backup owner: UNASSIGNED
-- Escalation path: UNDECIDED
+Ownership, support, retention, and recovery follow [maintainer policy](maintainer-policy.md).
 
 ## Validation
 
 - Required validation names: VALIDATION.md
 - Release blocker status: lack of documented compatibility or failure policy blocks stable releases.
-- Remaining operational risk: support window, severity definitions, and maintainer response targets remain UNDECIDED.
+Current support, retention, platform-enforcement limits, and recovery decisions
+are maintained in [maintainer policy](maintainer-policy.md).

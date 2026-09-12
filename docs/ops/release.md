@@ -20,8 +20,8 @@ project policy. Repository-level enforcement is now enabled, so releases after
 attestation protections. Exact semver tags may be used directly as GitHub Action
 refs. The mutable `v0` action tag may point
 to the latest compatible 0.x action release after external smoke verification.
-GitHub Marketplace registration and generated artifact upload are deferred until
-explicitly approved.
+GitHub Marketplace registration remains a separate publication step. Generated
+artifact upload is caller-owned and opt-in under the Action upload guide.
 
 PyPI package metadata is maintained in `pyproject.toml` with classifiers,
 keywords, and project URLs. Package distributions must validate their README
@@ -143,9 +143,7 @@ The PyPI publish workflow intentionally triggers only strict
 
 ## Owners
 
-- Primary owner: UNASSIGNED
-- Backup owner: UNASSIGNED
-- Escalation path: UNDECIDED
+Ownership, support, retention, and recovery follow [maintainer policy](maintainer-policy.md).
 
 ## Validation
 

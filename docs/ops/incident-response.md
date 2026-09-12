@@ -10,9 +10,7 @@ change generated output without a migration path.
 
 ## Owners
 
-- Primary owner: UNASSIGNED
-- Backup owner: UNASSIGNED
-- Escalation path: UNDECIDED
+Ownership, support, retention, and recovery follow [maintainer policy](maintainer-policy.md).
 
 ## Validation
 
@@ -20,4 +18,5 @@ change generated output without a migration path.
 - Release blocker status: unresolved secret disclosure, invalid exporter output, or action permission escalation blocks release.
 - Vulnerability intake and disclosure path: GitHub Private Vulnerability
   Reporting and repository security advisories, as documented in `SECURITY.md`.
-- Remaining operational risk: support response targets remain UNDECIDED.
+Current support, retention, platform-enforcement limits, and recovery decisions
+are maintained in [maintainer policy](maintainer-policy.md).

@@ -10,15 +10,14 @@ permission review for the GitHub Action wrapper.
 
 ## Owners
 
-- Primary owner: UNASSIGNED
-- Backup owner: UNASSIGNED
-- Escalation path: UNDECIDED
+Ownership, support, retention, and recovery follow [maintainer policy](maintainer-policy.md).
 
 ## Validation
 
 - Required validation names: VALIDATION.md
 - Release blocker status: failing check/test/docs validation, nondeterministic fixture output, or action permission drift blocks release.
-- Remaining operational risk: exact branch protection remains UNDECIDED.
+Current support, retention, platform-enforcement limits, and recovery decisions
+are maintained in [maintainer policy](maintainer-policy.md).
 
 ## Hosted Workflow
 
