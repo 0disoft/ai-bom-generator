@@ -8,7 +8,8 @@ Performance budgets must track model-directory scan cost, artifact hashing cost,
 memory usage while reading large model files, generated output size, and CI job
 runtime.
 
-The MVP artifact collection budget is fixed rather than configurable:
+Artifact collection defaults remain hard ceilings. Config and CLI may lower them
+as documented in `docs/cli/artifact-overrides.md`:
 
 - 1 MiB maximum config-file read size.
 - 1,000 declared references across dependency, dataset, prompt, eval, and

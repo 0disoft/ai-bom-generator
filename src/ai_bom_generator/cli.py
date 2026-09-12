@@ -47,6 +47,11 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--error-report", type=Path, default=None)
     generate.add_argument("--warnings", choices=["allow", "fail"], default=None)
     generate.add_argument("--redaction", choices=["strict", "off"], default="strict")
+    generate.add_argument("--discover-artifacts", action=argparse.BooleanOptionalAction, default=None)
+    for name in ("max-artifact-matches", "max-artifact-bytes", "max-total-artifact-bytes", "max-scan-entries"):
+        generate.add_argument(f"--{name}", type=int, default=None)
+    completion = subparsers.add_parser("completion", help="Print a shell completion registration.")
+    completion.add_argument("shell", choices=["bash", "powershell"])
     return parser
 
 
@@ -57,6 +62,11 @@ def main(argv: list[str] | None = None) -> int:
     try:
         error_report_path = _extract_error_report_path(effective_argv)
         args = parser.parse_args(effective_argv)
+        if args.command == "completion":
+            from ai_bom_generator.completion import render_completion
+
+            print(render_completion(parser, args.shell), end="")
+            return ExitCode.SUCCESS
         if args.command != "generate":
             parser.error("unsupported command")
 
@@ -84,6 +94,11 @@ def main(argv: list[str] | None = None) -> int:
             summary_stdout=summary_stdout,
             warnings=args.warnings,
             redaction=args.redaction,
+            discovery=args.discover_artifacts,
+            max_artifact_matches=args.max_artifact_matches,
+            max_artifact_bytes=args.max_artifact_bytes,
+            max_total_artifact_bytes=args.max_total_artifact_bytes,
+            max_scan_entries=args.max_scan_entries,
         )
         return generate_bom(options)
     except SystemExit as exc:

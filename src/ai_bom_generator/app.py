@@ -15,6 +15,7 @@ import time
 
 from ai_bom_generator.collectors import collect_evidence
 from ai_bom_generator.config import LoadedConfig, load_config
+from ai_bom_generator.config.artifact_options import apply_artifact_overrides
 from ai_bom_generator.domain.evidence import NormalizedEvidence
 from ai_bom_generator.errors import ExitCode, ExporterError, InvalidInputError
 from ai_bom_generator.exporters.cyclonedx_json import SUPPORTED_FORMAT as CYCLONEDX_JSON_FORMAT
@@ -38,6 +39,11 @@ class GenerateBomOptions:
     summary_stdout: bool
     warnings: str | None
     redaction: str
+    discovery: bool | None = None
+    max_artifact_matches: int | None = None
+    max_artifact_bytes: int | None = None
+    max_total_artifact_bytes: int | None = None
+    max_scan_entries: int | None = None
 
 
 def generate_bom(options: GenerateBomOptions) -> int:
@@ -46,6 +52,12 @@ def generate_bom(options: GenerateBomOptions) -> int:
     output_destinations = _validate_output_destinations(options, policy)
     redactor = Redactor(options.redaction)
     config = load_config(options.config, policy)
+    config = apply_artifact_overrides(config, options.discovery, {
+        "matches_per_pattern": options.max_artifact_matches,
+        "single_file_bytes": options.max_artifact_bytes,
+        "total_bytes": options.max_total_artifact_bytes,
+        "visited_entries": options.max_scan_entries,
+    })
     output_format = _resolve_output_format(options, config)
     if output_format not in _SUPPORTED_EXPORT_FORMATS:
         raise ExporterError(f"Unsupported output format: {output_format}", "exporter")

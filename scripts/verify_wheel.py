@@ -232,6 +232,14 @@ def _verify_installed_entry_point(wheel: Path) -> int:
             print("installed ai-bom console script did not render package version", file=sys.stderr)
             return version_check.returncode or 1
 
+        for shell, marker in (("bash", "complete -o default"), ("powershell", "Register-ArgumentCompleter")):
+            completion = subprocess.run(
+                [str(console), "completion", shell], text=True, capture_output=True, env=env,
+            )
+            if completion.returncode != 0 or marker not in completion.stdout:
+                print("installed completion generation failed", completion.stderr, file=sys.stderr)
+                return 1
+
         out = Path(temp) / "out"
         out.mkdir()
         smoke = subprocess.run(

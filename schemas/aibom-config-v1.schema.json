@@ -50,7 +50,17 @@
           "maxItems": 256,
           "items": { "type": "string", "minLength": 1 }
         },
-        "discovery": { "type": "boolean" }
+        "discovery": { "type": "boolean" },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "matches_per_pattern": { "type": "integer", "minimum": 1, "maximum": 256 },
+            "single_file_bytes": { "type": "integer", "minimum": 1, "maximum": 17179869184 },
+            "total_bytes": { "type": "integer", "minimum": 1, "maximum": 26843545600 },
+            "visited_entries": { "type": "integer", "minimum": 1, "maximum": 100000 }
+          }
+        }
       }
     },
     "dependencies": { "$ref": "#/$defs/dependencyReferenceList" },

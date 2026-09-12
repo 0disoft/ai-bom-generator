@@ -66,7 +66,7 @@ silently dropping user intent.
 ## Artifact Discovery
 
 Artifact discovery is disabled by default. `[artifacts].discovery = true` is the
-only MVP opt-in control; there is no CLI flag. When enabled, the collector adds
+config opt-in control. CLI enable/disable and bounded limits follow `docs/cli/artifact-overrides.md`. When enabled, the collector adds
 bounded default model artifact patterns for `.safetensors`, `.gguf`, `.bin`,
 `.pt`, `.pth`, `.ckpt`, and `.onnx` files. Explicit `[artifacts].include`
 patterns may still be used with discovery.

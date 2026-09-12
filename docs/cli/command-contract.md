@@ -82,3 +82,8 @@ leave previous-run JSON where callers expect current-run output.
 - A command changes without updating help, examples, output, and exit-code expectations.
 - JSON output exposes generated or existing file contents.
 - Runtime compatibility changes without smoke validation.
+
+## Artifact Overrides
+
+See [artifact overrides](artifact-overrides.md) for discovery enable/disable flags,
+config precedence, positive budget values, and hard ceilings.

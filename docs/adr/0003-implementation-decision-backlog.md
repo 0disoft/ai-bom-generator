@@ -35,7 +35,7 @@ choices from plausible candidates that still need approval.
 | Dependency lockfile intake | Explicit config-declared file references plus bounded parsing for `uv.lock`, Poetry 2.x `poetry.lock`, Pipenv `Pipfile.lock` specification 6, requirements files, and unified conda-lock v1 YAML | Python-first expansion approved on 2026-07-10; conda-lock approved on 2026-07-13; Poetry 2.x approved on 2026-07-14; Pipenv approved on 2026-07-15 |
 | Dependency parser boundary | Parser-neutral package source evidence preserving optional locator, channel, index, platform, revision, and artifact hashes | Approved for v0.4.0 dependency expansion on 2026-07-13 |
 | Artifact discovery opt-in | `[artifacts].discovery = true` adds bounded default model artifact patterns in config only | Approved for MVP polish on 2026-07-09 |
-| Artifact discovery CLI flag | CLI override for artifact discovery | Deferred |
+| Artifact discovery CLI flag | Explicit enable/disable with config fallback | Accepted; docs/cli/artifact-overrides.md |
 | Action wrapper | Composite GitHub Action invoking `uv run --project` | Approved for MVP on 2026-07-07 |
 | First public release | GitHub Release `v0.1.0` with no PyPI package | Approved by owner on 2026-07-07 |
 | Action tag policy | Exact semver tags plus mutable `v0` for compatible 0.x action updates; GitHub immutable-release enforcement applies after `v0.2.0` | Approved by owner on 2026-07-08 and enforcement enabled on 2026-07-11 |
@@ -53,7 +53,7 @@ choices from plausible candidates that still need approval.
 | Cross-file generation consistency | Optional `[generation].marker` producer seqlock marker from ADR 0004 | Approved by owner on 2026-07-13 for v0.3.0 |
 | Artifact immutable staging | Caller-owned immutable inputs; no tool-managed copies | Rejected in ADR 0005; retain descriptor checks and optional generation marker |
 | Artifact glob budgets | Fixed MVP match-count, single-file byte, and total-byte budgets with warning skips | Approved for MVP hardening on 2026-07-09 |
-| Configurable artifact budgets | Config or CLI overrides for artifact match-count and byte budgets | Deferred |
+| Configurable artifact budgets | Positive overrides bounded by fixed hard ceilings | Accepted; docs/cli/artifact-overrides.md |
 | Common provider-token redaction | AWS, Slack, GitLab, Google API key, Hugging Face, GCP OAuth, Bearer, and JWT-shaped values in strict mode | Approved for MVP hardening on 2026-07-09 |
 | Key-aware redaction matrix | Sensitive key names such as token, secret, password, credential, authorization, api_key, access_key, private_key, client_secret, refresh_token, and id_token redact values in strict mode | Approved for MVP hardening on 2026-07-09 |
 | Schema-aware secret-key warnings | `SENSITIVE_CONFIG_KEY` for sensitive key names in schema-accepted metadata | Accepted; one value-free warning per section/reference, independent of redaction mode |
@@ -87,8 +87,8 @@ choices from plausible candidates that still need approval.
   claims remain unsupported; skipped or malformed entries must produce warnings
   instead of fabricated package components. Poetry 1.x and unsupported Pipfile
   specification revisions remain unsupported.
-- Artifact discovery is config-driven opt-in only. It must not run when
-  `[artifacts].discovery` is absent or false, and it must reuse artifact budget,
+- Artifact discovery is opt-in through config or an explicit CLI override. An
+  absent override retains config/default behavior and must reuse artifact budget,
   symlink, target-root, and no-fabrication warning policies.
 - Config discovery is limited to the target-root `aibom.toml` filename. Parent
   directory search, alternate filenames, and environment-variable config are
@@ -108,11 +108,8 @@ choices from plausible candidates that still need approval.
 - Do not add collector/exporter network access, telemetry, hosted registry,
   persistent GitHub cache, or write-permission behavior beyond the approved
   Action-managed toolchain and locked-dependency setup boundary.
-- Do not claim immutable artifact staging,
-  artifact discovery CLI overrides, configurable artifact budgets, or
-  full SPDX AI conformance, or schema-aware secret-key warnings until the
-  corresponding deferred/proposed decision is approved and implemented with
-  fixtures.
+- Do not claim immutable artifact staging or full SPDX AI conformance. Approved
+  artifact overrides and sensitive-key warnings remain bounded by their contracts.
 - Hard-failure reports remain separate from successful output manifests and
   summaries. Successful and warning-only generation removes a stale requested
   error report instead of fabricating a success-shaped error envelope.

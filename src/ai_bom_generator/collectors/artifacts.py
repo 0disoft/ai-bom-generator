@@ -65,6 +65,9 @@ class ArtifactTraversalLimit(Exception):
 
 def collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[Warning]) -> list[ModelArtifact]:
     artifacts_config = config.get_table("artifacts")
+    limits = artifacts_config.get("limits", {})
+    match_limit = limits.get("matches_per_pattern", _MAX_ARTIFACT_MATCHES_PER_PATTERN)
+    scan_limit = limits.get("visited_entries", _MAX_VISITED_ENTRIES)
     discovery = artifacts_config.get("discovery", False)
     if not isinstance(discovery, bool):
         raise InvalidInputError("[artifacts].discovery must be a boolean.", "config")
@@ -104,12 +107,12 @@ def collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[W
         discovery_exclude_patterns,
     )
     try:
-        pattern_results = _scan_candidate_artifact_paths(policy.root, specs)
+        pattern_results = _scan_candidate_artifact_paths(policy.root, specs, match_limit, scan_limit)
     except ArtifactTraversalLimit:
         warnings.append(Warning(
             code="ARTIFACT_TRAVERSAL_LIMIT_EXCEEDED",
             severity="warning", object_kind="artifact", object_id="artifacts",
-            message=f"Artifact scan exceeded {_MAX_VISITED_ENTRIES} visited entries; no artifacts were selected.",
+            message=f"Artifact scan exceeded {scan_limit} visited entries; no artifacts were selected.",
             source=_source(config, "artifacts"),
             remediation="Narrow the target directory or exclude unrelated subtrees.",
         ))
@@ -133,7 +136,7 @@ def collect_artifacts(config: LoadedConfig, policy: PathPolicy, warnings: list[W
                     object_id=spec.pattern,
                     message=(
                         "Artifact include pattern matched more than "
-                        f"{_MAX_ARTIFACT_MATCHES_PER_PATTERN} candidate paths after excludes: {spec.pattern}"
+                        f"{match_limit} candidate paths after excludes: {spec.pattern}"
                     ),
                     source=_source(config, spec.source_field),
                     remediation="Use narrower artifact include patterns or add exclude patterns for non-model files.",
@@ -264,7 +267,11 @@ def _artifact_pattern_specs(
 def _scan_candidate_artifact_paths(
     root: Path,
     specs: list[_ArtifactPatternSpec],
+    match_limit: int | None = None,
+    scan_limit: int | None = None,
 ) -> list[_ArtifactPatternResult]:
+    match_limit = _MAX_ARTIFACT_MATCHES_PER_PATTERN if match_limit is None else match_limit
+    scan_limit = _MAX_VISITED_ENTRIES if scan_limit is None else scan_limit
     results = [_ArtifactPatternResult(spec) for spec in specs]
     if not results:
         return results
@@ -280,7 +287,7 @@ def _scan_candidate_artifact_paths(
         with os.scandir(current) as iterator:
             for item in iterator:
                 visited += 1
-                if visited > _MAX_VISITED_ENTRIES:
+                if visited > scan_limit:
                     raise ArtifactTraversalLimit
                 entry = current / item.name
                 entries.append(entry)
@@ -297,7 +304,7 @@ def _scan_candidate_artifact_paths(
                     continue
                 if not _matches_glob(relative, result.spec.pattern):
                     continue
-                if len(result.matches) >= _MAX_ARTIFACT_MATCHES_PER_PATTERN:
+                if len(result.matches) >= match_limit:
                     result.matches.clear()
                     result.limit_exceeded = True
                     continue
@@ -327,7 +334,8 @@ def _artifact_exceeds_single_file_budget(
     artifact_bytes: int,
     source_field: str,
 ) -> bool:
-    if artifact_bytes > _MAX_ARTIFACT_SINGLE_FILE_BYTES:
+    limit = config.get_table("artifacts").get("limits", {}).get("single_file_bytes", _MAX_ARTIFACT_SINGLE_FILE_BYTES)
+    if artifact_bytes > limit:
         warnings.append(
             Warning(
                 code="ARTIFACT_SIZE_LIMIT_EXCEEDED",
@@ -335,11 +343,11 @@ def _artifact_exceeds_single_file_budget(
                 object_kind="artifact",
                 object_id=relative_path,
                 message=(
-                    f"Artifact exceeds the {_MAX_ARTIFACT_SINGLE_FILE_BYTES} byte "
+                    f"Artifact exceeds the {limit} byte "
                     f"single-file budget and was skipped: {relative_path} ({artifact_bytes} bytes)"
                 ),
                 source=_source(config, source_field),
-                remediation="Hash a smaller staged artifact or wait for configurable budgets in a later release.",
+                remediation="Select a smaller artifact or adjust the limit within the documented hard ceiling.",
             )
         )
         return True
@@ -354,7 +362,8 @@ def _artifact_exceeds_total_budget(
     artifact_bytes: int,
     source_field: str,
 ) -> bool:
-    if selected_bytes + artifact_bytes > _MAX_ARTIFACT_TOTAL_BYTES:
+    limit = config.get_table("artifacts").get("limits", {}).get("total_bytes", _MAX_ARTIFACT_TOTAL_BYTES)
+    if selected_bytes + artifact_bytes > limit:
         warnings.append(
             Warning(
                 code="ARTIFACT_TOTAL_SIZE_LIMIT_EXCEEDED",
@@ -362,7 +371,7 @@ def _artifact_exceeds_total_budget(
                 object_kind="artifact",
                 object_id=relative_path,
                 message=(
-                    f"Artifact would exceed the {_MAX_ARTIFACT_TOTAL_BYTES} byte total "
+                    f"Artifact would exceed the {limit} byte total "
                     f"artifact budget and was skipped: {relative_path} "
                     f"({selected_bytes} selected bytes + {artifact_bytes} artifact bytes)"
                 ),

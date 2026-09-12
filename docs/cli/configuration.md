@@ -71,12 +71,12 @@ partial. It records unavailable or unsupported SPDX AI fields in the generated
 BOM instead of inventing source evidence.
 
 Artifact discovery is disabled unless `[artifacts].discovery = true` appears in
-the config. It is config-only in MVP; there is no CLI flag. Discovery adds
+the config. CLI enable/disable and bounded budget overrides follow `docs/cli/artifact-overrides.md`. Discovery adds
 bounded defaults for common model artifact extensions: `.safetensors`, `.gguf`,
 `.bin`, `.pt`, `.pth`, `.ckpt`, and `.onnx`. It excludes hidden, cache,
 dependency, virtualenv, build, and Git metadata paths before hashing.
 
-Artifact budget limits are fixed in MVP and are not config or CLI options yet:
+Artifact budget defaults and hard ceilings are:
 256 candidate paths per include pattern after excludes, 16 GiB per artifact,
 and 25 GiB total selected artifact bytes per run. A budget hit is reported in
 the warning report and JSON summary, and the over-budget pattern or artifact is
@@ -88,10 +88,9 @@ unified conda-lock v1 YAML. It does not auto-discover lockfiles, resolve Poetry
 or Pipenv dependency groups, solve Conda environments, or support Conda
 explicit/environment lock formats. Poetry 1.x remains unsupported.
 
-## Still UNDECIDED
+## Overrides
 
-- CLI override for artifact discovery.
-- Configurable artifact budget overrides.
+See [artifact overrides](artifact-overrides.md) for CLI precedence and bounded config limits.
 
 ## Review Blockers
 
