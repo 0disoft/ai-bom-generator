@@ -34,10 +34,15 @@ metadata rather than copying source file contents into telemetry or JSON summari
   destination-adjacent coordination lock files. Lock files contain no project
   evidence and are excluded from the output manifest; retaining their stable
   inode prevents overlapping later writers from splitting lock ownership.
-- No background cache, telemetry log, or hidden local database is part of MVP.
+- Product telemetry is prohibited by ADR 0005. No background cache, telemetry
+  log, or hidden local database is part of the supported runtime.
   The Action's explicit `RUNNER_TEMP` uv cache is ephemeral runtime state and
   is not persisted through the GitHub Actions cache service.
 - GitHub Action artifact upload must be explicit and documented.
+
+GitHub workflow logs are governed by the caller repository's retention settings.
+They are distinct from product telemetry. Caller-owned immutable input snapshots
+remain caller-owned; the CLI does not create staging copies (ADR 0005).
 
 ## Validation Needed Before Merge
 

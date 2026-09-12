@@ -27,6 +27,5 @@ environment variables for config in MVP.
 
 - Required validation names: VALIDATION.md
 - Release blocker status: invalid config accepted as valid, secret-bearing config logged, or CLI/action config precedence drift blocks release.
-- Remaining operational risk: environment-variable config policy, broader
-  config discovery, GitHub Action config compatibility, and compatibility policy
-  remain UNDECIDED.
+- ADR 0005 rejects environment-variable configuration and broader automatic
+  discovery. Explicit Action inputs preserve the CLI's documented precedence.

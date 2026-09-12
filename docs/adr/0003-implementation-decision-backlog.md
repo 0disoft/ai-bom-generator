@@ -43,7 +43,7 @@ choices from plausible candidates that still need approval.
 | PyPI package publishing | `.github/workflows/publish-pypi.yml` publishes new strict semver tags via PyPI Trusted Publishing after registry setup and external action smoke | Approved workflow policy on 2026-07-08 |
 | Repository license | Apache-2.0 | Approved by owner on 2026-07-06 |
 | Network policy | CLI collection and export do not access the network; Action-managed setup may download pinned Python, uv, and the action's locked dependencies | Approved by owner on 2026-07-11 |
-| Telemetry policy | No telemetry in MVP | Proposed |
+| Telemetry policy | No product telemetry in CLI or composite Action | Accepted in ADR 0005 |
 | Cache policy | No persistent GitHub Actions cache; Action runtime environment and uv cache are explicit under `RUNNER_TEMP` | Approved by owner on 2026-07-11 |
 | Redaction default | strict | Approved for CLI and terminal output on 2026-07-07 |
 | Action-managed runtime setup | Composite action prepares Python 3.12 and uv 0.11.28, disables the GitHub cache, and runs the locked action project from `RUNNER_TEMP` state | Approved by owner on 2026-07-11 |
@@ -51,7 +51,7 @@ choices from plausible candidates that still need approval.
 | Generation manifest | Manifest-backed run identity and output-set verification | Approved for MVP hardening on 2026-07-08 |
 | Artifact snapshot consistency | Single-descriptor stat/hash/stat validation with conservative failure on mutation | Approved for MVP hardening on 2026-07-08 |
 | Cross-file generation consistency | Optional `[generation].marker` producer seqlock marker from ADR 0004 | Approved by owner on 2026-07-13 for v0.3.0 |
-| Artifact immutable staging | Tool-managed immutable artifact copy before hashing | Deferred |
+| Artifact immutable staging | Caller-owned immutable inputs; no tool-managed copies | Rejected in ADR 0005; retain descriptor checks and optional generation marker |
 | Artifact glob budgets | Fixed MVP match-count, single-file byte, and total-byte budgets with warning skips | Approved for MVP hardening on 2026-07-09 |
 | Configurable artifact budgets | Config or CLI overrides for artifact match-count and byte budgets | Deferred |
 | Common provider-token redaction | AWS, Slack, GitLab, Google API key, Hugging Face, GCP OAuth, Bearer, and JWT-shaped values in strict mode | Approved for MVP hardening on 2026-07-09 |
@@ -91,8 +91,8 @@ choices from plausible candidates that still need approval.
   `[artifacts].discovery` is absent or false, and it must reuse artifact budget,
   symlink, target-root, and no-fabrication warning policies.
 - Config discovery is limited to the target-root `aibom.toml` filename. Parent
-  directory search, alternate filenames, and environment-variable config remain
-  deferred.
+  directory search, alternate filenames, and environment-variable config are
+  rejected in ADR 0005; explicit `--config` remains available.
 - The GitHub Action wrapper may invoke the packaged CLI from the action checkout,
   expose summary-derived outputs, and default output files under `RUNNER_TEMP`.
   Artifact upload remains deferred and must not be enabled by default.

@@ -26,9 +26,11 @@ CI without requiring a hosted service.
 - Report warnings and failure reasons.
 - Emit JSON summary for automation.
 
-## Still UNDECIDED
+## Discovery Boundary
 
-- Parent-directory or alternate-filename config discovery.
+- Parent-directory and alternate-filename discovery are rejected in ADR 0005.
+  Use explicit `--config` for another filename; only target-root `aibom.toml`
+  is automatically discovered.
 
 ## Approved Baseline
 

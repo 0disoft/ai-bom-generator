@@ -34,7 +34,8 @@ collect. It must make explicit references easy and avoid broad hidden discovery.
 Explicit CLI flags override discovered or explicit config values. Explicit
 `--config` paths override automatic config discovery. Environment variables are
 out of MVP and should not be added until secret-redaction behavior and
-precedence are designed.
+precedence are designed. ADR 0005 rejects environment configuration, parent
+search, and alternate automatic filenames for the supported CLI.
 
 ## Config v1
 

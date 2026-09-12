@@ -60,7 +60,7 @@ must not claim cross-file generation consistency.
   set that never existed as one generation.
 - **Read one opaque marker before and after collection:** rejected because the
   producer may leave the old marker in place while writes are active.
-- **Copy all inputs into tool-managed immutable staging:** deferred because it
+- **Copy all inputs into tool-managed immutable staging:** rejected in ADR 0005 because it
   duplicates multi-gigabyte artifacts, changes storage requirements, and makes
   the CLI responsible for caller data lifecycle.
 - **Use Git commit identity as the generation:** rejected because large model
