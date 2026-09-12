@@ -56,7 +56,7 @@ choices from plausible candidates that still need approval.
 | Configurable artifact budgets | Config or CLI overrides for artifact match-count and byte budgets | Deferred |
 | Common provider-token redaction | AWS, Slack, GitLab, Google API key, Hugging Face, GCP OAuth, Bearer, and JWT-shaped values in strict mode | Approved for MVP hardening on 2026-07-09 |
 | Key-aware redaction matrix | Sensitive key names such as token, secret, password, credential, authorization, api_key, access_key, private_key, client_secret, refresh_token, and id_token redact values in strict mode | Approved for MVP hardening on 2026-07-09 |
-| Schema-aware secret-key warnings | Warnings for sensitive keys detected in config beyond redaction | Proposed |
+| Schema-aware secret-key warnings | `SENSITIVE_CONFIG_KEY` for sensitive key names in schema-accepted metadata | Accepted; one value-free warning per section/reference, independent of redaction mode |
 | Machine-readable hard-failure report | Optional `--error-report` using `ai-bom-error-report/v1`; strict redaction applies regardless of generated-artifact redaction mode | Approved for v0.3.1 hardening on 2026-07-13 |
 
 ## Guardrails

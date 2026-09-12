@@ -26,6 +26,7 @@ from ai_bom_generator.collectors.generation_marker import (
     verify_final_generation_marker,
 )
 from ai_bom_generator.config import LoadedConfig
+from ai_bom_generator.config.sensitive_keys import sensitive_config_warnings
 from ai_bom_generator.domain.dependency import DependencyPackage
 from ai_bom_generator.domain.evidence import NormalizedEvidence
 from ai_bom_generator.domain.reference import DeclaredReference
@@ -42,7 +43,7 @@ _KNOWN_MODEL_CARD = "MODEL_CARD.md"
 
 def collect_evidence(config: LoadedConfig, policy: PathPolicy, redactor: Redactor) -> NormalizedEvidence:
     initial_generation_marker = collect_initial_generation_marker(config, policy)
-    warnings: list[Warning] = []
+    warnings: list[Warning] = sensitive_config_warnings(config)
     if redactor.mode == "off":
         warnings.append(
             Warning(

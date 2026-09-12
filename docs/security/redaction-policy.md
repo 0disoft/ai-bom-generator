@@ -1,5 +1,16 @@
 # Redaction Policy
 
+## Sensitive configuration warnings
+
+`SENSITIVE_CONFIG_KEY` reports sensitive key names in accepted `model` metadata
+and dependency, dataset, prompt, eval, or training reference extensions, including
+nested tables and arrays. It shares the redactor's sensitive-key classification.
+One warning is emitted per section/reference record, in both redaction modes.
+Its location contains only a schema-owned section/index and `<config>`; caller
+keys, values, and filenames are never interpolated. Remove credentials from the
+configuration. Unknown schema-forbidden sections still fail validation; file
+contents are not inspected. Names such as `tokenizer` do not trigger the rule.
+
 Status: Draft
 Owner: UNASSIGNED
 

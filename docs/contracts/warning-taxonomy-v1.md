@@ -1,5 +1,10 @@
 # Warning Taxonomy v1 Draft
 
+`SENSITIVE_CONFIG_KEY` indicates a sensitive key in accepted config metadata.
+It uses warning severity and `config` object kind, with a value-free section/index
+location. It participates in the normal summary warning count and fail-on-warning
+policy, including when generated artifact redaction is off.
+
 Status: Draft
 Owner: UNASSIGNED
 
