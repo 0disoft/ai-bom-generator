@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.7.1
+
+Unreleased maintenance changes on `main`; published installation examples stay
+on v0.7.0 until the next exact release is verified.
+
+- Preserve the reviewed Ruff rule baseline while updating Ruff, packaging,
+  CodeQL and the PyPI publishing Action.
+- Classify documentation roles, reconcile executable contracts, update security
+  support and enforce inventory/schema/input/output/version drift checks.
+- Add an upstream SPDX JSON Schema/SHACL gate for synthetic reference roundtrips,
+  invalid mappings and the explicit nonconformance of current preview outputs.
+  This does not upgrade the production exporter to full SPDX conformance.
+
 ## v0.7.0
 
 - Add CLI artifact-discovery switches and configurable lower scan/hash budgets

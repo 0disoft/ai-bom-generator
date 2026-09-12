@@ -18,6 +18,10 @@ legal compliance engine, dataset auditor, or AI governance platform.
 
 ## Install
 
+The source checkout currently targets unreleased maintenance version 0.7.1.
+Published package and exact Action installation examples below remain on the
+verified v0.7.0 release; this branch does not imply a new published tag.
+
 ```powershell
 py -3.12 -m pip install ai-bom-generator
 ai-bom --version
