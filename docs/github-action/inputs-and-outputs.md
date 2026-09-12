@@ -21,7 +21,7 @@ behavior stay comparable.
 - `config`: optional config path. Empty means the action omits `--config`, so
   the CLI may discover `<model-directory>/aibom.toml`.
 - `format`: selected exporter. The Action wrapper must mirror the CLI's accepted
-  values; the current CLI value is `cyclonedx-json-1.7`.
+  values: `cyclonedx-json-1.7` and the partial `spdx-ai` preview.
 - `output`: output path for generated BOM. Empty defaults under `RUNNER_TEMP`.
 - `warning-report`: output path for warning report. Empty defaults under
   `RUNNER_TEMP`.
@@ -37,8 +37,8 @@ behavior stay comparable.
   values: `strict` and `off`. The explicit `off` value permits unredacted
   generated artifacts and is intended only for controlled local debugging.
 
-Artifact upload behavior remains UNDECIDED. The wrapper must not invent values
-that diverge from the CLI contract.
+Artifact upload is owned by an explicit caller step; see [upload guide](artifact-upload.md).
+The wrapper never uploads automatically or changes CLI semantics.
 
 ## Outputs
 

@@ -34,7 +34,7 @@ state, registry publication, or compliance approval.
 
 ## Release Policy
 
-- Artifact upload behavior: UNDECIDED
+- Artifact upload: explicit caller step only; see [upload guide](artifact-upload.md).
 - First MVP action release: exact `v0.1.0` tag, published before GitHub
   immutable-release enforcement was enabled.
 - Exact semver tags are smoke-tested before the mutable `v0` tag moves. Releases

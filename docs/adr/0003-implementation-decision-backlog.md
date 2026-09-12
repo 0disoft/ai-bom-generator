@@ -95,7 +95,8 @@ choices from plausible candidates that still need approval.
   rejected in ADR 0005; explicit `--config` remains available.
 - The GitHub Action wrapper may invoke the packaged CLI from the action checkout,
   expose summary-derived outputs, and default output files under `RUNNER_TEMP`.
-  Artifact upload remains deferred and must not be enabled by default.
+  Artifact upload is approved only as an explicit caller step governed by
+  `docs/github-action/artifact-upload.md`; the wrapper never uploads by default.
 - The first public release may create `v0.1.0` and a GitHub Release. Mutable
   `v0` may point to the latest compatible 0.x action release after external
   smoke verification. Marketplace registration remains deferred until that
