@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.7.0
+
+- Add CLI artifact-discovery switches and configurable lower scan/hash budgets
+  under fixed safety ceilings; bound directory enumeration to 100,000 entries.
+- Warn on sensitive keys in accepted metadata without copying caller keys,
+  values, or paths into the warning.
+- Generate offline Bash and PowerShell 7 completion from the CLI contract.
+- Document caller-owned artifact uploads, maintainer recovery, dependency bot
+  ownership, local-only configuration, and the no-telemetry decision.
+- Add Action documentation and dependency-policy drift checks and prepare
+  Marketplace listing metadata without claiming a live listing.
+
 ## v0.6.1
 
 - Resolve explicit relative GitHub Action output paths from the workspace so
