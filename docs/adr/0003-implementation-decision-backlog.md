@@ -32,7 +32,7 @@ choices from plausible candidates that still need approval.
 | Project lockfile | `uv.lock` | Approved by uv adoption on 2026-07-06 |
 | Dependency lockfile intake | Explicit config-declared file references plus bounded parsing for `uv.lock`, Poetry 2.x `poetry.lock`, Pipenv `Pipfile.lock` specification 6, requirements files, and unified conda-lock v1 YAML | Python-first expansion approved on 2026-07-10; conda-lock approved on 2026-07-13; Poetry 2.x approved on 2026-07-14; Pipenv approved on 2026-07-15 |
 | Dependency parser boundary | Parser-neutral package source evidence preserving optional locator, channel, index, platform, revision, and artifact hashes | Approved for v0.4.0 dependency expansion on 2026-07-13 |
-| Artifact discovery opt-in | `[artifacts].discovery = true` adds bounded default model artifact patterns in config only | Approved for MVP polish on 2026-07-09 |
+| Artifact discovery opt-in | `[artifacts].discovery = true` adds bounded default model artifact patterns; explicit CLI overrides are now supported | Initial config scope approved on 2026-07-09; CLI override contract shipped in v0.7.0 |
 | Artifact discovery CLI flag | Explicit enable/disable with config fallback | Accepted; docs/cli/artifact-overrides.md |
 | Action wrapper | Composite GitHub Action invoking `uv run --project` | Approved for MVP on 2026-07-07 |
 | First public release | GitHub Release `v0.1.0` with no PyPI package | Approved by owner on 2026-07-07 |

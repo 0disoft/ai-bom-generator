@@ -155,5 +155,6 @@ Ownership, support, retention, and recovery follow [maintainer policy](maintaine
 - Rollback: mark a broken GitHub Release in release notes, then publish a patch
   tag after validation. Do not retarget or delete an existing immutable release
   tag.
-- Remaining operational risk: marketplace rollout, maintainer escalation path,
-  and long-term rollout cadence remain UNDECIDED.
+- Marketplace publication remains separate from listing preparation; see
+  `docs/github-action/marketplace.md`. Escalation and best-effort release cadence
+  follow the maintained support policy, not an unassigned future decision.

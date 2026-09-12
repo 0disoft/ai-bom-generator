@@ -135,8 +135,9 @@ existing GitHub-only tag (`0.1.0` or `0.1.1`).
 | smoke | Generate a CycloneDX JSON 1.7 BOM, warning report, summary, and generation manifest from `tests/fixtures/complete-project` through the `ai-bom` console script using target-root config discovery. |
 | check | Run `git diff --check` for whitespace and diff hygiene. |
 
-Docs validation is performed by reviewing changed documentation until a
-dedicated docs runner is configured.
+Documentation inventory, schema-required fields, versions, formats and Action
+input/output names are checked by `tests/test_documentation_contract.py` in the
+unit suite. Prose claims still require review; there is no general prose linter.
 
 ## Local Reproduction
 
