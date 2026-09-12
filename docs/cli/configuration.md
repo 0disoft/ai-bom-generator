@@ -1,6 +1,6 @@
 # CLI Configuration
 
-Status: Draft
+Status: Maintained guide
 Repository Type: cli-tool
 
 ## Purpose
@@ -12,7 +12,6 @@ collect. It must make explicit references easy and avoid broad hidden discovery.
 
 - Product decision: docs/product/02-spec.md
 - Command contract: docs/cli/command-contract.md
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Draft Config Responsibilities

@@ -1,6 +1,6 @@
 # Data Integrity
 
-Status: Draft
+Status: Maintained guide
 
 ## Contract
 
@@ -18,7 +18,6 @@ path.
 ## Required Evidence
 
 - Source of truth: docs/data/quality.md
-- Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 

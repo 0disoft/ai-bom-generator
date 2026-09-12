@@ -1,6 +1,6 @@
 # Operability and Failure Standard
 
-Status: Draft
+Status: Maintained guide
 
 ## Contract
 
@@ -11,7 +11,6 @@ expectations, and CI failure evidence.
 ## Required Evidence
 
 - Source of truth: docs/cli/output-and-exit-codes.md
-- Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 

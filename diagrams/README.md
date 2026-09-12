@@ -1,7 +1,6 @@
 # Diagrams
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -11,7 +10,6 @@ collector pipeline, exporter mapping flow, and CI wrapper behavior.
 ## Source of Truth
 
 - Product decision: Diagrams should clarify evidence flow without implying audit completeness.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Required Decisions

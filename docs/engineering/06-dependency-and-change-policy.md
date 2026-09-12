@@ -31,7 +31,6 @@ the presence of configuration alone.
 ## Required Evidence
 
 - Source of truth: docs/product/02-spec.md
-- Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 

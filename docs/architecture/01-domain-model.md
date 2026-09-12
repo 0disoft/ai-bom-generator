@@ -1,6 +1,6 @@
 # Domain Model
 
-Status: Draft
+Status: Maintained guide
 
 ## Boundary
 

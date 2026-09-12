@@ -1,6 +1,6 @@
 # Validation
 
-Status: Draft
+Status: Accepted contract
 
 ## Validation Source of Truth
 
@@ -41,7 +41,9 @@ use the minimum supported runtime, Python 3.12.
 | smoke | `uv run --python 3.12 ai-bom generate tests/fixtures/complete-project --format cyclonedx-json-1.7 --output <temp>/bom.cdx.json --warning-report <temp>/warnings.json --summary <temp>/summary.json` |
 | check | `git diff --check` |
 
-Docs validation is review-based until a documentation linter is configured.
+Machine-verifiable documentation drift is covered by
+`tests/test_documentation_contract.py` in the standard test suite. Prose remains
+review-based; the inventory distinguishes contracts, guides and open proposals.
 Format, typecheck, contract, and migration-check are stable names but do not
 have configured runners yet.
 

@@ -1,7 +1,6 @@
 # Product Specification
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Accepted contract
 
 ## Purpose
 
@@ -14,7 +13,6 @@ mapping, not on proving that the evidence is complete or legally sufficient.
 ## Source of Truth
 
 - Product decision: Evidence-first AI/ML BOM generator for local model project directories.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## MVP Input
@@ -67,7 +65,7 @@ schema-validated. The `spdx-ai` exporter is an approved preview mapping to SPDX
 unavailable supplier, download, release-time, safety, metric, or sensitive-data
 metadata.
 
-## Required Decisions Before Implementation
+## Implemented Decisions
 
 - Runtime: Python 3.12 is the compatibility floor. Package metadata and hosted
   CI currently support Python 3.12, 3.13, and 3.14; future interpreters require
@@ -92,7 +90,7 @@ metadata.
   Supported parsers share one normalized source-evidence boundary that preserves
   directly evidenced locator, channel or index, platform, revision, and artifact
   hash fields.
-- Model artifact discovery defaults: config opt-in discovery is approved.
+- Model artifact discovery defaults: off; config or explicit CLI opt-in is approved.
 - Redaction default: strict redaction is approved for CLI and terminal output.
 - GitHub Action runtime: the composite action prepares Python 3.12 and pinned
   uv `0.11.28`, disables persistent GitHub caching, and keeps its environment

@@ -1,6 +1,6 @@
 # Agent Context Map
 
-Status: Draft
+Status: Maintained guide
 Scope: data
 Repository Type: cli-tool
 Addons: github-action

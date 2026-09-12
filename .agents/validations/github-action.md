@@ -1,6 +1,6 @@
 # GitHub Action Validation
 
-Status: Draft
+Status: Maintained guide
 
 ## Validation Source of Truth
 
@@ -40,4 +40,3 @@ data validation routes must stay stack-neutral unless a runner file explicitly d
 ## Repository Shape
 
 github-action validation must stay repository-shape focused and must not imply generated application source code.
-

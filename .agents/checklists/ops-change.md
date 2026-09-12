@@ -1,6 +1,6 @@
 # Ops Change Checklist
 
-Status: Draft
+Status: Maintained guide
 
 ## Failure Modes
 

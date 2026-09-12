@@ -1,6 +1,6 @@
 # Config and Environment
 
-Status: Draft
+Status: Maintained guide
 
 ## Operational Contract
 

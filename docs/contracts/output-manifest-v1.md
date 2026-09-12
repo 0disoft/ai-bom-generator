@@ -1,7 +1,6 @@
-# Output Manifest Contract v1 Draft
+# Output Manifest Contract v1
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Accepted contract
 
 ## Purpose
 
@@ -11,7 +10,7 @@ without guessing from filenames alone.
 
 The executable schema lives at `schemas/aibom-output-manifest-v1.schema.json`.
 
-## Candidate Fields
+## Fields
 
 - `schema_version`
 - `generation_id`

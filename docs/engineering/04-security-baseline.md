@@ -1,6 +1,6 @@
 # Security Baseline
 
-Status: Draft
+Status: Maintained guide
 
 ## Contract
 
@@ -11,7 +11,6 @@ boundaries, and avoidance of implicit network access.
 ## Required Evidence
 
 - Source of truth: docs/data/privacy-and-retention.md
-- Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 - Automated static analysis: `.github/workflows/codeql.yml` uploads Python

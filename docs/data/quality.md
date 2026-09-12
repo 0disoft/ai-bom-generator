@@ -1,7 +1,6 @@
 # Data Quality
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -11,7 +10,6 @@ standards-valid BOM and warning report from the same input project.
 ## Source of Truth
 
 - Product decision: Prefer deterministic output and explicit warnings over broad autodetection.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Quality Gates

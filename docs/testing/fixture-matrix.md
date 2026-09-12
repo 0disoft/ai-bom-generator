@@ -1,7 +1,6 @@
 # Fixture Matrix
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 

@@ -1,6 +1,6 @@
 # System Boundary
 
-Status: Draft
+Status: Maintained guide
 
 ## Boundary
 

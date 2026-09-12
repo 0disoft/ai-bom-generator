@@ -1,7 +1,6 @@
 # Product Brief
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -19,7 +18,6 @@ not a fake complete provenance story.
 ## Source of Truth
 
 - Product decision: Build a small AI artifact BOM generator, not a compliance platform.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Required Decisions

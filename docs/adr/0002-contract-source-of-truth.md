@@ -1,7 +1,6 @@
 # Contract Source of Truth
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Accepted
 
 ## Purpose
 
@@ -11,7 +10,6 @@ GitHub Action, data pipeline, and docs do not drift apart.
 ## Source of Truth
 
 - Product decision: Public behavior must be changed in source-of-truth docs before implementation follows.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Decision

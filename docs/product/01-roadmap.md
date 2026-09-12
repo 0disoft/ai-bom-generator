@@ -1,7 +1,6 @@
 # Roadmap
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -11,7 +10,6 @@ later exporter and CI integrations.
 ## Source of Truth
 
 - Product decision: Build collector and exporter confidence before adding broad framework support.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Current Status

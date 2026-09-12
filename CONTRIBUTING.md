@@ -1,7 +1,6 @@
 # Contributing
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -12,7 +11,6 @@ hosted governance service.
 ## Source of Truth
 
 - Product decision: Contributions must preserve the evidence-first AI/ML BOM generator boundary.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Required Decisions

@@ -1,7 +1,6 @@
 # Development
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -11,7 +10,6 @@ collector pipeline, exporter mappings, and GitHub Action wrapper.
 ## Source of Truth
 
 - Product decision: Development work should keep the tool deterministic, local-first, and honest about missing evidence.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Approved Development Baseline

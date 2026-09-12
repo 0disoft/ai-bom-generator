@@ -1,6 +1,6 @@
 # Project Invariants
 
-Status: Draft
+Status: Maintained guide
 
 ## Contract
 
@@ -12,7 +12,6 @@ auditing, hosted registry behavior, and model serving.
 ## Required Evidence
 
 - Source of truth: docs/product/02-spec.md
-- Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 

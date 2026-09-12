@@ -1,7 +1,6 @@
 # Pipeline Contract
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Accepted contract
 
 ## Purpose
 
@@ -11,7 +10,6 @@ and a warning report.
 ## Source of Truth
 
 - Product decision: Collector pipeline must preserve provenance and absence information.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Pipeline Stages
@@ -37,14 +35,17 @@ and a warning report.
    supported parser has direct evidence for them.
 6. Select artifacts in one deterministic top-down tree walk from explicit
    include patterns and, only when
-   `[artifacts].discovery = true`, bounded default model artifact patterns for
+   the effective config/CLI discovery value is true, bounded default patterns for
    `.safetensors`, `.gguf`, `.bin`, `.pt`, `.pth`, `.ckpt`, and `.onnx` files.
    Prune a directory before descent when every still-active pattern excludes its
    subtree. Explicit patterns retain their own exclude semantics.
-7. Apply fixed MVP artifact budgets before hashing: at most 256 candidate paths
+7. Apply configurable lower artifact budgets under fixed ceilings before hashing:
+   at most 100,000 visited entries and at most 256 candidate paths
    per include pattern after excludes, at most 16 GiB for one artifact, and at
    most 25 GiB of selected artifacts per run. Budget hits are machine-readable
-   warnings and the over-budget pattern or artifact is skipped.
+   warnings and the over-budget pattern or artifact is skipped. Exceeding the
+   enumeration budget discards the entire partial artifact selection. Config
+   and CLI precedence follow `docs/cli/artifact-overrides.md`.
 8. Hash selected model artifacts and checkpoints through one open file
    descriptor. The recorded size and SHA-256 digest must come from the same
    stable file snapshot, verified by comparing file metadata before and after

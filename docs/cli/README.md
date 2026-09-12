@@ -1,6 +1,6 @@
 # CLI Tool
 
-Status: Draft
+Status: Maintained guide
 Repository Type: cli-tool
 
 ## Purpose
@@ -12,7 +12,6 @@ CI without requiring a hosted service.
 
 - Product decision: docs/product/02-spec.md
 - Command contract: docs/cli/command-contract.md
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## CLI Responsibilities

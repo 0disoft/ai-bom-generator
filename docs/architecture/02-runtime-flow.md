@@ -1,6 +1,6 @@
 # Runtime Flow
 
-Status: Draft
+Status: Maintained guide
 
 ## Boundary
 

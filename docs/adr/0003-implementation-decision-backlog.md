@@ -1,7 +1,6 @@
 # Implementation Decision Backlog
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -13,7 +12,6 @@ choices from plausible candidates that still need approval.
 
 - Product decision: docs/product/02-spec.md
 - Contract source: docs/adr/0002-contract-source-of-truth.md
-- Technical owner: UNASSIGNED
 
 ## Decisions
 

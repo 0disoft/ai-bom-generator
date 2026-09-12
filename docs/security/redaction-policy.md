@@ -11,8 +11,7 @@ keys, values, and filenames are never interpolated. Remove credentials from the
 configuration. Unknown schema-forbidden sections still fail validation; file
 contents are not inspected. Names such as `tokenizer` do not trigger the rule.
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 

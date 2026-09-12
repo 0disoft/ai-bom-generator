@@ -1,6 +1,6 @@
 # Threat Model
 
-Status: Draft
+Status: Maintained guide
 
 ## Contract
 
@@ -11,7 +11,6 @@ Action token scope, generated artifact disclosure, and misleading BOM claims.
 ## Required Evidence
 
 - Source of truth: docs/data/privacy-and-retention.md
-- Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 

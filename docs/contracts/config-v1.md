@@ -1,7 +1,6 @@
 # Config Contract v1
 
 Status: Accepted for MVP runtime validation
-Owner: UNASSIGNED
 
 ## Purpose
 
@@ -12,7 +11,7 @@ The packaged runtime copy lives at
 `src/ai_bom_generator/config/schema/aibom-config-v1.schema.json` and must stay
 byte-equivalent at the JSON object level.
 
-## Filename Candidate
+## Filename
 
 `aibom.toml` is the approved filename for explicit MVP config examples and
 fixtures. When `--config` is omitted, the CLI discovers only
@@ -23,11 +22,13 @@ the CLI uses inline defaults and reports missing optional metadata as warnings.
 ## Required Properties
 
 - `schema_version`: config schema version.
-- `output.format`: selected exporter format.
 
-## Candidate Sections
+`output.format` is optional; omission uses the CLI default unless overridden.
 
-- `warning_policy`: missing metadata and unsupported field behavior.
+## Sections
+
+- `warning_policy.missing_metadata`: `warn` or `fail`; unsupported-field
+  warnings are not separately configurable.
 - `generation.marker`: optional target-root-relative producer generation marker
   path governed by ADR 0004.
 - `output.format`: `cyclonedx-json-1.7` or `spdx-ai`.
@@ -37,7 +38,7 @@ the CLI uses inline defaults and reports missing optional metadata as warnings.
 - `dependencies`: explicit dependency-file references, scalar metadata, and an
   optional `parse` boolean.
 - `datasets`: declared dataset references.
-- `prompts`: declared prompt references, with content inclusion disabled by default.
+- `prompts`: declared prompt references; prompt contents are never included.
 - `evals`: declared eval artifact references.
 - `training`: declared training-code or pipeline references.
 

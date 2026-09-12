@@ -1,7 +1,6 @@
 # Architecture Decisions
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -12,7 +11,6 @@ mapping, GitHub Action behavior, privacy stance, or validation strategy.
 ## Source of Truth
 
 - Product decision: ADRs must keep implementation choices traceable to the evidence-first AI-BOM product boundary.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Required Decisions

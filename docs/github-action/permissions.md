@@ -1,6 +1,6 @@
 # Permissions
 
-Status: Draft
+Status: Maintained guide
 Repository Type: github-action
 
 ## Purpose
@@ -13,7 +13,6 @@ default.
 
 - Product decision: docs/product/02-spec.md
 - Action contract: docs/github-action/action-contract.md
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Default Permission Boundary

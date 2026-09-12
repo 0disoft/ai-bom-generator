@@ -1,6 +1,6 @@
 # Testing Standard
 
-Status: Draft
+Status: Maintained guide
 
 ## Contract
 
@@ -9,7 +9,6 @@ Testing standard defines merge-blocking expectations for unit, integration, cont
 ## Required Evidence
 
 - Source of truth: VALIDATION.md
-- Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 

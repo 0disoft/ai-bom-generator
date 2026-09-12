@@ -1,6 +1,6 @@
 # Error Report v1
 
-Status: Draft
+Status: Accepted contract
 
 ## Purpose
 

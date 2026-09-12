@@ -1,6 +1,6 @@
 # CLI Tool Checklist
 
-Status: Draft
+Status: Maintained guide
 
 ## Failure Modes
 

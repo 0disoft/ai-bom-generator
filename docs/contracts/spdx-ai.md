@@ -1,6 +1,6 @@
 # SPDX AI Preview Contract
 
-Status: Draft
+Status: Accepted contract
 Repository Type: cli-tool
 
 ## Purpose

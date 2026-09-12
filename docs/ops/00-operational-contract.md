@@ -1,6 +1,6 @@
 # Operational Contract
 
-Status: Draft
+Status: Maintained guide
 
 ## Operational Contract
 

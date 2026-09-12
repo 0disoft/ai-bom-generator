@@ -1,7 +1,6 @@
 # Agent Workspace
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -11,7 +10,6 @@ It is intentionally a scaffold and should be filled with project-specific decisi
 ## Source of Truth
 
 - Product decision: UNDECIDED
-- Technical owner: UNASSIGNED
 - Related ADR: UNDECIDED
 
 ## Required Decisions

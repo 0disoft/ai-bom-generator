@@ -1,6 +1,6 @@
 # Data Pipeline Checklist
 
-Status: Draft
+Status: Maintained guide
 
 ## Failure Modes
 

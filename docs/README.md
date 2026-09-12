@@ -1,6 +1,6 @@
 # Documentation
 
-Status: Draft
+Status: Maintained guide
 
 ## Source of Truth
 
@@ -18,6 +18,24 @@ Status: Draft
 - CLI config source: docs/cli/configuration.md
 - GitHub Action source: docs/github-action/README.md
 - Exporter mapping notes: docs/exporters/*.md
-- Public contract drafts: docs/contracts/*.md
-- Security policy drafts: docs/security/*.md
+- Public contracts: docs/contracts/*.md
+- Security guidance: docs/security/*.md
 - Fixture strategy: docs/testing/fixture-matrix.md
+
+## Document roles and ownership
+
+`document-status.json` inventories every tracked Markdown document outside
+generated LLMNav state. Normative contracts were checked against executable
+schemas, CLI/Action behavior and the v0.7.0 test/CI evidence. Maintained guides
+explain those contracts but do not approve future product decisions. Release
+notes remain historical, the ADR template remains a template, and the SPDX
+mapping follow-up remains a visibly unresolved proposal until its upstream gate
+proves the stronger mapping. Accepted preview documentation is not a full SPDX
+conformance claim.
+
+Ownership for all maintained documents follows
+[maintainer policy](ops/maintainer-policy.md); per-file unassigned placeholders
+have been removed rather than creating fictitious owners. The documentation
+contract tests check inventory coverage, roles, schema-required fields, format
+names, Action input/output names, and package version agreement. They cannot
+prove every prose claim; behavior changes still require focused review.

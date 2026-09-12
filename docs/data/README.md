@@ -1,7 +1,6 @@
 # Data
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -11,7 +10,6 @@ The CLI collects declared project evidence and emits derived BOM output.
 ## Source of Truth
 
 - Product decision: Keep artifact metadata, provenance references, and warning state explicit.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Required Decisions

@@ -1,7 +1,6 @@
 # Risk Register
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -11,7 +10,6 @@ the evidence behind it.
 ## Source of Truth
 
 - Product decision: Prefer explicit warnings over implied completeness.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Current Risks

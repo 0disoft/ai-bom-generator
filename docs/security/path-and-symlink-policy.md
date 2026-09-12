@@ -1,7 +1,6 @@
 # Path and Symlink Policy
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 

@@ -1,6 +1,6 @@
 # Quality Attributes
 
-Status: Draft
+Status: Maintained guide
 
 ## Boundary
 

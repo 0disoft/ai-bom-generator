@@ -80,9 +80,10 @@ executable `allow` behavior and config `fail` maps to the executable `fail`
 behavior.
 Discovered and explicit config files are validated against AI-BOM config schema
 v1 before new final output files are written. After output-path validation
-succeeds, stale files at the requested generated-output destinations are removed
-before config loading, collection, or export starts, so a failed run does not
-leave previous-run JSON where callers expect current-run output.
+succeeds, the CLI preserves previous outputs until a new output set is ready
+to commit. Config, collection, and export failures leave that previous set
+unchanged. The Action wrapper separately removes stale requested outputs before
+invoking the CLI and verifies the new manifest before exposing outputs.
 
 ## Review Blockers
 

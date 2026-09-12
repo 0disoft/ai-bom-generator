@@ -1,6 +1,6 @@
 # Checklist Router
 
-Status: Draft
+Status: Maintained guide
 
 Use this file as a router. Do not turn it into one giant checklist.
 

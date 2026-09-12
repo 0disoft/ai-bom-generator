@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Draft
+Status: Maintained guide
 
 ## Boundary
 

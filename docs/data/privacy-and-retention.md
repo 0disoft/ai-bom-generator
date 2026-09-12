@@ -1,7 +1,6 @@
 # Privacy and Retention
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -12,7 +11,6 @@ metadata rather than copying source file contents into telemetry or JSON summari
 ## Source of Truth
 
 - Product decision: Do not inspect private dataset contents in MVP.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Privacy Boundary

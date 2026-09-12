@@ -1,7 +1,6 @@
 # CycloneDX JSON 1.7 Mapping Notes
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 

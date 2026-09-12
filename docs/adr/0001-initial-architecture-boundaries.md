@@ -1,7 +1,6 @@
 # Initial Architecture Boundaries
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Accepted
 
 ## Purpose
 
@@ -10,7 +9,6 @@ This ADR records the first architecture boundary for AI-BOM Generator.
 ## Source of Truth
 
 - Product decision: AI-BOM Generator is a local collector and exporter for AI/ML bill-of-materials artifacts.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/product/02-spec.md
 
 ## Decision

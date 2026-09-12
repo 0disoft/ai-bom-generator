@@ -1,7 +1,6 @@
-# JSON Summary Contract v1 Draft
+# JSON Summary Contract v1
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Accepted contract
 
 ## Purpose
 
@@ -11,7 +10,7 @@ or failed without scraping terminal prose.
 
 The executable schema lives at `schemas/aibom-summary-v1.schema.json`.
 
-## Candidate Fields
+## Fields
 
 - `schema_version`
 - `tool.name`
@@ -31,8 +30,10 @@ The executable schema lives at `schemas/aibom-summary-v1.schema.json`.
 ## Privacy Rules
 
 - Do not embed full model-card, prompt, eval, dataset, dependency, or model file contents.
-- Do not emit unredacted token-bearing URLs, private key blocks, credentialed
+- In strict mode, do not emit unredacted token-bearing URLs, private key blocks, credentialed
   Git remotes, provider token shapes, or values attached to sensitive key names.
+- Explicit `--redaction off` permits unredacted generated summaries; terminal
+  diagnostics and hard-failure reports remain strictly redacted.
 - Prefer relative paths when they preserve enough source context.
 
 ## Status Values

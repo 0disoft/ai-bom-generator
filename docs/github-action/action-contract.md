@@ -1,6 +1,6 @@
 # Action Contract
 
-Status: Draft
+Status: Maintained guide
 Repository Type: github-action
 
 ## Repository Type Contract
@@ -10,7 +10,6 @@ This repository type owns action inputs, outputs, permissions, token handling, a
 ## Source of Truth
 
 - Product decision: GitHub Action wraps the CLI for CI generation and validation of AI-BOM artifacts.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Required Decisions

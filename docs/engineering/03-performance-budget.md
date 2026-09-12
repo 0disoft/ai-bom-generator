@@ -1,6 +1,6 @@
 # Performance Budget
 
-Status: Draft
+Status: Maintained guide
 
 ## Contract
 
@@ -85,7 +85,6 @@ Optimization or validator caching requires a measured breach or a separately
 recorded performance decision.
 
 - Source of truth: docs/architecture/03-quality-attributes.md
-- Owner: UNASSIGNED
 - Merge-blocking validation: VALIDATION.md
 - Related checklist: CHECKLIST.md
 

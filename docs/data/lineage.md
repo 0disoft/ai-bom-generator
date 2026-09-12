@@ -1,7 +1,6 @@
 # Data Lineage
 
-Status: Draft
-Owner: UNASSIGNED
+Status: Maintained guide
 
 ## Purpose
 
@@ -11,7 +10,6 @@ derived, or missing.
 ## Source of Truth
 
 - Product decision: Every collected field must keep source context.
-- Technical owner: UNASSIGNED
 - Related ADR: docs/adr/0001-initial-architecture-boundaries.md
 
 ## Required Lineage Fields

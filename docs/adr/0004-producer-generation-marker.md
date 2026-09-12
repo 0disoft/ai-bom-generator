@@ -1,7 +1,6 @@
 # Producer Generation Marker Contract
 
 Status: Accepted on 2026-07-13
-Owner: UNASSIGNED
 
 ## Context
 

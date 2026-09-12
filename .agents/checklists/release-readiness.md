@@ -1,6 +1,6 @@
 # Release Readiness Checklist
 
-Status: Draft
+Status: Maintained guide
 
 ## Failure Modes
 

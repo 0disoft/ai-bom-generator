@@ -1,6 +1,6 @@
 # Observability
 
-Status: Draft
+Status: Maintained guide
 
 ## Operational Contract
 
