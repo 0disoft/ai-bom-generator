@@ -2,7 +2,7 @@
   "partitions": [
     {
       "edges": [],
-      "inputHash": "fa4337ae608d458902e5662bb937db9212b9633f5ba2113eb877c8b423a904cc",
+      "inputHash": "22aded2c5f83f0128424918b38cb9b276aea06d719e3abaa00ac4263f34465ab",
       "key": "card:ai-bom-generator/aibom.app.generation",
       "nodes": [
         {
@@ -31,7 +31,7 @@
     },
     {
       "edges": [],
-      "inputHash": "3c1cc5b427e019436e4791fc0c88b4a2d65cde2edd2d712fc4d3803a8a2b4663",
+      "inputHash": "e394f800ad6fe29fb91603f4a4ff627c38c1afa023eacaa4be495bc062ebb6bd",
       "key": "card:ai-bom-generator/aibom.cli.command",
       "nodes": [
         {
@@ -60,7 +60,7 @@
     },
     {
       "edges": [],
-      "inputHash": "a6f8d38657a42164656291a80f8c4059d7f8f03ba93b707917f0e80fe65762f1",
+      "inputHash": "f01d6bf82a4e743350505df48097314767ce07268acc2f0d3e3b118caadd2422",
       "key": "card:ai-bom-generator/aibom.config.loading",
       "nodes": [
         {
@@ -89,7 +89,7 @@
     },
     {
       "edges": [],
-      "inputHash": "a9cfc54ed85bdd7a1b099138563d0b5e3963979a01d9055b015e5e0cc4b3fdbd",
+      "inputHash": "551b59f6d4532c86987388f4845acc1bc25e427af4129151101ef4e302de378c",
       "key": "card:ai-bom-generator/aibom.dependencies.files",
       "nodes": [
         {
@@ -118,7 +118,7 @@
     },
     {
       "edges": [],
-      "inputHash": "a6caccabff4249c4349507136b9d552b3ec26b85a202c9207f74f9593c238a0d",
+      "inputHash": "7f31cc997a4d77b81343b454358b9aed05e226c9d627467470e216dcb3ec73d0",
       "key": "card:ai-bom-generator/aibom.evidence.pipeline",
       "nodes": [
         {
@@ -147,7 +147,7 @@
     },
     {
       "edges": [],
-      "inputHash": "01d1c780214ace5188d05979add64784940a025a41dc1e5183fd0b365e4ab1fe",
+      "inputHash": "5a5d96d3a315c75b4e76bbd4ecdd4f4befc032ec6c8e376004f56ff5141612d1",
       "key": "card:ai-bom-generator/aibom.export.cyclonedx",
       "nodes": [
         {
@@ -176,7 +176,7 @@
     },
     {
       "edges": [],
-      "inputHash": "12bbb2f722a8a1ec634065715651c094cc20adb202bf59b0fdd6abb07a270aff",
+      "inputHash": "3e19aab0ea32d5937e582e75e30fc0f63f50b1d29667889b205349e120480c3b",
       "key": "card:ai-bom-generator/aibom.export.spdx-ai",
       "nodes": [
         {
@@ -205,7 +205,7 @@
     },
     {
       "edges": [],
-      "inputHash": "a4eb7d3b76fe75aa6f56695570efd298471c49c0136943386fe0735d99bd1510",
+      "inputHash": "a6e48438d81078e541b287df0e641ceeb46be8722ab14f7e92ed13e5c0457e80",
       "key": "card:ai-bom-generator/aibom.security.path-policy",
       "nodes": [
         {
@@ -234,6 +234,6 @@
     }
   ],
   "repositoryId": "ai-bom-generator",
-  "resolutionHash": "0bf867d915619a5d445b0965dd576371a959ba32ff6b52897ee56e167aa31a65",
+  "resolutionHash": "16f4a3547f70125eac390daaa4d5662ec53220d6806a5b312074e44ec2985a4e",
   "schemaVersion": 1
 }

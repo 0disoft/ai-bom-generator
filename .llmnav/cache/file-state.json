@@ -2,7 +2,7 @@
   "files": [
     {
       "blocks": [],
-      "contentHash": "831443a125fefdd6adbfd7f57d60bfa85017280f5eaec13175b7529de6f1ac03",
+      "contentHash": "48a4bbad65594933956ef59c17abaaf07ccba5dd897ceb402729294923eab753",
       "declarations": [],
       "imports": [],
       "path": "src/ai_bom_generator/__init__.py",
@@ -109,7 +109,7 @@
           "syntaxErrors": []
         }
       ],
-      "contentHash": "02a032f40d2a236a5f1cad87c049a0fc73fc85da7d88544a145c876339e9b646",
+      "contentHash": "769f8683024e2dce6dc8535803480ed677a3caf34da4ad0c64a122a274ada558",
       "declarations": [
         null
       ],
@@ -117,6 +117,7 @@
         "__future__",
         "ai_bom_generator.collectors",
         "ai_bom_generator.config",
+        "ai_bom_generator.config.artifact_options",
         "ai_bom_generator.domain.evidence",
         "ai_bom_generator.errors",
         "ai_bom_generator.exporters.cyclonedx_json",
@@ -131,7 +132,7 @@
       ],
       "path": "src/ai_bom_generator/app.py",
       "semanticBytes": 553,
-      "sourceBytes": 6451
+      "sourceBytes": 7039
     },
     {
       "blocks": [
@@ -222,7 +223,7 @@
           "syntaxErrors": []
         }
       ],
-      "contentHash": "9b474dc99c5d5b92686937cc0370fd3d9730eab2d6b5be5815ade3cda45bbb1e",
+      "contentHash": "dff98116c04c35b0bdc0cab7dc76e8b75b9b7f05a5afc23337b71d3480ee9bbd",
       "declarations": [
         null
       ],
@@ -230,6 +231,7 @@
         "__future__",
         "ai_bom_generator",
         "ai_bom_generator.app",
+        "ai_bom_generator.completion",
         "ai_bom_generator.errors",
         "ai_bom_generator.reporting",
         "ai_bom_generator.security",
@@ -239,7 +241,7 @@
       ],
       "path": "src/ai_bom_generator/cli.py",
       "semanticBytes": 498,
-      "sourceBytes": 7453
+      "sourceBytes": 8400
     },
     {
       "blocks": [],
@@ -254,7 +256,7 @@
     },
     {
       "blocks": [],
-      "contentHash": "42df5693531149da8df4ada296110c0684e5406c3b31aba300bac2af78644224",
+      "contentHash": "42bed3ebb968a46e1f3de251f7f57bcfce820d62aae6ed86e0e72b50d1221d66",
       "declarations": [],
       "imports": [
         "__future__",
@@ -273,7 +275,7 @@
       ],
       "path": "src/ai_bom_generator/collectors/artifacts.py",
       "semanticBytes": 0,
-      "sourceBytes": 15050
+      "sourceBytes": 16571
     },
     {
       "blocks": [
@@ -617,7 +619,7 @@
           "syntaxErrors": []
         }
       ],
-      "contentHash": "232cd933b15b68bce8abe72e66fc20dfcd809d3cf338443f2960d502a5c5829e",
+      "contentHash": "e87db16c835104b1793f8aeb11d75dd5e81fa89398cb6fc4754a51e7ae41d63e",
       "declarations": [
         null
       ],
@@ -627,6 +629,7 @@
         "ai_bom_generator.collectors.dependency_files",
         "ai_bom_generator.collectors.generation_marker",
         "ai_bom_generator.config",
+        "ai_bom_generator.config.sensitive_keys",
         "ai_bom_generator.domain.dependency",
         "ai_bom_generator.domain.evidence",
         "ai_bom_generator.domain.reference",
@@ -641,7 +644,22 @@
       ],
       "path": "src/ai_bom_generator/collectors/pipeline.py",
       "semanticBytes": 561,
-      "sourceBytes": 23842
+      "sourceBytes": 23950
+    },
+    {
+      "blocks": [],
+      "contentHash": "82db6b4060dd52d6d4e5d87ad930edea68f5f978793a444c0a434d89dd178d07",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.app",
+        "argparse",
+        "json",
+        "pathlib",
+        "shlex"
+      ],
+      "path": "src/ai_bom_generator/completion.py",
+      "semanticBytes": 0,
+      "sourceBytes": 4277
     },
     {
       "blocks": [],
@@ -653,6 +671,19 @@
       "path": "src/ai_bom_generator/config/__init__.py",
       "semanticBytes": 0,
       "sourceBytes": 112
+    },
+    {
+      "blocks": [],
+      "contentHash": "bff7ff571bae5d3dfc488c89eb6879d996bedbb361da5941f78f58cd82599f38",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.config.loader",
+        "ai_bom_generator.errors",
+        "dataclasses"
+      ],
+      "path": "src/ai_bom_generator/config/artifact_options.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1100
     },
     {
       "blocks": [
@@ -772,6 +803,21 @@
       "path": "src/ai_bom_generator/config/schema/__init__.py",
       "semanticBytes": 0,
       "sourceBytes": 38
+    },
+    {
+      "blocks": [],
+      "contentHash": "09899a814731a43d1240b2ba6e75b4e0bf8b24d630f012ef6fc9fac4de6cd293",
+      "declarations": [],
+      "imports": [
+        "__future__",
+        "ai_bom_generator.config.loader",
+        "ai_bom_generator.domain.source_location",
+        "ai_bom_generator.domain.warning",
+        "ai_bom_generator.security.redaction"
+      ],
+      "path": "src/ai_bom_generator/config/sensitive_keys.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1848
     },
     {
       "blocks": [],
@@ -1453,6 +1499,6 @@
       "sourceBytes": 1541
     }
   ],
-  "indexerVersion": 6,
+  "indexerVersion": 7,
   "schemaVersion": 1
 }
