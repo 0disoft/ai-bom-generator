@@ -1,0 +1,72 @@
+{
+  "@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+  "@graph": [
+    {
+      "type": "CreationInfo",
+      "@id": "_:creation",
+      "createdBy": [
+        "https://aibom.example/fixture/producer"
+      ],
+      "specVersion": "3.0.1",
+      "created": "2026-01-01T00:00:00Z"
+    },
+    {
+      "type": "Organization",
+      "spdxId": "https://aibom.example/fixture/producer",
+      "name": "Synthetic fixture producer",
+      "creationInfo": "_:creation"
+    },
+    {
+      "type": "ai_AIPackage",
+      "spdxId": "https://aibom.example/fixture/model",
+      "creationInfo": "_:creation",
+      "name": "synthetic-model",
+      "software_packageVersion": "1.0.0"
+    },
+    {
+      "type": "software_File",
+      "spdxId": "https://aibom.example/fixture/file",
+      "creationInfo": "_:creation",
+      "name": "model.bin"
+    },
+    {
+      "type": "software_Package",
+      "spdxId": "https://aibom.example/fixture/dependency",
+      "creationInfo": "_:creation",
+      "name": "synthetic-dependency",
+      "software_packageVersion": "2.0.0"
+    },
+    {
+      "type": "Relationship",
+      "spdxId": "https://aibom.example/fixture/contains",
+      "creationInfo": "_:creation",
+      "from": "https://aibom.example/fixture/model",
+      "to": [
+        "https://aibom.example/fixture/file",
+        "https://aibom.example/fixture/dependency"
+      ],
+      "relationshipType": "contains",
+      "completeness": "complete"
+    },
+    {
+      "type": "SpdxDocument",
+      "spdxId": "https://aibom.example/fixture/document",
+      "creationInfo": "_:creation",
+      "rootElement": [
+        "https://aibom.example/fixture/model"
+      ],
+      "element": [
+        "https://aibom.example/fixture/producer",
+        "https://aibom.example/fixture/model",
+        "https://aibom.example/fixture/file",
+        "https://aibom.example/fixture/dependency",
+        "https://aibom.example/fixture/contains"
+      ],
+      "profileConformance": [
+        "core",
+        "software",
+        "ai"
+      ]
+    }
+  ]
+}

@@ -66,6 +66,11 @@ jobs:
           bun test tools/release
           bun tools/release/check-tooling.ts
 
+      - name: Verify upstream SPDX fixture conformance and preview rejection
+        if: matrix.python-version == '3.12'
+        timeout-minutes: 10
+        run: uv run --no-sync --with 'spdx3-validate>=0.0.7,<1' --python 3.12 python scripts/verify_spdx_upstream.py
+
       - name: Check bounded component performance
         if: matrix.python-version == '3.12'
         run: uv run --python 3.12 python scripts/benchmark_components.py --check --json

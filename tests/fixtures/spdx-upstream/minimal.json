@@ -1,0 +1,44 @@
+{
+  "@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+  "@graph": [
+    {
+      "type": "CreationInfo",
+      "@id": "_:creation",
+      "createdBy": [
+        "https://aibom.example/fixture/producer"
+      ],
+      "specVersion": "3.0.1",
+      "created": "2026-01-01T00:00:00Z"
+    },
+    {
+      "type": "Organization",
+      "spdxId": "https://aibom.example/fixture/producer",
+      "name": "Synthetic fixture producer",
+      "creationInfo": "_:creation"
+    },
+    {
+      "type": "ai_AIPackage",
+      "spdxId": "https://aibom.example/fixture/model",
+      "creationInfo": "_:creation",
+      "name": "synthetic-model",
+      "software_packageVersion": "1.0.0"
+    },
+    {
+      "type": "SpdxDocument",
+      "spdxId": "https://aibom.example/fixture/document",
+      "creationInfo": "_:creation",
+      "rootElement": [
+        "https://aibom.example/fixture/model"
+      ],
+      "element": [
+        "https://aibom.example/fixture/producer",
+        "https://aibom.example/fixture/model"
+      ],
+      "profileConformance": [
+        "core",
+        "software",
+        "ai"
+      ]
+    }
+  ]
+}

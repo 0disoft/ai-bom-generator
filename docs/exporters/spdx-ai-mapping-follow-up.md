@@ -23,8 +23,9 @@ full upstream SPDX conformance.
 - Which AI, Dataset, Licensing, Security, and Build profile relationships are needed?
 - Which fields require human declaration rather than tool observation?
 - Which conformance fixtures prove import/export compatibility?
-- Which upstream JSON-LD or SHACL validator should become the executable
-  conformance gate?
+- The upstream validator and bounded reference/negative-preview gate are settled
+  by ADR 0006. How should current preview consumers migrate to a mapper whose
+  actual output passes the positive upstream gate without dropping evidence?
 
 ## Review Blockers
 

@@ -28,7 +28,10 @@ The output declares:
 - `aiBom:contract`: `docs/contracts/spdx-ai.md`
 
 The exporter validates this local preview contract before writing output. It
-does not yet perform full upstream SPDX SHACL or JSON-LD conformance validation.
+does not perform upstream validation at runtime. The CI-only gate in ADR 0006
+validates synthetic reference documents with upstream JSON Schema and SHACL,
+and confirms that actual preview output remains nonconformant. Passing CI is
+therefore not a full production-export conformance claim.
 
 `CreationInfo` identifies the generating tool but intentionally omits `created`.
 The normalized evidence model has no trustworthy source creation timestamp, and

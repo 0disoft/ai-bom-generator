@@ -89,6 +89,12 @@ project-root `latest` value does not create a false release failure.
 
 ## Required Final Report
 
+The Python 3.12 CI lane also runs `scripts/verify_spdx_upstream.py` with
+`spdx3-validate>=0.0.7,<1`. ADR 0006 owns its positive reference roundtrips,
+invalid required-field cases, and expected rejection of current partial preview
+outputs. It is network-dependent validation of public synthetic fixtures, not
+an offline CLI dependency or evidence of full exporter conformance.
+
 Final responses must list executed validations, passed validations, skipped validations, skip reasons, and remaining risk.
 
 ## Runner Policy
