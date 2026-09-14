@@ -2,9 +2,6 @@
 
 ## v0.7.1
 
-Unreleased maintenance changes on `main`; published installation examples stay
-on v0.7.0 until the next exact release is verified.
-
 - Preserve the reviewed Ruff rule baseline while updating Ruff, packaging,
   CodeQL and the PyPI publishing Action.
 - Classify documentation roles, reconcile executable contracts, update security
