@@ -1,6 +1,10 @@
-# Marketplace listing preparation
+# Marketplace listing
 
 Status: Maintained guide
+
+Published: [AI-BOM Generator](https://github.com/marketplace/actions/ai-bom-generator).
+The public listing was verified on 2026-09-14 with v0.7.1 selected as latest,
+under Code quality and Utilities. Installation evidence below is release-specific.
 
 ## Listing contract
 
@@ -52,8 +56,10 @@ also passed. These links prove 0.7.1, not an unreleased successor.
 Follow [GitHub's publication procedure](https://docs.github.com/en/actions/how-tos/create-and-publish-actions/publish-in-github-marketplace):
 the owning account reviews/accepts the Marketplace Developer Agreement if
 needed, checks name availability, selects categories and an immutable exact
-release, and publishes it. This document does not assert agreement acceptance
-or a live Marketplace listing. A release being public is not listing evidence.
+release, and publishes it. Verify the public Marketplace page after saving:
+a release being public alone is not listing evidence. Published immutable tags
+retain their original README; documentation corrections reach the versioned
+listing through a subsequent verified release, never by retargeting old tags.
 
 For each update, require source CI and CodeQL, publish the immutable exact
 release, run the clean external exact-version smoke, then promote `v0` and run

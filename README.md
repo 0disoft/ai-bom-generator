@@ -118,8 +118,8 @@ directory if that file exists. It does not search parent directories or alternat
 filenames. Artifact discovery defaults are opt-in with
 `[artifacts].discovery = true`. The `spdx-ai` export format is available as a
 partial SPDX 3.0.1 AI Profile preview; it explicitly marks unavailable SPDX AI
-fields instead of inventing missing metadata. GitHub Marketplace registration is
-deferred.
+fields instead of inventing missing metadata. The Action is published on
+[GitHub Marketplace](https://github.com/marketplace/actions/ai-bom-generator).
 
 ## CLI
 
