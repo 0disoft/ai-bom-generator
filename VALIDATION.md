@@ -95,6 +95,13 @@ invalid required-field cases, and expected rejection of current partial preview
 outputs. It is network-dependent validation of public synthetic fixtures, not
 an offline CLI dependency or evidence of full exporter conformance.
 
+The gate fetches the SPDX 3.0.1 context, schema and SHACL model once per run,
+verifies reviewed SHA-256 digests, and reuses them in memory for every case.
+Logs identify the validator version and resource digests. Network, size and
+integrity failures are infrastructure/resource errors, never successful negative
+mapping tests. No persistent cross-run cache or offline availability is claimed.
+Digest changes require reviewing upstream changes, not automatic acceptance.
+
 Final responses must list executed validations, passed validations, skipped validations, skip reasons, and remaining risk.
 
 ## Runner Policy

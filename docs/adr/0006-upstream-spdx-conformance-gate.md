@@ -17,8 +17,14 @@ fixtures and generates synthetic sparse/complete previews in a temporary
 directory. Network access is limited by purpose to installing verification
 dependencies and retrieving public SPDX context/schema/model documents. No
 user BOMs or private model evidence are sent to an online validation service.
-Each validator subprocess has a 90-second timeout; the whole gate has a
-ten-minute limit. Retrieval errors fail the gate; they are never passing skips.
+The gate calls upstream schema and graph validation APIs with reviewed resources
+cached in memory. Each of the three resource downloads has a 30-second timeout
+and a 2 MiB ceiling; the whole gate retains its ten-minute limit. SHA-256 digests
+bind the context, schema and SHACL model to reviewed bytes and appear alongside
+the resolved validator version in logs. Integrity, size and network failures are
+resource errors, not mapping rejections or passing skips. The cache lasts for one
+run only; this is not an offline or persistent cross-run cache. Review upstream
+changes before updating resource hashes.
 
 ## Proven scope
 

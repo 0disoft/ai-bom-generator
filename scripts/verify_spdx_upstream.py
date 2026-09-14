@@ -5,34 +5,38 @@ import copy
 from importlib.metadata import version
 import json
 from pathlib import Path
-import shutil
-import subprocess
 import tempfile
 
 from ai_bom_generator.cli import main as cli_main
+try:
+    from .spdx_validation_resources import RESOURCES, UpstreamValidator
+except ImportError:
+    from spdx_validation_resources import RESOURCES, UpstreamValidator
 
 
 ROOT = Path(__file__).resolve().parents[1]
+VALIDATOR = None
 
 
 def validate(path: Path, *, expected: bool, diagnostic: str = "") -> None:
-    executable = shutil.which("spdx3-validate")
-    if not executable:
-        raise RuntimeError("Install the declared upstream validation dependency first")
-    result = subprocess.run([executable, "--quiet", "--json", str(path)], text=True,
-                            capture_output=True, timeout=90)
-    output = result.stdout + result.stderr
+    if VALIDATOR is None:
+        raise RuntimeError("Initialize the verified upstream resources first")
+    errors = VALIDATOR.errors(path)
+    output = "\n".join(errors)
     if expected:
-        if result.returncode != 0:
+        if errors:
             raise RuntimeError(f"Positive upstream fixture failed: {path.name}\n{output[-5000:]}")
-    elif result.returncode != 1 or diagnostic not in output:
+    elif not errors or diagnostic not in output:
         raise RuntimeError(f"Expected attributed mapping rejection: {path.name}\n{output[-5000:]}")
     print(json.dumps({"case": path.name, "expected_valid": expected, "passed": True}))
 
 
 def main() -> None:
+    global VALIDATOR
     print(json.dumps({"validator": "spdx3-validate", "version": version("spdx3-validate"),
                       "profile": "SPDX 3.0.1 Core/Software/AI", "exporter_conformance": "partial"}))
+    print(json.dumps({"resources": RESOURCES, "cache": "verified in-memory, one fetch per resource per run"}))
+    VALIDATOR = UpstreamValidator()
     with tempfile.TemporaryDirectory(prefix="aibom-spdx-gate-") as directory:
         work = Path(directory)
         for name in ("minimal", "complete"):

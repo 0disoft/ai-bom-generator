@@ -4,6 +4,9 @@
 
 Unreleased maintenance changes; published installation examples remain on v0.7.1.
 
+- Reuse SHA-256-verified SPDX validation resources across cases and distinguish
+  network/resource integrity failures from schema and SHACL mapping failures.
+
 - Record the live Marketplace listing and remove outdated registration guidance.
 - Promote mutable Action channels using an explicit expected remote object ID;
   reject concurrent changes and update the local tag only after remote success.
