@@ -4,6 +4,7 @@ import {
   requestedVersion,
   run,
 } from "./lib";
+import { promotionPushArgs } from "./promotion-lib";
 
 if (!process.argv.includes("--apply")) throw new Error("refusing tag mutation without --apply");
 
@@ -17,8 +18,7 @@ if (remoteTarget === releaseCommit) {
   process.exit(0);
 }
 
-run(["git", "tag", "--force", majorTag, tag], SOURCE_PROJECT);
-run(["git", "push", "origin", `refs/tags/${majorTag}`, "--force"], SOURCE_PROJECT);
+run(promotionPushArgs(majorTag, releaseCommit, remoteTarget), SOURCE_PROJECT);
 const promotedTarget = run(
   ["git", "ls-remote", "origin", `refs/tags/${majorTag}`],
   SOURCE_PROJECT,
@@ -26,4 +26,5 @@ const promotedTarget = run(
 if (promotedTarget !== releaseCommit) {
   throw new Error(`remote ${majorTag} resolves to ${promotedTarget || "nothing"}, expected ${releaseCommit}`);
 }
+run(["git", "tag", "--force", majorTag, tag], SOURCE_PROJECT);
 console.log(`${majorTag} now resolves to ${tag} at ${releaseCommit}`);

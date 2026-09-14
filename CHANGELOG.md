@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.7.2
+
+Unreleased maintenance changes; published installation examples remain on v0.7.1.
+
+- Record the live Marketplace listing and remove outdated registration guidance.
+- Promote mutable Action channels using an explicit expected remote object ID;
+  reject concurrent changes and update the local tag only after remote success.
+
 ## v0.7.1
 
 - Preserve the reviewed Ruff rule baseline while updating Ruff, packaging,
