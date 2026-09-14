@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - id: ai-bom
-        uses: 0disoft/ai-bom-generator@v0.6.1
+        uses: 0disoft/ai-bom-generator@v0.7.1
         with:
           model-directory: .
           config: aibom.toml
@@ -43,9 +43,9 @@ jobs:
 
 The target repository supplies its own `aibom.toml` and declared model evidence.
 The clean external consumer runs these inputs without preinstalled Python/uv:
-[exact release and caller upload smoke](https://github.com/0disoft/ai-bom-generator-action-smoke/actions/runs/34680072291).
-The [post-promotion mutable-channel smoke](https://github.com/0disoft/ai-bom-generator-action-smoke/actions/runs/34678929677)
-also passed. These links prove 0.6.1, not an unreleased successor.
+[exact release and caller upload smoke](https://github.com/0disoft/ai-bom-generator-action-smoke/actions/runs/34832464069).
+The [post-promotion mutable-channel smoke](https://github.com/0disoft/ai-bom-generator-action-smoke/actions/runs/34832673616)
+also passed. These links prove 0.7.1, not an unreleased successor.
 
 ## Publication and updates
 
