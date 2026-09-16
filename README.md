@@ -148,7 +148,7 @@ stale report at that requested path.
 - uses: actions/checkout@v7
 
 - id: ai-bom
-  uses: 0disoft/ai-bom-generator@v0.8.0
+  uses: 0disoft/ai-bom-generator@v0.8.1
   with:
     model-directory: .
     warnings: allow
@@ -179,7 +179,7 @@ put credentials in declared evidence or lockfile locators.
 Summary-derived action outputs are published only when the generation manifest
 matches the BOM, warning report, and summary files from the current run.
 
-Use `@v0` for compatible 0.x updates, or pin the exact `@v0.8.0` tag when a
+Use `@v0` for compatible 0.x updates, or pin the exact `@v0.8.1` tag when a
 workflow needs release reproducibility. GitHub-enforced immutable releases
 apply to versions published after `v0.2.0`.
 
@@ -200,7 +200,7 @@ uv run --python 3.12 python scripts/verify_github_action.py
 Post-release verification:
 
 ```powershell
-$env:RELEASE_VERSION = "0.8.0"
+$env:RELEASE_VERSION = "0.8.1"
 $env:PUBLISH_RUN_ID = "<successful-publish-run-id>"
 $env:SMOKE_RUN_ID = "<successful-exact-version-action-smoke-run-id>"
 uv run --python 3.12 python scripts/verify_release.py --version $env:RELEASE_VERSION --publish-run-id $env:PUBLISH_RUN_ID --smoke-run-id $env:SMOKE_RUN_ID

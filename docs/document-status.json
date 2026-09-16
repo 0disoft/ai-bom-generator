@@ -3,6 +3,10 @@
   "description": "Every tracked Markdown document outside generated LLMNav state has an explicit role. Guide classification is not approval of unresolved proposals; executable contracts and accepted ADRs take precedence.",
   "documents": [
     {
+      "path": "docs/releases/v0.8.1.md",
+      "kind": "historical-note"
+    },
+    {
       "path": "docs/releases/v0.8.0.md",
       "kind": "historical-note"
     },

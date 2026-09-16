@@ -31,7 +31,8 @@ class DocumentMetadataTests(unittest.TestCase):
             project = work / "project"
             project.mkdir()
             config = project / "aibom.toml"
-            base = 'schema_version = "1"\n[model]\nname = "synthetic-model"\n'
+            base = ('schema_version = "1"\n[model]\nname = "synthetic-model"\n'
+                    'supplied_by = "Example Supplier"\ndownload_location = "https://example.invalid/model"\n')
             config.write_text(base, encoding="utf-8")
             output = work / "bom.json"
             output.write_text("previous", encoding="utf-8")
@@ -48,3 +49,7 @@ class DocumentMetadataTests(unittest.TestCase):
                 self.assertEqual(first, output.read_bytes())
             graph = json.loads(first)["@graph"]
             self.assertTrue(any(x["type"] == "Person" and x["name"] == "Example" for x in graph))
+            model = next(x for x in graph if x["type"] == "ai_AIPackage")
+            retained = json.loads(model["comment"])
+            self.assertEqual(retained["suppliedBy"], "Example Supplier")
+            self.assertEqual(retained["downloadLocation"], "https://example.invalid/model")

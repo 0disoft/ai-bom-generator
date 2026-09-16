@@ -2,7 +2,7 @@
   "files": [
     {
       "blocks": [],
-      "contentHash": "1ba4d4f7ab3425e37251d3b9a0f886ae40bd3f3966874630bdb25a25b5d591c0",
+      "contentHash": "90fa8d600949d5fbe9c51b6a876e28c0f715e7457d150cf0a18a9b75c606ddc7",
       "declarations": [],
       "imports": [],
       "path": "src/ai_bom_generator/__init__.py",
@@ -1238,7 +1238,7 @@
     },
     {
       "blocks": [],
-      "contentHash": "10534150f39844c536ee714044424929ea619cc0e2ff110e056fca89faa66e82",
+      "contentHash": "56a4ef9b9b72e4bbf13359206f9d0846cbbaa57683140663d993ca6694c3e220",
       "declarations": [],
       "imports": [
         "ai_bom_generator",
@@ -1251,7 +1251,7 @@
       ],
       "path": "src/ai_bom_generator/exporters/spdx_json.py",
       "semanticBytes": 0,
-      "sourceBytes": 4030
+      "sourceBytes": 4132
     },
     {
       "blocks": [],

@@ -45,7 +45,8 @@ def export_spdx_json(evidence: NormalizedEvidence, redactor: Redactor, metadata:
                 for digest in item.get("verifiedUsing", []) if digest["algorithm"] == "SHA256"
             ]
         # Preserve extension evidence as redacted JSON text, not unknown JSON-LD predicates.
-        extra = {key: value for key, value in item.items() if key.startswith("aiBom:")}
+        mapped_fields = {"type", "spdxId", "creationInfo", "name", "packageVersion", "verifiedUsing"}
+        extra = {key: value for key, value in item.items() if key not in mapped_fields}
         if extra:
             element["comment"] = json.dumps(extra, sort_keys=True, ensure_ascii=False)
         if item["type"] == "ai_AIPackage":

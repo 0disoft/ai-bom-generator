@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.8.1
+
+- Retain supplier, download location and other unmapped preview properties in
+  standard comments alongside extension evidence in spdx-json-3.0.1 output.
+
 ## v0.8.0
 
 - Add opt-in spdx-json-3.0.1 Core/Software/AI output with explicit BOM
