@@ -163,7 +163,7 @@ stale report at that requested path.
     test "${{ steps.ai-bom.outputs.status }}" = "success"
 ```
 
-The action prepares Python 3.12 and pinned uv `0.11.28`, disables the setup-uv
+The action prepares Python 3.12 and the uv version declared in `action.yml`, disables the setup-uv
 GitHub cache, and invokes the packaged CLI with `uv run --project --locked`.
 Its virtual environment and uv download cache stay under `RUNNER_TEMP`; the
 caller repository is not used for action runtime state.
