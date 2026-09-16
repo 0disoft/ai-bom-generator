@@ -142,7 +142,7 @@ def _verify_action_metadata() -> None:
     text = ACTION.read_text(encoding="utf-8")
     required_snippets = [
         "using: composite",
-        'version: "0.11.28"',
+        'version: "0.12.15"',
         'enable-cache: "false"',
         "working-directory: ${{ github.action_path }}",
         "INPUT_MODEL_DIRECTORY",
