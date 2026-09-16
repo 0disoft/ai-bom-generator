@@ -2,7 +2,7 @@
   "files": [
     {
       "blocks": [],
-      "contentHash": "90fa8d600949d5fbe9c51b6a876e28c0f715e7457d150cf0a18a9b75c606ddc7",
+      "contentHash": "33f6a0676b8535374bfe309d2578f92cf4f2556d6f8226dade65232f291ea38a",
       "declarations": [],
       "imports": [],
       "path": "src/ai_bom_generator/__init__.py",

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.8.2
+
+- Update the CI and Action uv toolchain to 0.12.15 and release-tooling CI to Bun 1.4.2.
+- Verify compatible SPDX outputs with the independent SPDX Python object model.
+- Align security support with 0.8.x and reject future supported-minor documentation drift.
+
 ## v0.8.1
 
 - Retain supplier, download location and other unmapped preview properties in

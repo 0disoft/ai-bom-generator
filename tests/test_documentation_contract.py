@@ -15,6 +15,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DocumentationContractTests(unittest.TestCase):
+    def test_security_support_tracks_current_minor(self):
+        project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+        minor = ".".join(project["version"].split(".")[:2]) + ".x"
+        policy = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
+        supported = re.findall(r"^\|\s*([^|]+?)\s*\|\s*Yes\s*\|$", policy, re.MULTILINE)
+        self.assertEqual(supported, [minor], "Security support must match the current minor line")
+
     def test_inventory_covers_tracked_markdown_without_promoting_proposals(self):
         inventory = json.loads((ROOT / "docs/document-status.json").read_text(encoding="utf-8"))
         entries = inventory["documents"]
