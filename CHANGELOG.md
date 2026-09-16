@@ -2,8 +2,6 @@
 
 ## v0.8.0
 
-Unreleased maintenance changes; published installation examples remain on v0.7.1.
-
 - Add opt-in spdx-json-3.0.1 Core/Software/AI output with explicit BOM
   authorship and a deterministic timezone-normalized creation timestamp.
   Preserve the spdx-ai preview and retain extra evidence in standard comments.
