@@ -7,9 +7,9 @@
         "evidence collector internals"
       ],
       "hashes": {
-        "body": "769f8683024e2dce6dc8535803480ed677a3caf34da4ad0c64a122a274ada558",
+        "body": "ec02d1b0265a18a906415a6ef1363f92b3b23da4462a775c79adaa174ec35c13",
         "semantic": "5d6dea3e29db94574608b8ec17f273ce7ef7e116b34fc78aa2bb6915d9706c31",
-        "structure": "8ca7d695a55ca1a493a11a6fd5b5d123be836b28289614279aeddbf686bf8682"
+        "structure": "1af7198bc1d5b698342071d8aef086bb6012f1d05843975f8495afd079f0af67"
       },
       "id": "aibom.app.generation",
       "imports": [
@@ -17,10 +17,12 @@
         "ai_bom_generator.collectors",
         "ai_bom_generator.config",
         "ai_bom_generator.config.artifact_options",
+        "ai_bom_generator.config.spdx_document",
         "ai_bom_generator.domain.evidence",
         "ai_bom_generator.errors",
         "ai_bom_generator.exporters.cyclonedx_json",
         "ai_bom_generator.exporters.spdx_ai",
+        "ai_bom_generator.exporters.spdx_json",
         "ai_bom_generator.reporting",
         "ai_bom_generator.reporting.json_writer",
         "ai_bom_generator.security",
@@ -66,7 +68,7 @@
         "exporter mapping"
       ],
       "hashes": {
-        "body": "dff98116c04c35b0bdc0cab7dc76e8b75b9b7f05a5afc23337b71d3480ee9bbd",
+        "body": "4f4c5e53a7c7b415f23bb76115e69173e8f76b35a57a529c71a4a7c94cc6275d",
         "semantic": "8400200ade5a40ad427a0c567c414df7575c75a7a4a910f3e0ef4d184a12edc2",
         "structure": "d7b3f7226f9676d24cf35ccbf5ed78e66f3d2dc96c7f2e75ef1f76f930f51580"
       },
@@ -445,6 +447,6 @@
   "generatedBy": "llmnav@0.9.2",
   "repositoryId": "ai-bom-generator",
   "schemaVersion": 1,
-  "sourceHash": "846014e61ab11608489646d38520934c6ef5935ca043c3689ef018769ac9b91f",
+  "sourceHash": "f189c4aa079ac82e58636e3b98207d0146b361dc6dfcacf61f60fa71a42ddb54",
   "specVersion": "1"
 }

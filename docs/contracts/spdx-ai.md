@@ -1,5 +1,8 @@
 # SPDX AI Preview Contract
 
+The existing `spdx-ai` preview remains unchanged. The additional
+`spdx-json-3.0.1` format below is a separately selected compatibility mapping.
+
 Status: Accepted contract
 Repository Type: cli-tool
 
@@ -82,7 +85,45 @@ model package instead of silently implying that they were known.
 These fields are informational and do not make the output a full SPDX AI
 Profile conformance claim.
 
-## Review Blockers
+## SPDX 3.0.1 compatibility mapping
+
+`spdx-json-3.0.1` emits standard Core/Software/AI JSON-LD fields. It requires
+explicit BOM authorship, not model developer identity or training time:
+
+```toml
+[spdx]
+creator_name = "Example Organization"
+creator_type = "Organization" # or "Person"
+created = "2026-01-01T00:00:00Z"
+```
+
+The name is limited to 256 characters. The timestamp must be a quoted ISO
+date/time with seconds and timezone; UTC normalization is deterministic.
+`--document-created` overrides only the timestamp, including when the config
+omits it. No clock, login identity, Git author or environment variable is inferred.
+Missing or invalid metadata fails before evidence collection or output replacement.
+The flag is rejected for other formats.
+
+Model, observed artifact files and parsed dependency packages map to AI Package,
+Software File and Software Package. SHA-256 artifact digests use Core Hash;
+model-to-file containment and model-to-dependency relationships use
+`completeness=noAssertion`. Missing package versions are omitted.
+Extra model/package/artifact evidence is retained as redacted JSON text in
+`comment`. Other declared references are retained in the document comment,
+not falsely promoted to Dataset, Build, licensing or Security profile elements.
+Suppliers, licenses, release dates and AI metrics are not independently verified.
+
+The document namespace derives from redacted evidence, tool version and explicit
+authorship. Identical inputs and options produce identical BOM bytes; summaries
+and generation manifests keep their existing timing/run-ID semantics.
+No runtime validation downloads or new runtime dependency are introduced.
+Upstream JSON Schema and SHACL validation is performed in CI on actual generated
+sparse and complete fixture outputs. This proves the bounded mapping, not every
+possible SPDX profile or every possible input.
+
+Existing preview consumers keep selecting `spdx-ai`; migration is opt-in.
+
+## Review blockers for both formats
 
 - The exporter claims full SPDX AI conformance without upstream conformance
   validation.

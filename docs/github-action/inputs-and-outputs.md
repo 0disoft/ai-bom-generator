@@ -17,6 +17,11 @@ behavior stay comparable.
 
 ## Inputs
 
+The `format` input also accepts `spdx-json-3.0.1`; supply explicit authorship
+and creation time through the caller's `aibom.toml` as described in
+[the SPDX contract](../contracts/spdx-ai.md). The Action adds no new input;
+the timestamp CLI override is available when invoking the CLI directly.
+
 - `model-directory`: required path to the model project directory.
 - `config`: optional config path. Empty means the action omits `--config`, so
   the CLI may discover `<model-directory>/aibom.toml`.

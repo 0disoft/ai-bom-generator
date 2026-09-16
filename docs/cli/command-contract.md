@@ -33,7 +33,8 @@ ai-bom completion <bash|powershell>
 
 ai-bom generate <model-directory>
   [--config <path>]
-  [--format <cyclonedx-json-1.7|spdx-ai>]
+  [--format <cyclonedx-json-1.7|spdx-ai|spdx-json-3.0.1>]
+  [--document-created <ISO-timestamp-with-timezone>]
   --output <path>
   --warning-report <path>
   --summary <path|->

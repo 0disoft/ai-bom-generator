@@ -2,7 +2,7 @@
   "files": [
     {
       "blocks": [],
-      "contentHash": "327776bbad527e9a3c028b3871bcf5016e0a841e8d35e1639c363654f6d50c25",
+      "contentHash": "1ba4d4f7ab3425e37251d3b9a0f886ae40bd3f3966874630bdb25a25b5d591c0",
       "declarations": [],
       "imports": [],
       "path": "src/ai_bom_generator/__init__.py",
@@ -109,7 +109,7 @@
           "syntaxErrors": []
         }
       ],
-      "contentHash": "769f8683024e2dce6dc8535803480ed677a3caf34da4ad0c64a122a274ada558",
+      "contentHash": "ec02d1b0265a18a906415a6ef1363f92b3b23da4462a775c79adaa174ec35c13",
       "declarations": [
         null
       ],
@@ -118,10 +118,12 @@
         "ai_bom_generator.collectors",
         "ai_bom_generator.config",
         "ai_bom_generator.config.artifact_options",
+        "ai_bom_generator.config.spdx_document",
         "ai_bom_generator.domain.evidence",
         "ai_bom_generator.errors",
         "ai_bom_generator.exporters.cyclonedx_json",
         "ai_bom_generator.exporters.spdx_ai",
+        "ai_bom_generator.exporters.spdx_json",
         "ai_bom_generator.reporting",
         "ai_bom_generator.reporting.json_writer",
         "ai_bom_generator.security",
@@ -132,7 +134,7 @@
       ],
       "path": "src/ai_bom_generator/app.py",
       "semanticBytes": 553,
-      "sourceBytes": 7039
+      "sourceBytes": 7629
     },
     {
       "blocks": [
@@ -223,7 +225,7 @@
           "syntaxErrors": []
         }
       ],
-      "contentHash": "dff98116c04c35b0bdc0cab7dc76e8b75b9b7f05a5afc23337b71d3480ee9bbd",
+      "contentHash": "4f4c5e53a7c7b415f23bb76115e69173e8f76b35a57a529c71a4a7c94cc6275d",
       "declarations": [
         null
       ],
@@ -241,7 +243,7 @@
       ],
       "path": "src/ai_bom_generator/cli.py",
       "semanticBytes": 498,
-      "sourceBytes": 8400
+      "sourceBytes": 8608
     },
     {
       "blocks": [],
@@ -821,6 +823,20 @@
     },
     {
       "blocks": [],
+      "contentHash": "6a7ae07ba3b8b8127104ff3daf37907d800656776a873989fd71015f46663b28",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator.errors",
+        "dataclasses",
+        "datetime",
+        "re"
+      ],
+      "path": "src/ai_bom_generator/config/spdx_document.py",
+      "semanticBytes": 0,
+      "sourceBytes": 1770
+    },
+    {
+      "blocks": [],
       "contentHash": "38ff11348398240fbb39d3495d6f6927d5f93af833c26349e7afca8e73bb8590",
       "declarations": [],
       "imports": [
@@ -1219,6 +1235,23 @@
       "path": "src/ai_bom_generator/exporters/spdx_ai/schema/__init__.py",
       "semanticBytes": 0,
       "sourceBytes": 57
+    },
+    {
+      "blocks": [],
+      "contentHash": "10534150f39844c536ee714044424929ea619cc0e2ff110e056fca89faa66e82",
+      "declarations": [],
+      "imports": [
+        "ai_bom_generator",
+        "ai_bom_generator.config.spdx_document",
+        "ai_bom_generator.domain.evidence",
+        "ai_bom_generator.exporters.spdx_ai",
+        "ai_bom_generator.security",
+        "hashlib",
+        "json"
+      ],
+      "path": "src/ai_bom_generator/exporters/spdx_json.py",
+      "semanticBytes": 0,
+      "sourceBytes": 4030
     },
     {
       "blocks": [],

@@ -22,7 +22,7 @@ class CompletionTests(unittest.TestCase):
     def test_spec_uses_parser_flags_and_exporter_registry(self):
         spec = completion_spec(build_parser())
         self.assertIn("--max-scan-entries", spec["generate"]["words"])
-        self.assertEqual(spec["generate"]["choices"]["--format"], ["cyclonedx-json-1.7", "spdx-ai"])
+        self.assertEqual(spec["generate"]["choices"]["--format"], ["cyclonedx-json-1.7", "spdx-ai", "spdx-json-3.0.1"])
         self.assertIn("--config", spec["generate"]["paths"])
         self.assertIn("--max-scan-entries", spec["generate"]["values"])
         output = io.StringIO()
@@ -36,7 +36,7 @@ class CompletionTests(unittest.TestCase):
         script += '\nCOMP_WORDS=(ai-bom generate --format sp); COMP_CWORD=3; _ai_bom_complete; printf "%s\\n" "${COMPREPLY[@]}"\n'
         result = subprocess.run([native_bash(), "--noprofile", "--norc"], input=script, text=True, capture_output=True, timeout=15)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.strip(), "spdx-ai")
+        self.assertEqual(result.stdout.strip().splitlines(), ["spdx-ai", "spdx-json-3.0.1"])
 
     @unittest.skipUnless(shutil.which("pwsh"), "PowerShell 7 unavailable")
     def test_powershell_completes_warning_enum_in_native_shell(self):

@@ -58,7 +58,14 @@ Human-declared metadata remains distinct from tool-observed paths and hashes.
 
 ## Promotion boundary
 
-This decision establishes the upstream gate, not a production exporter upgrade.
+The opt-in `spdx-json-3.0.1` mapping now uses explicit `[spdx]` authorship
+and creation time (CLI timestamp override allowed). Its actual sparse/complete
+CLI outputs must pass positive upstream checks; missing creator and relationship
+source checks must fail. The original `spdx-ai` format retains its negative
+baseline for backward compatibility. See the SPDX contract for bounded mapping
+scope and comment-preserved evidence; no additional profile coverage is claimed.
+
+The original decision established the upstream gate, not a preview exporter upgrade.
 Do not rename current preview fields, discard evidence, or set conformance to
 full just to pass it. A future mapper change must replace the expected-preview-
 rejection checks with positive checks for actual CLI output, add invalid

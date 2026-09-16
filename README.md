@@ -123,6 +123,13 @@ fields instead of inventing missing metadata. The Action is published on
 
 ## CLI
 
+For the opt-in `spdx-json-3.0.1` compatibility format, declare `[spdx]`
+`creator_name`, `creator_type` (Person/Organization) and quoted `created`
+timestamp in `aibom.toml`. `--document-created` overrides the timestamp.
+Missing values are errors; neither current time nor user identity is inferred.
+See [mapping scope and migration](docs/contracts/spdx-ai.md).
+The existing `spdx-ai` partial preview is unchanged.
+
 ```text
 ai-bom --version
 ai-bom generate <model-directory> [--config <path>] --format <cyclonedx-json-1.7|spdx-ai> --output <bom.json> --warning-report <warnings.json> --summary <summary.json> [--manifest <manifest.json>] [--error-report <error.json>]

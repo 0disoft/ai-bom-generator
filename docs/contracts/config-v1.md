@@ -31,7 +31,11 @@ the CLI uses inline defaults and reports missing optional metadata as warnings.
   warnings are not separately configurable.
 - `generation.marker`: optional target-root-relative producer generation marker
   path governed by ADR 0004.
-- `output.format`: `cyclonedx-json-1.7` or `spdx-ai`.
+- `output.format`: `cyclonedx-json-1.7`, `spdx-ai` or `spdx-json-3.0.1`.
+- `spdx`: optional document metadata table with `creator_name`, `creator_type`
+  (Person or Organization), and `created` (quoted timestamp with timezone).
+  These are required only for the compatibility format; CLI
+  `--document-created` can supply or override `created`.
 - `model`: declared model metadata and model-card path.
 - `artifacts`: include and exclude patterns for model artifacts and checkpoints,
   plus explicit opt-in artifact discovery.

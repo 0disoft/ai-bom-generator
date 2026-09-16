@@ -40,6 +40,8 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("model_directory", type=Path)
     generate.add_argument("--config", type=Path, default=None)
     generate.add_argument("--format", dest="output_format", default=None)
+    generate.add_argument("--document-created", default=None,
+                          help="Explicit SPDX document timestamp; overrides [spdx].created.")
     generate.add_argument("--output", type=Path, required=True)
     generate.add_argument("--warning-report", type=Path, required=True)
     generate.add_argument("--summary", default="-")
@@ -87,6 +89,7 @@ def main(argv: list[str] | None = None) -> int:
             model_directory=args.model_directory,
             config=args.config,
             output_format=args.output_format,
+            document_created=args.document_created,
             output=args.output,
             warning_report=args.warning_report,
             summary=summary_path,
