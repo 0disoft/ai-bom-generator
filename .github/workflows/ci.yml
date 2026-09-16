@@ -69,7 +69,7 @@ jobs:
       - name: Verify upstream SPDX fixture conformance and preview rejection
         if: matrix.python-version == '3.12'
         timeout-minutes: 10
-        run: uv run --no-sync --with 'spdx3-validate>=0.0.7,<1' --python 3.12 python scripts/verify_spdx_upstream.py
+        run: uv run --no-sync --with 'spdx3-validate>=0.0.7,<1' --with 'spdx-python-model>=0.0.6,<1' --python 3.12 python scripts/verify_spdx_upstream.py
 
       - name: Check bounded component performance
         if: matrix.python-version == '3.12'

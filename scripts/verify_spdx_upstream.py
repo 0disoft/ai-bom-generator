@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import tempfile
 import shutil
+import spdx_python_model
 
 from ai_bom_generator.cli import main as cli_main
 try:
@@ -17,6 +18,43 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = None
+
+
+def consume(path: Path) -> None:
+    """Read actual CLI output through the independent SPDX object model."""
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    model, objects = spdx_python_model.load(path)
+    for item in raw["@graph"]:
+        identifier = item.get("spdxId", item.get("@id"))
+        if item["type"] == "CreationInfo":
+            # The reader resolves blank nodes but does not index their source IDs.
+            candidates = list(objects.foreach_type("CreationInfo"))
+            if len(candidates) != 1:
+                raise RuntimeError("Consumer did not recover one CreationInfo")
+            obj = candidates[0]
+        else:
+            obj = objects.obj_by_id[identifier]
+        if not isinstance(obj, getattr(model, item["type"])):
+            raise RuntimeError(f"Consumer lost element type: {item['type']}")
+        for field in ("name", "comment", "software_packageVersion"):
+            if field in item and getattr(obj, field) != item[field]:
+                raise RuntimeError(f"Consumer changed evidence field: {field}")
+        if item["type"] == "Relationship":
+            if obj.from_.spdxId != item["from"]:
+                raise RuntimeError("Consumer did not resolve relationship source")
+            if {target.spdxId for target in obj.to} != set(item["to"]):
+                raise RuntimeError("Consumer did not resolve relationship targets")
+            if obj.relationshipType.rsplit("/", 1)[-1] != item["relationshipType"]:
+                raise RuntimeError("Consumer changed relationship type")
+        if item["type"] == "SpdxDocument":
+            if {root.spdxId for root in obj.rootElement} != set(item["rootElement"]):
+                raise RuntimeError("Consumer did not resolve document roots")
+            if obj.creationInfo.specVersion != "3.0.1":
+                raise RuntimeError("Consumer selected wrong SPDX version")
+            if obj.creationInfo.createdBy[0].name != "Synthetic producer":
+                raise RuntimeError("Consumer lost explicitly declared author")
+    print(json.dumps({"case": path.name, "consumer": "spdx-python-model",
+                      "version": version("spdx-python-model"), "passed": True}))
 
 
 def validate(path: Path, *, expected: bool, diagnostic: str = "") -> None:
@@ -79,6 +117,7 @@ def main() -> None:
             if code != 0:
                 raise RuntimeError(f"Compatible CLI fixture failed: {name}: {code}")
             validate(compatible, expected=True)
+            consume(compatible)
             broken_document = json.loads(compatible.read_text(encoding="utf-8"))
             next(item for item in broken_document["@graph"] if item["type"] == "CreationInfo").pop("createdBy")
             invalid_creator = work / f"{name}-compatible-missing-creator.json"

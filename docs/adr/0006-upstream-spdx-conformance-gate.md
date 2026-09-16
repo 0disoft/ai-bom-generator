@@ -73,6 +73,17 @@ relationship/license/source cases for the expanded scope, and document migration
 for existing preview consumers. The open design is retained in the mapping
 follow-up proposal, not silently approved by this ADR.
 
+## Consumer interoperability
+
+The same gate reads actual compatible sparse and complete CLI outputs with
+the official `spdx-python-model>=0.0.6,<1` object-model library (Apache-2.0).
+This CI-only dependency has no runtime dependency on the producer. It must
+resolve document roots, authors and relationship endpoints into typed objects,
+and preserve names, versions and comment-encoded evidence. Its resolved version
+is logged. Comments remain application-readable text, not native Dataset or
+licensing semantics. Passing these cases demonstrates library interoperability,
+not support by every SPDX UI, vulnerability scanner or ingestion service.
+
 ## Recovery
 
 A validator or upstream-service failure blocks the conformance job and requires
